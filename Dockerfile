@@ -19,6 +19,9 @@ COPY . /var/www/html
 # Install dependencies with Composer (if applicable)
 RUN composer install --no-dev --optimize-autoloader
 
+# Apply a fix for vfsStream.php (if the file exists)
+RUN sed -i s/name{0}/name[0]/ vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php || true
+
 # Set proper permissions (optional)
 RUN chown -R www-data:www-data /var/www/html
 
