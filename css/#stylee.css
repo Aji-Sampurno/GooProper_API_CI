@@ -1,0 +1,98 @@
+.team {
+    background: #4e73df;
+    /* background: rgb(190, 187, 209); */
+  }
+  
+  .team .member {
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+  }
+  
+  .team .member .pic {
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .team .member img {
+    transition: all ease-in-out 0.4s;
+  }
+  
+  .team .member:hover img {
+    transform: scale(1.1);
+  }
+  
+  .team .member .member-info {
+    position: absolute;
+    bottom: -80px;
+    left: 0px;
+    right: 0px;
+    background: rgba(255, 255, 255, 0.9);
+    /* background: rgba(166, 170, 230, 0.9); */
+    padding: 15px 0;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .team .member h4 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #01036f;
+    position: relative;
+    padding-bottom: 10px;
+  }
+  
+  .team .member h4::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 50px;
+    height: 1px;
+    background: #0d12fc;
+    bottom: 0;
+    left: calc(50% - 25px);
+  }
+  
+  .team .member span {
+    font-style: italic;
+    display: block;
+    font-size: 13px;
+    color: #01036f;
+  }
+  
+  .team .member .social {
+    margin-top: 10px;
+  }
+  
+  .team .member .social a {
+    transition: color 0.3s;
+    color: #01036f;
+  }
+  
+  .team .member .social a:hover {
+    color: #1acc8d;
+  }
+  
+  .team .member .social i {
+    font-size: 16px;
+    margin: 0 2px;
+  }
+  
+  .team .btn-get-started {
+    margin-top: 10px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: inline-block;
+    padding: 10px 30px;
+    border-radius: 50px;
+    transition: 0.5s;
+    color: #fff;
+    background: #1acc8d;
+  }
+  
+  .team .btn-get-started:hover {
+    background: #17b57d;
+  }
