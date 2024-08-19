@@ -4,6 +4,9 @@ FROM php:7.4-apache
 # Install necessary PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
+# Enable Apache mod_rewrite (necessary for CodeIgniter)
+RUN a2enmod rewrite
+
 # Set the working directory in the container
 WORKDIR /var/www/html
 
@@ -12,9 +15,6 @@ COPY . /var/www/html
 
 # Set proper permissions (optional)
 RUN chown -R www-data:www-data /var/www/html
-
-# Enable Apache mod_rewrite (if needed by your application)
-RUN a2enmod rewrite
 
 # Expose port 80 to the outside world
 EXPOSE 80
