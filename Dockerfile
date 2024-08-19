@@ -19,6 +19,9 @@ COPY . /var/www/html
 # Install dependencies with Composer (if applicable)
 RUN composer install --no-dev --optimize-autoloader
 
+# Debug: List files in the application directory
+RUN ls -la /var/www/html
+
 # Debug: List files in vendor directory
 RUN find /var/www/html/vendor -type f
 
@@ -27,7 +30,7 @@ RUN if [ -f /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/
     sed -i s/name{0}/name[0]/ /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php; \
 fi
 
-# Set proper permissions (optional)
+# Set proper permissions
 RUN chown -R www-data:www-data /var/www/html
 
 # Expose port 80 to the outside world
