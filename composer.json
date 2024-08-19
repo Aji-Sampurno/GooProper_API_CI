@@ -20,7 +20,7 @@
 		"test:coverage": [
 			"@putenv XDEBUG_MODE=coverage",
 			"phpunit --color=always --coverage-text --configuration tests/travis/sqlite.phpunit.xml"
-		],
+		]
 	},
 	"require-dev": {
 		"mikey179/vfsstream": "1.6.*",
