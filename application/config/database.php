@@ -75,9 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'gooprope_android',
-	'password' => 'gooproper090922',
+	'hostname' => '5.181.217.105',
+	'port' => '3306',
+	'username' => 'root',
+	'password' => 'b4rJnDY2PEczek4ta2OicJbIHKX6h5ZhWr6HVjHVNHeLQOHC0cIJ5gmzul5neqZs',
 	'database' => 'gooprope_android',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
