@@ -19,6 +19,9 @@ COPY . /var/www/html
 # Install dependencies with Composer (if applicable)
 RUN composer install --no-dev --optimize-autoloader
 
+# Debug: List files in vendor directory
+RUN ls -R vendor
+
 # Apply a fix for vfsStream.php (if the file exists)
 RUN sed -i s/name{0}/name[0]/ vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php || true
 
