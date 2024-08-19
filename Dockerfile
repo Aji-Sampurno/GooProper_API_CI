@@ -20,10 +20,12 @@ COPY . /var/www/html
 RUN composer install --no-dev --optimize-autoloader
 
 # Debug: List files in vendor directory
-RUN ls -R vendor
+RUN find /var/www/html/vendor -type f
 
-# Apply a fix for vfsStream.php (if the file exists)
-RUN sed -i s/name{0}/name[0]/ vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php || true
+# Apply a fix for vfsStream.php if it exists
+RUN if [ -f /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php ]; then \
+    sed -i s/name{0}/name[0]/ /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php; \
+fi
 
 # Set proper permissions (optional)
 RUN chown -R www-data:www-data /var/www/html
