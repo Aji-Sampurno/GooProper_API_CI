@@ -70,20 +70,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
 */
-$active_group = 'default';
+$active_group = 'vps';
+// $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => '5.181.217.105',
-	'port' => '3306',
+	'port' => '33060',
 	'username' => 'root',
-	'password' => 'b4rJnDY2PEczek4ta2OicJbIHKX6h5ZhWr6HVjHVNHeLQOHC0cIJ5gmzul5neqZs',
+	'password' => 'dpRzz29u3GwuZMHUzHy8CXzXyOCEtFinjV1o0b6Ch9KRzwa7NtZeGqlgbtrn7yL2',
 	'database' => 'gooprope_android',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
-	'db_debug' => TRUE,
+	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,
 	'cachedir' => '',
 	'char_set' => 'utf8',
@@ -94,4 +95,50 @@ $db['default'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE
+);
+
+$db['pdo'] = array(
+    'dsn' => 'mysql:host=localhost;port=33060;dbname=gooprope_android',
+    'username' => 'root',
+    'password' => 'dpRzz29u3GwuZMHUzHy8CXzXyOCEtFinjV1o0b6Ch9KRzwa7NtZeGqlgbtrn7yL2',
+    'dbdriver' => 'pdo',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => FALSE,
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'return_type' => 'array',
+    'enable_query_strings' => FALSE,
+    'subdriver' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+);
+
+
+$db['vps'] = array(
+	'dsn'	=> '',
+	'hostname' => '5.181.217.105',
+	'port' => '33060',
+	'username' => 'root',
+	'password' => 'dpRzz29u3GwuZMHUzHy8CXzXyOCEtFinjV1o0b6Ch9KRzwa7NtZeGqlgbtrn7yL2',
+	'database' => 'gooprope_android',
+	'dbdriver' => 'mysqli',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => FALSE,
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => FALSE,
+	'stricton' => FALSE,
+	'failover' => array(),
+	'save_queries' => FALSE
 );
