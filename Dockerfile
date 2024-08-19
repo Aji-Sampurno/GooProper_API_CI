@@ -7,11 +7,17 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli
 # Enable Apache mod_rewrite (necessary for CodeIgniter)
 RUN a2enmod rewrite
 
+# Install Composer (if using Composer for dependencies)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 # Set the working directory in the container
 WORKDIR /var/www/html
 
 # Copy the contents of your application to the working directory
 COPY . /var/www/html
+
+# Install dependencies with Composer (if applicable)
+RUN composer install --no-dev --optimize-autoloader
 
 # Set proper permissions (optional)
 RUN chown -R www-data:www-data /var/www/html
