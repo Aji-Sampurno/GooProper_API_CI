@@ -452,7 +452,8 @@ class ApiFlutter extends CI_Controller
     }
     
     public function Get_Wilayah(){
-        $data = $this->ModelFlutter->Get_Wilayah();
+        $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $data = $this->ModelFlutter->Get_Wilayah($id);
         echo json_encode($data);
     }
     
