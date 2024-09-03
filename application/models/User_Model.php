@@ -149,7 +149,7 @@ class User_Model extends CI_Model
                                     LEFT JOIN 
                                     	agen ON infoproperty.IdAgen = agen.IdAgen
                                     WHERE 
-                                    	infoproperty.TglInput BETWEEN '2024-07-01' AND '2024-07-31'");
+                                    	infoproperty.TglInput BETWEEN '2024-08-01' AND '2024-08-31'");
         return $query->result_array();
     }
     
@@ -1581,7 +1581,7 @@ class User_Model extends CI_Model
                                     JOIN
                                         agen ON listing.IdAgen = agen.IdAgen
                                     WHERE 
-                                    	MONTH(susulan.TglInput) <> MONTH(listing.TglInput) AND susulan.TglInput BETWEEN '2024-07-01' AND '2024-07-31'");
+                                    	MONTH(susulan.TglInput) <> MONTH(listing.TglInput) AND susulan.TglInput BETWEEN '2024-08-01' AND '2024-08-31'");
         return $query->result_array();
     }
     	
