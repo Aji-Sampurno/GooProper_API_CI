@@ -55,6 +55,10 @@
         
         <p>Goo Proper juga dapat menggunakan teknologi Internetnya bersifat personalisasi yang disebut "cookie”. "Cookie” adalah file teks kecil yang ditempatkan pada hard disk komputer Anda yang mengidentifikasi software browser Anda ke situs Web. Cookies memungkinkan kami untuk mengidentifikasi ketika Anda mengunjungi, menelusuri, menutup halaman, dan masuk kembali ke situs kami beserta segala aktivitas yang anda lakukan pada kunjungan ke situs kami.</p>
         
+        <h2>Lokasi</h2>
+        
+        <p>Goo Proper meminta lokasi anda untuk memberikan saran lokasi listing atau properti terdekat dari anda. Goo Proper juga meminta lokasi anda untuk melakukan share lokasi listing atau properti yang akan anda input.</p>
+        
         <h2>Mencari Property Dijual atau Disewa</h2>
         
         <p>Goo Proper memberikan kesempatan untuk menerima informasi tentang real properti ditawarkan untuk dijual, yang akan meminta alamat email anda dan atau untuk memberikan alamat email Anda kepada agen maupun afiliasi pemasaran kami.</p>
