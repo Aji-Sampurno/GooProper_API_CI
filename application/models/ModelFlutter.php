@@ -196,6 +196,122 @@ class ModelFlutter extends CI_Model
         return $query->result_array();
     }
     
+    // Report Buyer ====================================================================================================================================================================================
+    
+    public function Get_Report_Buyer_Agen($id, $search = ''){
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " AND reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
+        }
+            
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        IdAgen = $id   
+                                        $searchCondition
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer_Agen_Ready($id){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        IdAgen = $id
+                                        AND DATEDIFF(NOW(), TglReport)  < 20
+                                        AND IsClose = 0
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer_Agen_To_Expired($id){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        IdAgen = $id
+                                        AND DATEDIFF(NOW(), TglReport)  BETWEEN 20 AND 30
+                                        AND IsClose = 0
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer_Agen_Expired($id){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        IdAgen = $id
+                                        AND DATEDIFF(NOW(), TglReport) > 30
+                                        AND IsClose = 0
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer(){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer_Expired(){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        DATEDIFF(NOW(), TglReport) > 30
+                                        AND IsClose = 0
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer_To_Expired(){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        DATEDIFF(NOW(), TglReport)  BETWEEN 20 AND 30
+                                        AND IsClose = 0
+                                    ORDER BY
+                                        DATEDIFF(NOW(), TglReport) DESC; ");
+        return $query->result();
+    }
+    
+    public function Get_Detail_Report_Buyer($id){
+        $query = $this->db->query(" SELECT 
+                                        reportbuyer.*,
+                                        agen.IdAgen AS IdAgenAgen,
+                                        agen.NamaTemp,
+                                        agen.NoTelp,
+                                        agen.Instagram
+                                    FROM 
+                                        reportbuyer
+                                        LEFT JOIN agen ON reportbuyer.IdAgen = agen.IdAgen
+                                    WHERE 
+                                        reportbuyer.IdReportBuyer = $id; ");
+        return $query->result();
+    }
+    
     // Tampungan =======================================================================================================================================================================================
     
         // Get -----------------------------------------------------------------
@@ -522,7 +638,15 @@ class ModelFlutter extends CI_Model
         
         // Get -----------------------------------------------------------------
         
-        public function Get_List_Listing_Agen($limit, $offset, $id){
+        public function Get_List_Listing_Agen($limit, $offset, $id, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND listing.MetaNamaListing LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
             $query = $this->db->query(" SELECT 
                                         	IdListing,
                                             NamaListing,
@@ -544,7 +668,8 @@ class ModelFlutter extends CI_Model
                                             SoldAgen = 0 AND 
                                             Rented = 0 AND 
                                             RentedAgen = 0 AND
-                                            Pending = 0 
+                                            Pending = 0        
+                                            $searchCondition
                                         ORDER BY 
                                             IdListing DESC
                                         LIMIT $limit OFFSET $offset ");
@@ -1138,13 +1263,21 @@ class ModelFlutter extends CI_Model
             return $query->result();
         }
         
-        public function Get_List_Listing_Pencarian($limit, $offset, $search = '', $status = '', $jenis = '', $kota = '', $wilayah = '', $prabot = '', $bed = null, $bath = null, $hargaMin = null, $hargaMax = null, $landMin = null, $landMax = null, $wideMin = null, $wideMax = null) {
+        public function Get_List_Listing_Pencarian($limit, $offset, $search = '', $priority = '', $sold = null, $rented = null, $soldagen = null, $rentedagen = null, $status = '', $jenis = '', $kota = '', $wilayah = '', $prabot = '', $bed = null, $bath = null, $hargaMin = '', $hargaMax ='', $landMin = null, $landMax = null, $wideMin = null, $wideMax = null) {
             $searchCondition = '';
             if (!empty($search)) {
                 $keywords = explode(' ', $search);
                 foreach ($keywords as $keyword) {
                     $searchCondition .= " AND listing.MetaNamaListing LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
                 }
+            }
+            
+            if (!empty($sold) && !empty($rented) && !empty($soldagen) && !empty($rentedagen)) {
+                $searchCondition .= " AND Sold = " . $this->db->escape($sold) . " OR SoldAgen = " . $this->db->escape($soldagen) . " OR Rented = " . $this->db->escape($rented) . " OR RentedAgen = " . $this->db->escape($rentedagen) . " ";
+            }
+            
+            if (!empty($priority)) {
+                $searchCondition .= " AND listing.Priority = " . $this->db->escape($priority) . " ";
             }
             
             if (!empty($status)) {
@@ -1177,28 +1310,28 @@ class ModelFlutter extends CI_Model
         
             if ($status === 'Jual') {
                 if (!empty($hargaMin) && !empty($hargaMax)) {
-                    $searchCondition .= " AND listing.Harga BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " ";
+                    $searchCondition .= " AND CAST(listing.Harga AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " ";
                 }
             } elseif ($status === 'Sewa') {
                 if (!empty($hargaMin) && !empty($hargaMax)) {
-                    $searchCondition .= " AND listing.HargaSewa BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " ";
+                    $searchCondition .= " AND CAST(listing.HargaSewa AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " ";
                 }
             } elseif ($status === 'Jual/Sewa') {
                 if (!empty($hargaMin) && !empty($hargaMax)) {
-                    $searchCondition .= " AND (listing.Harga BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " OR listing.HargaSewa BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . ") ";
+                    $searchCondition .= " AND (CAST(listing.Harga AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " OR CAST(listing.HargaSewa AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . ") ";
                 }
             } elseif (empty($status)) {
                 if (!empty($hargaMin) && !empty($hargaMax)) {
-                    $searchCondition .= " AND (listing.Harga BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " OR listing.HargaSewa BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . ") ";
+                    $searchCondition .= " AND (CAST(listing.Harga AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " OR CAST(listing.HargaSewa AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . ") ";
                 }
             }
         
             if (!empty($landMin) && !empty($landMax)) {
-                $searchCondition .= " AND REPLACE(listing.Land, ' m²', '') BETWEEN " . $this->db->escape($landMin) . " AND " . $this->db->escape($landMax) . " ";
+                $searchCondition .= " AND CAST(REPLACE(listing.Land, ' m²', '') AS UNSIGNED) BETWEEN " . $this->db->escape($landMin) . " AND " . $this->db->escape($landMax) . " ";
             }
         
             if (!empty($wideMin) && !empty($wideMax)) {
-                $searchCondition .= " AND REPLACE(listing.Wide, ' m²', '') BETWEEN " . $this->db->escape($wideMin) . " AND " . $this->db->escape($wideMax) . " ";
+                $searchCondition .= " AND CAST(REPLACE(listing.Wide, ' m²', '') AS UNSIGNED) BETWEEN " . $this->db->escape($wideMin) . " AND " . $this->db->escape($wideMax) . " ";
             }
             
             $query = $this->db->query("
@@ -1217,7 +1350,6 @@ class ModelFlutter extends CI_Model
                 FROM 
                     listing
                 WHERE
-                    JenisProperti = 'Rumah' AND
                     IsDouble = 0 AND 
                     IsDelete = 0 AND 
                     Sold = 0 AND 
@@ -1371,7 +1503,15 @@ class ModelFlutter extends CI_Model
     
         // Get -----------------------------------------------------------------
         
-        public function Get_List_Listing_Primary($limit, $offset){
+        public function Get_List_Listing_Primary($limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= "WHERE CONCAT(Nama, ' ',JenisProperty, ' ',Developer, ' ',Kota, ' ',Area) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
             $query = $this->db->query(" SELECT 
                                         	IdNew,
                                             Nama,
@@ -1379,21 +1519,39 @@ class ModelFlutter extends CI_Model
                                             Img
                                         FROM 
                                         	listingnew
+                                        $searchCondition 
                                         LIMIT $limit OFFSET $offset;");
+            return $query->result_array();
+        }
+        
+        public function Get_Detail_Primary($id){
+            $query = $this->db->query(" SELECT 
+                                        	*
+                                        FROM 
+                                        	listingnew
+                                        WHERE
+                                            IdNew = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Image_Primary($id){
+            $query = $this->db->query(" SELECT 
+                                        	IdNew,
+                                        	Img
+                                        FROM 
+                                        	listingnew
+                                        WHERE
+                                            IdNew = $id; ");
             return $query->result_array();
         }
         
         public function Get_List_Tipe_Listing_Primary($id){
             $query = $this->db->query(" SELECT 
-                                        	IdListing,
-                                            NamaListing,
-                                            Kota
+                                        	*
                                         FROM 
                                         	tipenewlisting
                                         WHERE
-                                            IdNew = $id;
-                                        	ORDER BY 
-                                            IdNew ASC; ");
+                                            IdNew = $id; ");
             return $query->result_array();
         }
         
@@ -1401,17 +1559,45 @@ class ModelFlutter extends CI_Model
     
         // Get -----------------------------------------------------------------
         
+        public function Get_List_Info($limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= "AND CONCAT(JenisProperty, ' ', StatusProperty, ' ', Lokasi, ' ', Alamat, ' ', Keterangan) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
+            $query = $this->db->query(" 
+                                        SELECT
+                                            IdInfo,
+                                            JenisProperty,
+                                            StatusProperty,
+                                            Lokasi,
+                                            ImgProperty
+                                        FROM 
+                                            infoproperty
+                                        WHERE
+                                            IsHide = 0
+                                            $searchCondition
+                                        ORDER BY
+                                        	IdInfo DESC
+                                        LIMIT $limit OFFSET $offset;");
+            
+            return $query->result_array();
+        }
+        
         public function Get_List_Info_Agen($id, $limit, $offset) {
             $query = $this->db->query(" SELECT 
                                         	IdInfo,
                                             JenisProperty,
-                                            StatusProperty, 
+                                            StatusProperty,
+                                            Lokasi,
                                             ImgProperty
                                         FROM 
                                         	infoproperty
                                         WHERE 
-                                            IdAgen = $id AND
-                                        	StatusProperty = 'Jual'
+                                            IdAgen = $id
                                         ORDER BY
                                         	IdInfo DESC
                                         LIMIT $limit OFFSET $offset;");
@@ -1424,6 +1610,7 @@ class ModelFlutter extends CI_Model
                                         	IdInfo,
                                             JenisProperty,
                                             StatusProperty, 
+                                            Lokasi,
                                             ImgProperty
                                         FROM 
                                         	infoproperty
@@ -1441,6 +1628,7 @@ class ModelFlutter extends CI_Model
                                         	IdInfo,
                                             JenisProperty,
                                             StatusProperty, 
+                                            Lokasi,
                                             ImgProperty
                                         FROM 
                                         	infoproperty
@@ -1458,6 +1646,7 @@ class ModelFlutter extends CI_Model
                                         	IdInfo,
                                             JenisProperty,
                                             StatusProperty, 
+                                            Lokasi,
                                             ImgProperty
                                         FROM 
                                         	infoproperty
@@ -1467,6 +1656,32 @@ class ModelFlutter extends CI_Model
                                         	IdInfo DESC
                                         LIMIT $limit OFFSET $offset;");
             
+            return $query->result_array();
+        }
+        
+        public function Get_Image_Info($id){
+            $query = $this->db->query(" SELECT 
+                                            infoproperty.IdInfo,
+                                            infoproperty.ImgProperty
+                                        FROM
+                                            infoproperty
+                                        WHERE
+                                        	infoproperty.IdInfo = $id");
+            return $query->result_array();
+        }
+        
+        public function Get_Lampiran_Info($id){
+            $query = $this->db->query(" SELECT 
+                                        	infoproperty.*,
+                                            agen.IdAgen AS IdAgenAgen,
+                                            agen.NamaTemp AS NamaTemp,
+                                            agen.NoTelp AS NoTelpAgen,
+                                            agen.Instagram AS Instagram
+                                        FROM 
+                                            infoproperty
+                                            LEFT JOIN agen ON infoproperty.IdAgen = agen.IdAgen
+                                        WHERE
+                                            infoproperty.IdInfo = $id;");
             return $query->result_array();
         }
         
