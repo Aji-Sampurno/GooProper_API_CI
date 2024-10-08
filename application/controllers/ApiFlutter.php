@@ -260,59 +260,41 @@ class ApiFlutter extends CI_Controller
     }
     
     public function Update_Agen() {
-        $Username = $this->input->post('Username');
-        $Nama = $this->input->post('Nama');
-        $NoTelp = $this->input->post('NoTelp');
-        $Email = $this->input->post('Email');
-        $TglLahir = $this->input->post('TglLahir');
-        $KotaKelahiran = $this->input->post('KotaKelahiran');
-        $Pendidikan = $this->input->post('Pendidikan');
-        $NamaSekolah = $this->input->post('NamaSekolah');
-        $MasaKerja = $this->input->post('MasaKerja');
-        $Jabatan = $this->input->post('Jabatan');
-        $AlamatDomisili = $this->input->post('AlamatDomisili');
-        $Facebook = $this->input->post('Facebook');
-        $Instagram = $this->input->post('Instagram');
-        $Npwp = $this->input->post('Npwp');
-
-        if(empty($username) || empty($namalengkap) || empty($notelp) || empty($email)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
-            return;
-        }
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+        
+        $IdAgen = $input['IdUser'];
+        $NamaTemp = $input['NamaTemp'];
+        $Username = $input['Username'];
+        $Email = $input['Email'];
+        $NoTelp = $input['WhatsApp'];
+        $Instagram = $input['Instagram'];
+        $Facebook = $input['Facebook'];
+        $Photo = $input['Profile'];
 
         $data = [
+            'NamaTemp' => $NamaTemp,
             'Username' => $Username,
-            'Nama' => $Nama,
-            'NoTelp' => $NoTelp,
             'Email' => $Email,
-            'TglLahir' => $TglLahir,
-            'KotaKelahiran' => $KotaKelahiran,
-            'Pendidikan' => $Pendidikan,
-            'NamaSekolah' => $NamaSekolah,
-            'MasaKerja' => $MasaKerja,
-            'Jabatan' => $Jabatan,
-            'AlamatDomisili' => $AlamatDomisili,
-            'Facebook' => $Facebook,
+            'NoTelp' => $NoTelp,
             'Instagram' => $Instagram,
-            'Npwp' => $Npwp,
+            'Facebook' => $Facebook,
+            'Photo' => $Photo,
         ];
 
-        $where = array('IdAgen' => $this->input->post('IdAgen'),);
+        $where = array('IdAgen' => $IdAgen,);
         $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
 
         if($insert_id) {
             $this->output
                 ->set_content_type('application/json')
-                ->set_status_header(201)
+                ->set_status_header(200)
                 ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
         } else {
             $this->output
                 ->set_content_type('application/json')
                 ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Akun']));
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Profil']));
         }
     }
     
@@ -606,6 +588,596 @@ class ApiFlutter extends CI_Controller
         echo json_encode($data);
     }
     
+    // Report Buyer ==================================================================================================================================================================================
+    
+        // Add -----------------------------------------------------------------
+        
+        public function Add_Report_Buyer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            if (!isset($input['IdAgen'], $input['NamaBuyer'], $input['NoTelp'], $input['JenisProperti'], $input['AlamatProperti'], $input['SumberBuyer'], $input['StatusFollowUp'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+                return;
+            }
+            
+            $data = [
+                'IdAgen' => $input['IdAgen'],
+                'NamaBuyer' => $input['NamaBuyer'],
+                'TelpBuyer' => $input['NoTelp'],
+                'JenisProperti' => $input['JenisProperti'],
+                'AlamatProperti' => $input['AlamatProperti'],
+                'SumberInformasi' => $input['SumberBuyer'],
+                'StatusFollowUp' => $input['StatusFollowUp']
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'reportbuyer');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Report Buyer Gagal']));
+            }
+        }
+    
+        // Update --------------------------------------------------------------
+        
+        public function Update_Report_Buyer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            if (!isset($input['NamaBuyer'], $input['NoTelp'], $input['JenisProperti'], $input['AlamatProperti'], $input['SumberBuyer'], $input['StatusFollowUp'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+                return;
+            }
+            
+            date_default_timezone_set('Asia/Jakarta');
+            
+            $data = [
+                'NamaBuyer' => $input['NamaBuyer'],
+                'TelpBuyer' => $input['NoTelp'],
+                'JenisProperti' => $input['JenisProperti'],
+                'AlamatProperti' => $input['AlamatProperti'],
+                'SumberInformasi' => $input['SumberBuyer'],
+                'StatusFollowUp' => $input['StatusFollowUp'],
+                'TglReport' => date('Y-m-d H:i:s')
+            ];
+            
+            $where = array('IdReportBuyer'=> $input['IdReport'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'reportbuyer');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Report Buyer Gagal']));
+            }
+        }
+        
+        public function Close_Report_Buyer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            if (!isset($input['NamaBuyer'], $input['NoTelp'], $input['JenisProperti'], $input['AlamatProperti'], $input['SumberBuyer'], $input['StatusFollowUp'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+                return;
+            }
+            
+            date_default_timezone_set('Asia/Jakarta');
+            
+            $data = [
+                'StatusFollowUp' => "$currentDate Close Report",
+                'TglReport' => date('Y-m-d H:i:s'),
+                'IsClose' => 1
+            ];
+            
+            $where = array('IdReportBuyer'=> $input['IdReport'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'reportbuyer');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Close Report Buyer Gagal']));
+            }
+        }
+        
+        // Get -----------------------------------------------------------------
+        
+        public function Get_Report_Buyer_Agen() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $search = $this->input->get('search');
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen($id, $search);
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer_Agen_Ready() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_Ready($id);
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer_Agen_To_Expired() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_To_Expired($id);
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer_Agen_Expired() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_Expired($id);
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer() {
+            $status_data = $this->ModelFlutter->Get_Report_Buyer();
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer_Ready() {
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Ready();
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer_To_Expired() {
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_To_Expired();
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Report_Buyer_Expired() {
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Expired();
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
+        public function Get_Detail_Report_Buyer() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $status_data = $this->ModelFlutter->Get_Detail_Report_Buyer($id);
+            
+            $current_date = new DateTime();
+            $response = [];
+        
+            foreach ($status_data as $data) {
+                $updated_at = new DateTime($data->TglReport);
+                $one_month_after_update = clone $updated_at;
+                $one_month_after_update->modify('+1 month');
+        
+                $interval = $current_date->diff($one_month_after_update);
+        
+                if ($interval->invert == 0) {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaTemp' => $data->NamaTemp,
+                        'NoTelp' => $data->NoTelp,
+                        'Instagram' => $data->Instagram,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => $interval->days,
+                        'message' => "Akan jatuh tempo dalam " . $interval->days . " hari."
+                    ];
+                } else {
+                    $response[] = [
+                        'IdReportBuyer' => $data->IdReportBuyer,
+                        'IdAgen' => $data->IdAgen,
+                        'NamaTemp' => $data->NamaTemp,
+                        'NamaBuyer' => $data->NamaBuyer,
+                        'TelpBuyer' => $data->TelpBuyer,
+                        'JenisProperti' => $data->JenisProperti,
+                        'AlamatProperti' => $data->AlamatProperti,
+                        'SumberInformasi' => $data->SumberInformasi,
+                        'StatusFollowUp' => $data->StatusFollowUp,
+                        'TglReport' => $data->TglReport,
+                        'IsClose' => $data->IsClose,
+                        'days_remaining' => 0,
+                        'message' => "Sudah melewati batas 1 bulan."
+                    ];
+                }
+            }
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+        
     // Tampungan =====================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
@@ -620,7 +1192,7 @@ class ApiFlutter extends CI_Controller
             $Latitude = $input['Latitude'];
             $Longitude = $input['Longitude'];
             $Selfie = $input['Selfie'];
-    
+            
             $data = [
                 'IdAgen' => $IdAgen,
                 'Alamat' => $Alamat,
@@ -630,9 +1202,9 @@ class ApiFlutter extends CI_Controller
                 'Selfie' => $Selfie,
                 'IsListing' => 0,
             ];
-    
+            
             $insert_id = $this->ModelFlutter->Input_Data($data, 'sharelokasi');
-    
+            
             if($insert_id) {
                 $this->output
                     ->set_content_type('application/json')
@@ -916,21 +1488,605 @@ class ApiFlutter extends CI_Controller
                         $this->output
                             ->set_content_type('application/json')
                             ->set_status_header(500)
-                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Tampungan Gagal']));
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
                     }
                 } else {
                     $this->db->trans_rollback();
                     $this->output
                         ->set_content_type('application/json')
                         ->set_status_header(500)
-                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Tampungan Gagal']));
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
                 }
             } else {
                 $this->db->trans_rollback();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Tampungan Gagal']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+            }
+        }
+        
+        public function Add_PraListing_Tampungan(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $inputDate = $input['TglInput'];
+            $currentDate = date('Y-m-d');
+            
+            $IdShareLokasi = $input['IdShareLokasi'];
+            
+            $NamaLengkap = $input['NamaLengkap'];
+            $NoTelp = $input['NoTelp'];
+            $AlamatVendor = $input['AlamatVendor'];
+            $TglLahir = $input['TglLahir'];
+            $Nik = $input['Nik'];
+            $NoRekening = $input['NoRekening'];
+            $Bank = $input['Bank'];
+            $AtasNama = $input['AtasNama'];
+			
+            $IdAgen = $input['IdAgen'];
+            $IdAgenCo = $input['IdAgenCo'];
+            $IdInput = $input['IdInput'];
+            $NamaListing = $input['NamaListing'];
+            $MetaNamaListing = $input['MetaNamaListing'];	
+            $Alamat = $input['Alamat'];	
+            $AlamatTemplate = $input['AlamatTemplate'];
+            $Latitude = $input['Latitude'];
+            $Longitude = $input['Longitude'];
+            $Location = $input['Location'];
+            $Wilayah = $input['Wilayah'];
+            $Daerah = $input['Daerah'];
+            $Wide = $input['Wide'];	
+            $Land = $input['Land'];	
+            $Dimensi = $input['Dimensi'];	
+            $Listrik = $input['Listrik'];	
+            $Level = $input['Level'];	
+            $Bed = $input['Bed'];	
+            $Bath = $input['Bath'];	
+            $BedArt = $input['BedArt'];	
+            $BathArt = $input['BathArt'];	
+            $Garage = $input['Garage'];	
+            $Carpot = $input['Carpot'];
+            $Hadap = $input['Hadap'];
+            $SHM = $input['SHM'];
+            $HGB = $input['HGB'];
+            $HSHP = $input['HSHP'];
+            $PPJB = $input['PPJB'];
+            $Stratatitle = $input['Stratatitle'];
+            $AJB = $input['AJB'];
+            $PetokD = $input['PetokD'];
+            $ImgSHM = $input['ImgSHM'];
+            $ImgHGB = $input['ImgHGB'];
+            $ImgHSHP = $input['ImgHSHP'];
+            $ImgPPJB = $input['ImgPPJB'];
+            $ImgStratatitle = $input['ImgStratatitle'];
+            $ImgAJB = $input['ImgAJB'];
+            $ImgPetokD = $input['ImgPetokD'];
+            $ImgPjp = $input['ImgPjp'];
+            $ImgPjp1 = $input['ImgPjp1'];
+            $JenisProperti = $input['JenisProperti'];	
+            $SumberAir = $input['SumberAir'];	
+            $Kondisi = $input['Kondisi'];
+            $RuangTamu = $input['RuangTamu'];
+            $RuangMakan = $input['RuangMakan'];
+            $Dapur = $input['Dapur'];
+            $Jemuran = $input['Jemuran'];
+            $Masjid = $input['Masjid'];
+            $Taman = $input['Taman'];
+            $Playground = $input['Playground'];
+            $Cctv = $input['Cctv'];
+            $OneGateSystem = $input['OneGateSystem'];
+            $KolamRenang = $input['KolamRenang'];
+            $SportSpace = $input['SportSpace'];
+            $ParkingSpot = $input['ParkingSpot'];
+            $Deskripsi = $input['Deskripsi'];
+            $MetaDeskripsi = $input['MetaDeskripsi'];	
+            $Prabot = $input['Prabot'];	
+            $KetPrabot = $input['KetPrabot'];	
+            $Priority = $input['Priority'];
+            $Banner = $input['Banner'];
+            $Size = $input['Size'];
+            $TipeHarga = $input['TipeHarga'];
+            $Harga = $input['Harga'];	
+            $HargaSewa = $input['HargaSewa'];
+            $RangeHarga = $input['RangeHarga'];	
+            $Img1 = $input['Img1'];
+            $Img2 = $input['Img2'];
+            $Img3 = $input['Img3'];
+            $Img4 = $input['Img4'];
+            $Img5 = $input['Img5'];
+            $Img6 = $input['Img6'];
+            $Img7 = $input['Img7'];
+            $Img8 = $input['Img8'];
+            $Img9 = $input['Img9'];
+            $Img10 = $input['Img10'];
+            $Img11 = $input['Img11'];
+            $Img12 = $input['Img12'];
+            $Video = $input['Video'];	
+            $LinkFacebook = $input['LinkFacebook'];	
+            $LinkTiktok = $input['LinkTiktok'];	
+            $LinkInstagram = $input['LinkInstagram'];	
+            $LinkYoutube = $input['LinkYoutube'];	
+            $Fee = $input['Fee'];
+            $Marketable = $input['IsMarketable'];
+            $StatusHarga = $input['IsHarga'];
+            $IsSelfie = $input['IsSelfie'];
+            $IsLokasi = $input['IsLokasi'];
+            $Selfie = $input['Selfie'];
+            $NoKtp = $input['NoKtp'];
+            $ImgKtp = $input['ImgKtp'];
+            
+            $AksesJalanAgen = $input['AksesJalanAgen'];
+            $KondisiAgen = $input['KondisiAgen'];
+            $AreaSekitarAgen = $input['AreaSekitarAgen'];
+            $HargaAgen = $input['HargaAgen'];
+            
+            if($inputDate == 0){
+                $makeDate = $currentDate;
+            } else{
+                $makeDate = $inputDate;
+            }
+            
+            $this->db->trans_start();
+            
+            $vendor = array(
+				'NamaLengkap' => $NamaLengkap,
+                'NoTelp' => $NoTelp,
+                'Alamat' => $AlamatVendor,
+				'TglLahir' => $TglLahir,
+				'Nik' => $Nik,
+				'NoRekening' => $NoRekening,
+				'Bank' => $Bank,
+				'AtasNama' => $AtasNama,
+			);
+			$this->db->insert('vendor',$vendor);
+			$idvendor = $this->db->insert_id();
+    
+            if($idvendor) {
+                $data = [
+                    'IdAgen' => $IdAgen,
+                    'IdAgenCo' => $IdAgenCo,
+                    'IdInput' => $IdInput,
+                    'IdVendor' => $idvendor,
+                    'NamaListing'=> $NamaListing,
+                    'MetaNamaListing'=> $MetaNamaListing,	
+                    'Alamat'=> $Alamat,	
+                    'AlamatTemplate'=> $AlamatTemplate,
+                    'Latitude'=> $Latitude,
+                    'Longitude'=> $Longitude,
+                    'Location'=> $Location,
+                    'Wilayah' => $Wilayah,
+                    'Daerah' => $Daerah,
+                    'Wide'=> $Wide,	
+                    'Land'=> $Land,	
+                    'Dimensi'=> $Dimensi,	
+                    'Listrik'=> $Listrik,	
+                    'Level'=> $Level,	
+                    'Bed'=> $Bed,
+                    'Bath'=> $Bath,	
+                    'BedArt'=> $BedArt,	
+                    'BathArt'=> $BathArt,	
+                    'Garage'=> $Garage,	
+                    'Carpot'=> $Carpot,
+                    'Hadap'=> $Hadap,
+                    'SHM'=> $SHM,
+                    'HGB'=> $HGB,
+                    'HSHP'=> $HSHP,
+                    'PPJB'=> $PPJB,
+                    'Stratatitle'=> $Stratatitle,
+                    'AJB'=> $AJB,
+                    'PetokD'=> $PetokD,
+                    'ImgSHM'=> $ImgSHM,
+                    'ImgHGB'=> $ImgHGB,
+                    'ImgHSHP'=> $ImgHSHP,
+                    'ImgPPJB'=> $ImgPPJB,
+                    'ImgStratatitle'=> $ImgStratatitle,
+                    'ImgAJB'=> $ImgAJB,
+                    'ImgPetokD'=> $ImgPetokD,
+                    'ImgPjp'=> $ImgPjp,
+                    'ImgPjp1'=> $ImgPjp1,
+                    'JenisProperti'=> $JenisProperti,	
+                    'SumberAir'=> $SumberAir,	
+                    'Kondisi'=> $Kondisi,
+                    'RuangTamu'=> $RuangTamu,
+                    'RuangMakan'=> $RuangMakan,
+                    'Dapur'=> $Dapur,
+                    'Jemuran'=> $Jemuran,
+                    'Masjid'=> $Masjid,
+                    'Taman'=> $Taman,
+                    'Playground'=> $Playground,
+                    'Cctv'=> $Cctv,
+                    'OneGateSystem'=> $OneGateSystem,
+                    'KolamRenang'=> $KolamRenang,
+                    'SportSpace'=> $SportSpace,
+                    'ParkingSpot'=> $ParkingSpot,
+                    'Deskripsi'=> $Deskripsi,
+                    'MetaDeskripsi'=> $MetaDeskripsi,	
+    				'Prabot'=> $Prabot,	
+    				'KetPrabot'=> $KetPrabot,	
+    				'Priority'=> $Priority,
+    				'Banner'=> $Banner,
+    				'Size'=> $Size,
+    				'TipeHarga'=> $TipeHarga,
+    				'Harga'=> $Harga,	
+    				'HargaSewa'=> $HargaSewa,
+    				'RangeHarga'=> $RangeHarga,	
+    				'TglInput'=> $makeDate,
+    				'Img1'=> $Img1,
+                    'Img2'=> $Img2,
+                    'Img3'=> $Img3,
+                    'Img4'=> $Img4,
+                    'Img5'=> $Img5,
+                    'Img6'=> $Img6,
+                    'Img7'=> $Img7,
+                    'Img8'=> $Img8,
+                    'Img9'=> $Img9,
+                    'Img10'=> $Img10,
+                    'Img11'=> $Img11,
+                    'Img12'=> $Img12,
+    				'Video'=> $Video,	
+    				'LinkFacebook'=> $LinkFacebook,	
+    				'LinkTiktok'=> $LinkTiktok,	
+    				'LinkInstagram'=> $LinkInstagram,	
+    				'LinkYoutube'=> $LinkYoutube,	
+    				'Fee'=> $Fee,
+    				'IsAdmin' => 0,
+    				'IsManager' => 0,
+    				'Marketable' => $Marketable,
+    				'StatusHarga' => $StatusHarga,
+                    'IsSelfie' => $IsSelfie,
+                    'IsLokasi' => $IsLokasi,
+                    'Selfie' => $Selfie,
+                    'NoKtp' => $NoKtp,
+                    'ImgKtp' => $ImgKtp,
+                    'Pending' => 0,
+                ];
+                
+			    $this->db->insert('pralisting',$data);
+			    $insert_id = $this->db->insert_id();
+			    
+			    if($insert_id) {
+			        $nilai = [
+                        'IdPralisting' => $insert_id,
+                        'AksesJalanAgen' => $AksesJalanAgen,
+                        'KondisiAgen' => $KondisiAgen,
+                        'AreaSekitarAgen' => $AreaSekitarAgen,
+                        'HargaAgen' => $HargaAgen,
+                    ];
+                    $insertnilai = $this->ModelFlutter->Input_Data($nilai, 'penilaian');
+                    
+                    if($insertnilai) {
+                        $tampungan = [
+                            'IsListing' => 1,
+                        ];
+                        $where = array('IdShareLokasi'=> $IdShareLokasi,);
+                        $updatetampungan = $this->ModelFlutter->Update_Data($where,$tampungan,'sharelokasi');
+                        
+                        if($updatetampungan) {
+                            $this->db->trans_commit();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(200)
+                                ->set_output(json_encode(['status' => 'success', 'user_id' => $updatetampungan]));
+                        } else {
+                            $this->db->trans_rollback();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(500)
+                                ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                        }
+                    } else {
+                        $this->db->trans_rollback();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(500)
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                    }
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+            }
+        }
+        
+        public function Add_PraListing_Info(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $inputDate = $input['TglInput'];
+            $currentDate = date('Y-m-d');
+            
+            $IdInfo = $input['IdInfo'];
+            
+            $NamaLengkap = $input['NamaLengkap'];
+            $NoTelp = $input['NoTelp'];
+            $AlamatVendor = $input['AlamatVendor'];
+            $TglLahir = $input['TglLahir'];
+            $Nik = $input['Nik'];
+            $NoRekening = $input['NoRekening'];
+            $Bank = $input['Bank'];
+            $AtasNama = $input['AtasNama'];
+			
+            $IdAgen = $input['IdAgen'];
+            $IdAgenCo = $input['IdAgenCo'];
+            $IdInput = $input['IdInput'];
+            $NamaListing = $input['NamaListing'];
+            $MetaNamaListing = $input['MetaNamaListing'];	
+            $Alamat = $input['Alamat'];	
+            $AlamatTemplate = $input['AlamatTemplate'];
+            $Latitude = $input['Latitude'];
+            $Longitude = $input['Longitude'];
+            $Location = $input['Location'];
+            $Wilayah = $input['Wilayah'];
+            $Daerah = $input['Daerah'];
+            $Wide = $input['Wide'];	
+            $Land = $input['Land'];	
+            $Dimensi = $input['Dimensi'];	
+            $Listrik = $input['Listrik'];	
+            $Level = $input['Level'];	
+            $Bed = $input['Bed'];	
+            $Bath = $input['Bath'];	
+            $BedArt = $input['BedArt'];	
+            $BathArt = $input['BathArt'];	
+            $Garage = $input['Garage'];	
+            $Carpot = $input['Carpot'];
+            $Hadap = $input['Hadap'];
+            $SHM = $input['SHM'];
+            $HGB = $input['HGB'];
+            $HSHP = $input['HSHP'];
+            $PPJB = $input['PPJB'];
+            $Stratatitle = $input['Stratatitle'];
+            $AJB = $input['AJB'];
+            $PetokD = $input['PetokD'];
+            $ImgSHM = $input['ImgSHM'];
+            $ImgHGB = $input['ImgHGB'];
+            $ImgHSHP = $input['ImgHSHP'];
+            $ImgPPJB = $input['ImgPPJB'];
+            $ImgStratatitle = $input['ImgStratatitle'];
+            $ImgAJB = $input['ImgAJB'];
+            $ImgPetokD = $input['ImgPetokD'];
+            $ImgPjp = $input['ImgPjp'];
+            $ImgPjp1 = $input['ImgPjp1'];
+            $JenisProperti = $input['JenisProperti'];	
+            $SumberAir = $input['SumberAir'];	
+            $Kondisi = $input['Kondisi'];
+            $RuangTamu = $input['RuangTamu'];
+            $RuangMakan = $input['RuangMakan'];
+            $Dapur = $input['Dapur'];
+            $Jemuran = $input['Jemuran'];
+            $Masjid = $input['Masjid'];
+            $Taman = $input['Taman'];
+            $Playground = $input['Playground'];
+            $Cctv = $input['Cctv'];
+            $OneGateSystem = $input['OneGateSystem'];
+            $KolamRenang = $input['KolamRenang'];
+            $SportSpace = $input['SportSpace'];
+            $ParkingSpot = $input['ParkingSpot'];
+            $Deskripsi = $input['Deskripsi'];
+            $MetaDeskripsi = $input['MetaDeskripsi'];	
+            $Prabot = $input['Prabot'];	
+            $KetPrabot = $input['KetPrabot'];	
+            $Priority = $input['Priority'];
+            $Banner = $input['Banner'];
+            $Size = $input['Size'];
+            $TipeHarga = $input['TipeHarga'];
+            $Harga = $input['Harga'];	
+            $HargaSewa = $input['HargaSewa'];
+            $RangeHarga = $input['RangeHarga'];	
+            $Img1 = $input['Img1'];
+            $Img2 = $input['Img2'];
+            $Img3 = $input['Img3'];
+            $Img4 = $input['Img4'];
+            $Img5 = $input['Img5'];
+            $Img6 = $input['Img6'];
+            $Img7 = $input['Img7'];
+            $Img8 = $input['Img8'];
+            $Img9 = $input['Img9'];
+            $Img10 = $input['Img10'];
+            $Img11 = $input['Img11'];
+            $Img12 = $input['Img12'];
+            $Video = $input['Video'];	
+            $LinkFacebook = $input['LinkFacebook'];	
+            $LinkTiktok = $input['LinkTiktok'];	
+            $LinkInstagram = $input['LinkInstagram'];	
+            $LinkYoutube = $input['LinkYoutube'];	
+            $Fee = $input['Fee'];
+            $Marketable = $input['IsMarketable'];
+            $StatusHarga = $input['IsHarga'];
+            $IsSelfie = $input['IsSelfie'];
+            $IsLokasi = $input['IsLokasi'];
+            $Selfie = $input['Selfie'];
+            $NoKtp = $input['NoKtp'];
+            $ImgKtp = $input['ImgKtp'];
+            
+            $AksesJalanAgen = $input['AksesJalanAgen'];
+            $KondisiAgen = $input['KondisiAgen'];
+            $AreaSekitarAgen = $input['AreaSekitarAgen'];
+            $HargaAgen = $input['HargaAgen'];
+            
+            if($inputDate == 0){
+                $makeDate = $currentDate;
+            } else{
+                $makeDate = $inputDate;
+            }
+            
+            $this->db->trans_start();
+            
+            $vendor = array(
+				'NamaLengkap' => $NamaLengkap,
+                'NoTelp' => $NoTelp,
+                'Alamat' => $AlamatVendor,
+				'TglLahir' => $TglLahir,
+				'Nik' => $Nik,
+				'NoRekening' => $NoRekening,
+				'Bank' => $Bank,
+				'AtasNama' => $AtasNama,
+			);
+			$this->db->insert('vendor',$vendor);
+			$idvendor = $this->db->insert_id();
+    
+            if($idvendor) {
+                $data = [
+                    'IdAgen' => $IdAgen,
+                    'IdAgenCo' => $IdAgenCo,
+                    'IdInput' => $IdInput,
+                    'IdVendor' => $idvendor,
+                    'NamaListing'=> $NamaListing,
+                    'MetaNamaListing'=> $MetaNamaListing,	
+                    'Alamat'=> $Alamat,	
+                    'AlamatTemplate'=> $AlamatTemplate,
+                    'Latitude'=> $Latitude,
+                    'Longitude'=> $Longitude,
+                    'Location'=> $Location,
+                    'Wilayah' => $Wilayah,
+                    'Daerah' => $Daerah,
+                    'Wide'=> $Wide,	
+                    'Land'=> $Land,	
+                    'Dimensi'=> $Dimensi,	
+                    'Listrik'=> $Listrik,	
+                    'Level'=> $Level,	
+                    'Bed'=> $Bed,
+                    'Bath'=> $Bath,	
+                    'BedArt'=> $BedArt,	
+                    'BathArt'=> $BathArt,	
+                    'Garage'=> $Garage,	
+                    'Carpot'=> $Carpot,
+                    'Hadap'=> $Hadap,
+                    'SHM'=> $SHM,
+                    'HGB'=> $HGB,
+                    'HSHP'=> $HSHP,
+                    'PPJB'=> $PPJB,
+                    'Stratatitle'=> $Stratatitle,
+                    'AJB'=> $AJB,
+                    'PetokD'=> $PetokD,
+                    'ImgSHM'=> $ImgSHM,
+                    'ImgHGB'=> $ImgHGB,
+                    'ImgHSHP'=> $ImgHSHP,
+                    'ImgPPJB'=> $ImgPPJB,
+                    'ImgStratatitle'=> $ImgStratatitle,
+                    'ImgAJB'=> $ImgAJB,
+                    'ImgPetokD'=> $ImgPetokD,
+                    'ImgPjp'=> $ImgPjp,
+                    'ImgPjp1'=> $ImgPjp1,
+                    'JenisProperti'=> $JenisProperti,	
+                    'SumberAir'=> $SumberAir,	
+                    'Kondisi'=> $Kondisi,
+                    'RuangTamu'=> $RuangTamu,
+                    'RuangMakan'=> $RuangMakan,
+                    'Dapur'=> $Dapur,
+                    'Jemuran'=> $Jemuran,
+                    'Masjid'=> $Masjid,
+                    'Taman'=> $Taman,
+                    'Playground'=> $Playground,
+                    'Cctv'=> $Cctv,
+                    'OneGateSystem'=> $OneGateSystem,
+                    'KolamRenang'=> $KolamRenang,
+                    'SportSpace'=> $SportSpace,
+                    'ParkingSpot'=> $ParkingSpot,
+                    'Deskripsi'=> $Deskripsi,
+                    'MetaDeskripsi'=> $MetaDeskripsi,	
+    				'Prabot'=> $Prabot,	
+    				'KetPrabot'=> $KetPrabot,	
+    				'Priority'=> $Priority,
+    				'Banner'=> $Banner,
+    				'Size'=> $Size,
+    				'TipeHarga'=> $TipeHarga,
+    				'Harga'=> $Harga,	
+    				'HargaSewa'=> $HargaSewa,
+    				'RangeHarga'=> $RangeHarga,	
+    				'TglInput'=> $makeDate,
+    				'Img1'=> $Img1,
+                    'Img2'=> $Img2,
+                    'Img3'=> $Img3,
+                    'Img4'=> $Img4,
+                    'Img5'=> $Img5,
+                    'Img6'=> $Img6,
+                    'Img7'=> $Img7,
+                    'Img8'=> $Img8,
+                    'Img9'=> $Img9,
+                    'Img10'=> $Img10,
+                    'Img11'=> $Img11,
+                    'Img12'=> $Img12,
+    				'Video'=> $Video,	
+    				'LinkFacebook'=> $LinkFacebook,	
+    				'LinkTiktok'=> $LinkTiktok,	
+    				'LinkInstagram'=> $LinkInstagram,	
+    				'LinkYoutube'=> $LinkYoutube,	
+    				'Fee'=> $Fee,
+    				'IsAdmin' => 0,
+    				'IsManager' => 0,
+    				'Marketable' => $Marketable,
+    				'StatusHarga' => $StatusHarga,
+                    'IsSelfie' => $IsSelfie,
+                    'IsLokasi' => $IsLokasi,
+                    'Selfie' => $Selfie,
+                    'NoKtp' => $NoKtp,
+                    'ImgKtp' => $ImgKtp,
+                    'Pending' => 0,
+                ];
+                
+			    $this->db->insert('pralisting',$data);
+			    $insert_id = $this->db->insert_id();
+			    
+			    if($insert_id) {
+			        $nilai = [
+                        'IdPralisting' => $insert_id,
+                        'AksesJalanAgen' => $AksesJalanAgen,
+                        'KondisiAgen' => $KondisiAgen,
+                        'AreaSekitarAgen' => $AreaSekitarAgen,
+                        'HargaAgen' => $HargaAgen,
+                    ];
+                    $insertnilai = $this->ModelFlutter->Input_Data($nilai, 'penilaian');
+                    
+                    if($insertnilai) {
+                        $tampungan = [
+                            'IsListing' => 1,
+                        ];
+                        $where = array('IdInfo'=> $IdInfo,);
+                        $updatetampungan = $this->ModelFlutter->Update_Data($where,$tampungan,'infoproperty');
+                        
+                        if($updatetampungan) {
+                            $this->db->trans_commit();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(200)
+                                ->set_output(json_encode(['status' => 'success', 'user_id' => $updatetampungan]));
+                        } else {
+                            $this->db->trans_rollback();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(500)
+                                ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                        }
+                    } else {
+                        $this->db->trans_rollback();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(500)
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                    }
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
             }
         }
         
@@ -1195,6 +2351,37 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Reject Pra-Listing Gagal']));
+            }
+        }
+        
+        // Ajukan Ulang --------------------------------------------------------
+        
+        public function Ajukan_Ulang_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdPralisting = $input['IdPraListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IsRejected'=> 0,
+            ];
+            $where = array('IdPralisting'=> $IdPralisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Pra-Listing di Ajukan Ulang']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Ajukan Ulang Pra-Listing Gagal']));
             }
         }
         
@@ -1621,7 +2808,8 @@ class ApiFlutter extends CI_Controller
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->Get_List_Listing_Agen($limit, $offset,$id);
+            $search = $this->input->get('search');
+            $data = $this->ModelFlutter->Get_List_Listing_Agen($limit, $offset, $id, $search);
             echo json_encode($data);
         }
         
@@ -1772,6 +2960,11 @@ class ApiFlutter extends CI_Controller
         
         public function Get_List_Listing_Pencarian() {
             $search = $this->input->get('search');
+            $priority = $this->input->get('priority');
+            $sold = $this->input->get('sold');
+            $rented = $this->input->get('rented');
+            $soldagen = $this->input->get('soldagen');
+            $rentedagen = $this->input->get('rentedagen');
             $status = $this->input->get('status');
             $jenis = $this->input->get('jenis');
             $kota = $this->input->get('kota');
@@ -1788,7 +2981,7 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             
-            $data = $this->ModelFlutter->Get_List_Listing_Pencarian($limit, $offset, $search, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
+            $data = $this->ModelFlutter->Get_List_Listing_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
             
             echo json_encode($data);
         }
@@ -1831,8 +3024,129 @@ class ApiFlutter extends CI_Controller
     // Info ===========================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
+        
+        public function Add_Info(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d');
+            $currentTime = date('H:i:s');
+            
+            $data = [
+                'IdAgen' => $input['IdAgen'],
+                'JenisProperty' => $input['JenisProperty'],
+                'StatusProperty' => $input['StatusProperty'],
+                'StatusNarahubung' => $input['StatusNarahubung'],
+                'Narahubung' => $input['Narahubung'],
+                'NoTelp' => $input['NoTelp'],
+                'LTanah' => $input['LuasTanah'],
+                'LBangunan' => $input['LuasBangunan'],
+                'Keterangan' => $input['Keterangan'],
+                'Harga' => $input['HargaJual'],
+                'HargaSewa' => $input['HargaSewa'],
+                'Lokasi' => $input['Lokasi'],
+                'Alamat' => $input['Alamat'],
+                'Latitude' => $input['Latitude'],
+                'Longitude' => $input['Longitude'],
+                'ImgSelfie' => $input['ImgSelfie'],
+                'ImgProperty' => $input['ImgProperty'],
+                'IsSpek' => $input['IsSpek'],
+                'TglInput' => $currentDate,
+				'JamInput' => $currentTime,
+				'IsListing' => 0,
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'infoproperty');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Info Gagal']));
+            }
+        }
+        
+        public function Add_Info_Tampungan(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d');
+            $currentTime = date('H:i:s');
+            
+            $IdShareLokasi = $input['IdShareLokasi'];
+            
+            $this->db->trans_start();
+            
+            $data = array(
+				'IdAgen' => $input['IdAgen'],
+                'JenisProperty' => $input['JenisProperty'],
+                'StatusProperty' => $input['StatusProperty'],
+                'StatusNarahubung' => $input['StatusNarahubung'],
+                'Narahubung' => $input['Narahubung'],
+                'NoTelp' => $input['NoTelp'],
+                'LTanah' => $input['LuasTanah'],
+                'LBangunan' => $input['LuasBangunan'],
+                'Keterangan' => $input['Keterangan'],
+                'Harga' => $input['HargaJual'],
+                'HargaSewa' => $input['HargaSewa'],
+                'Lokasi' => $input['Lokasi'],
+                'Alamat' => $input['Alamat'],
+                'Latitude' => $input['Latitude'],
+                'Longitude' => $input['Longitude'],
+                'ImgSelfie' => $input['ImgSelfie'],
+                'ImgProperty' => $input['ImgProperty'],
+                'IsSpek' => $input['IsSpek'],
+                'TglInput' => $currentDate,
+				'JamInput' => $currentTime,
+				'IsListing' => 0,
+			);
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'infoproperty');
+            
+            if($insert_id) {
+                $tampungan = [
+                    'IsListing' => 1,
+                ];
+                $where = array('IdShareLokasi'=> $IdShareLokasi,);
+                $updatetampungan = $this->ModelFlutter->Update_Data($where,$tampungan,'sharelokasi');
+                
+                if($updatetampungan) {
+                    $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'user_id' => $updatetampungan]));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Info Gagal']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Info Gagal']));
+            }
+        }
+        
         // Update --------------------------------------------------------------
         // Get -----------------------------------------------------------------
+        
+        public function Get_List_Info() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $search = $this->input->get('search');
+            $data = $this->ModelFlutter->Get_List_Info($limit, $offset, $search);
+            echo json_encode($data);
+        }
         
         public function Get_List_Info_Agen() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -1863,24 +3177,337 @@ class ApiFlutter extends CI_Controller
             echo json_encode($data);
         }
         
+        public function Get_Image_Info() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Image_Info($id);
+            echo json_encode($data);
+        }
+        
+        public function Get_Lampiran_Info() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Lampiran_Info($id);
+            echo json_encode($data);
+        }
+        
         // Delete --------------------------------------------------------------
         // Count ---------------------------------------------------------------
     
     // Primary ========================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
+        
+        public function Add_Primary(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $this->db->trans_start();
+            
+            $data = array(
+				'Nama' => $input['Nama'],
+                'JenisProperty' => $input['JenisProperty'],
+                'Developer' => $input['Developer'],
+				'Kota' => $input['Kota'],
+				'Area' => $input['Area'],
+				'LuasTanah' => $input['LuasTanah'],
+				'LuasBangunan' => $input['LuasBangunan'],
+				'MinHarga' => $input['MinHarga'],
+				'MaxHarga' => $input['MaxHarga'],
+				'Deskripsi' => $input['Deskripsi'],
+				'Benefit' => $input['Benefit'],
+				'Payment' => $input['Payment'],
+				'Img' => $input['Img'],
+				'ImgDetail' => $input['ImgDetail'],
+			);
+			$this->db->insert('listingnew',$data);
+			$idprimary = $this->db->insert_id();
+    
+            if($idprimary) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $idprimary]));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+            }
+        }
+        
+        public function Add_Tipe_Primary(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d');
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IdNew' => $input['IdNew'],
+                'IdAgen' => 0,
+                'IdAgenCo' => 0,
+                'IdInput' => 0,
+                'IdVendor' => 0,
+                'NamaListing'=> $input['NamaListing'],
+                'MetaNamaListing'=> $input['MetaNamaListing'],
+                'Alamat'=> $input['Alamat'],
+                'AlamatTemplate'=> $input['AlamatTemplate'],
+                'Latitude'=> 0,
+                'Longitude'=> 0,
+                'Location'=> 0,
+                'Wilayah' => $input['Wilayah'],
+                'Daerah' => $input['Daerah'],
+                'Wide'=> $input['Wide'],
+                'Land'=> $input['Land'],
+                'Dimensi'=> $input['Dimensi'],
+                'Listrik'=> $input['Listrik'],
+                'Level'=> $input['Level'],
+                'Bed'=> $input['Bed'],
+                'Bath'=> $input['Bath'],
+                'BedArt'=> $input['BedArt'],
+                'BathArt'=> $input['BathArt'],
+                'Garage'=> $input['Garage'],
+                'Carpot'=> $input['Carpot'],
+                'Hadap'=> $input['Hadap'],
+                'SHM'=> 0,
+                'HGB'=> 0,
+                'HSHP'=> 0,
+                'PPJB'=> 0,
+                'Stratatitle'=> 0,
+                'AJB'=> 0,
+                'PetokD'=> 0,
+                'ImgSHM'=> 0,
+                'ImgHGB'=> 0,
+                'ImgHSHP'=> 0,
+                'ImgPPJB'=> 0,
+                'ImgStratatitle'=> 0,
+                'ImgAJB'=> 0,
+                'ImgPetokD'=> 0,
+                'ImgPjp'=> 0,
+                'ImgPjp1'=> 0,
+                'JenisProperti'=> $input['JenisProperti'],
+                'SumberAir'=> $input['SumberAir'],
+                'Kondisi'=> 0,
+                'RuangTamu'=> $input['RuangTamu'],
+                'RuangMakan'=> $input['RuangMakan'],
+                'Dapur'=> $input['Dapur'],
+                'Jemuran'=> $input['Jemuran'],
+                'Masjid'=> $input['Masjid'],
+                'Taman'=> $input['Taman'],
+                'Playground'=> $input['Playground'],
+                'Cctv'=> $input['Cctv'],
+                'OneGateSystem'=> $input['OneGateSystem'],
+                'KolamRenang'=> $input['KolamRenang'],
+                'SportSpace'=> $input['SportSpace'],
+                'ParkingSpot'=> $input['ParkingSpot'],
+                'Deskripsi'=> $input['Deskripsi'],
+                'MetaDeskripsi'=> $input['MetaDeskripsi'],
+				'Prabot'=> $input['Prabot'],
+				'KetPrabot'=> $input['KetPrabot'],
+				'Priority'=> 0,
+				'Banner'=> 0,
+				'Size'=> 0,
+				'TipeHarga'=> 0,
+				'Harga'=> $input['Harga'],
+				'HargaSewa'=> 0,
+				'RangeHarga'=> 0,
+				'TglInput'=> $currentDate,
+				'Img1'=> $input['Img1'],
+                'Img2'=> $input['Img2'],
+                'Img3'=> $input['Img3'],
+                'Img4'=> $input['Img4'],
+                'Img5'=> $input['Img5'],
+                'Img6'=> $input['Img6'],
+                'Img7'=> $input['Img7'],
+                'Img8'=> $input['Img8'],
+                'Img9'=> $input['Img9'],
+                'Img10'=> $input['Img10'],
+                'Img11'=> $input['Img11'],
+                'Img12'=> $input['Img12'],
+				'Video'=> 0,
+				'LinkFacebook'=> 0,
+				'LinkTiktok'=> 0,
+				'LinkInstagram'=> 0,
+				'LinkYoutube'=> 0,
+				'Fee'=> 0,
+				'IsAdmin' => 0,
+				'IsManager' => 0,
+				'Marketable' => 0,
+				'StatusHarga' => 0,
+                'IsSelfie' => 0,
+                'IsLokasi' => 0,
+                'Selfie' => 0,
+                'NoKtp' => 0,
+                'ImgKtp' => 0,
+                'Pending' => 0,
+            ];
+            
+		    $this->db->insert('tipenewlisting',$data);
+		    $insert_id = $this->db->insert_id();
+		    
+		    if($insert_id) {
+		        $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Tipe Gagal']));
+            }
+        }
+        
+        public function Update_Primary(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $this->db->trans_start();
+            
+            $data = array(
+				'Nama' => $input['Nama'],
+                'JenisProperty' => $input['JenisProperty'],
+                'Developer' => $input['Developer'],
+				'Kota' => $input['Kota'],
+				'Area' => $input['Area'],
+				'LuasTanah' => $input['LuasTanah'],
+				'LuasBangunan' => $input['LuasBangunan'],
+				'MinHarga' => $input['MinHarga'],
+				'MaxHarga' => $input['MaxHarga'],
+				'Deskripsi' => $input['Deskripsi'],
+				'Benefit' => $input['Benefit'],
+				'Payment' => $input['Payment'],
+				'Img' => $input['Img'],
+				'ImgDetail' => $input['ImgDetail'],
+			);
+            $where = array('IdNew'=> $input['IdNew'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listingnew');
+    
+            if($insert_id) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Update Primary Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Primary Gagal']));
+            }
+        }
+        
+        public function Update_Tipe_Primary(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d');
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'NamaListing'=> $input['NamaListing'],
+                'Wide'=> $input['Wide'],
+                'Land'=> $input['Land'],
+                'Dimensi'=> $input['Dimensi'],
+                'Listrik'=> $input['Listrik'],
+                'Level'=> $input['Level'],
+                'Bed'=> $input['Bed'],
+                'Bath'=> $input['Bath'],
+                'BedArt'=> $input['BedArt'],
+                'BathArt'=> $input['BathArt'],
+                'Garage'=> $input['Garage'],
+                'Carpot'=> $input['Carpot'],
+                'SumberAir'=> $input['SumberAir'],
+				'Harga'=> $input['Harga'],
+            ];
+            $where = array('IdListing'=> $input['IdListing'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'tipenewlisting');
+		    
+		    if($insert_id) {
+		        $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Update Tipe Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Tipe Gagal']));
+            }
+        }
+        
+        public function Update_Gambar_Tipe_Primary(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            $this->db->trans_start();
+            
+            $data = [
+                
+				'Img1'=> $input['Img1'],
+                'Img2'=> $input['Img2'],
+                'Img3'=> $input['Img3'],
+                'Img4'=> $input['Img4'],
+                'Img5'=> $input['Img5'],
+                'Img6'=> $input['Img6'],
+                'Img7'=> $input['Img7'],
+                'Img8'=> $input['Img8'],
+                'Img9'=> $input['Img9'],
+                'Img10'=> $input['Img10'],
+                'Img11'=> $input['Img11'],
+                'Img12'=> $input['Img12'],
+            ];
+            $where = array('IdListing'=> $input['IdListing'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'tipenewlisting');
+		    
+		    if($insert_id) {
+		        $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Update Tipe Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Tipe Gagal']));
+            }
+        }
+        
         // Update --------------------------------------------------------------
         // Get -----------------------------------------------------------------
         
         public function Get_List_Listing_Primary() {
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->Get_List_Listing_Primary($limit, $offset);
+            $search = $this->input->get('search');
+            $data = $this->ModelFlutter->Get_List_Listing_Primary($limit, $offset, $search);
+            echo json_encode($data);
+        }
+        
+        public function Get_Detail_Primary() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Detail_Primary($id);
+            echo json_encode($data);
+        }
+        
+        public function Get_Image_Primary() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Image_Primary($id);
             echo json_encode($data);
         }
         
         public function Get_List_Tipe_Listing_Primary() {
-            $data = $this->ModelFlutter->Get_List_Tipe_Listing_Primary();
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_List_Tipe_Listing_Primary($id);
             echo json_encode($data);
         }
         
