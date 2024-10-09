@@ -1488,7 +1488,7 @@ class ApiFlutter extends CI_Controller
                         $this->output
                             ->set_content_type('application/json')
                             ->set_status_header(500)
-                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Nilai Listing Gagal']));
                     }
                 } else {
                     $this->db->trans_rollback();
