@@ -186,6 +186,13 @@ class ApiFlutter extends CI_Controller
     
     // Agen --------------------------------------------------------------------
     
+        // Count ---------------------------------------------------------------
+        
+        public function Count_Pelamar(){
+            $data = $this->ModelFlutter->Count_Pelamar();
+            echo json_encode($data);
+        }
+    
     public function Registrasi_Agen() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
@@ -919,7 +926,8 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_Report_Buyer() {
-            $status_data = $this->ModelFlutter->Get_Report_Buyer();
+            $search = $this->input->get('search');
+            $status_data = $this->ModelFlutter->Get_Report_Buyer($search);
             
             $current_date = new DateTime();
             $response = [];
@@ -1218,6 +1226,42 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        // Delete ---------------------------------------------------------------
+        
+        public function Delete_Tampungan() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+        
+            if (!isset($input['IdShareLokasi'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'IdTampungan tidak diberikan']));
+                return;
+            }
+        
+            $IdShareLokasi = $input['IdShareLokasi'];
+        
+            $this->db->trans_start();
+            
+            $this->db->where('IdShareLokasi', $IdShareLokasi);
+            $deleteSuccessful = $this->db->delete('sharelokasi');
+        
+            if ($deleteSuccessful) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Tampungan berhasil dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal menghapus Tampungan']));
+            }
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_Tampungan(){
@@ -1467,8 +1511,8 @@ class ApiFlutter extends CI_Controller
 			    $this->db->insert('pralisting',$data);
 			    $insert_id = $this->db->insert_id();
 			    
-	if($insert_id) {
-		$nilai = [
+			    if($insert_id) {
+			        $nilai = [
                         'IdPralisting' => $insert_id,
                         'AksesJalanAgen' => $AksesJalanAgen,
                         'KondisiAgen' => $KondisiAgen,
@@ -1488,21 +1532,21 @@ class ApiFlutter extends CI_Controller
                         $this->output
                             ->set_content_type('application/json')
                             ->set_status_header(500)
-                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Nilai Listing Gagal']));
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
                     }
                 } else {
                     $this->db->trans_rollback();
                     $this->output
                         ->set_content_type('application/json')
                         ->set_status_header(500)
-                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Data Listing Gagal']));
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
                 }
             } else {
                 $this->db->trans_rollback();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Vendor Listing Gagal']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Listing Gagal']));
             }
         }
         
@@ -2191,7 +2235,7 @@ class ApiFlutter extends CI_Controller
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Nilai Gagal']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Template Gagal']));
             }
         }
         
@@ -2382,6 +2426,37 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Ajukan Ulang Pra-Listing Gagal']));
+            }
+        }
+        
+        // Delete --------------------------------------------------------------
+        
+        public function Delete_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdPralisting = $input['IdPraListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IsDelete'=> 1,
+            ];
+            $where = array('IdPralisting'=> $IdPralisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Pra-Listing Deleted']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Delete Pra-Listing Gagal']));
             }
         }
         
@@ -2719,6 +2794,18 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        // Count ---------------------------------------------------------------
+        
+        public function Count_Pralisting_Admin(){
+            $data = $this->ModelFlutter->Count_Pralisting_Admin();
+            echo json_encode($data);
+        }
+        
+        public function Count_Pralisting_Manager(){
+            $data = $this->ModelFlutter->Count_Pralisting_Manager();
+            echo json_encode($data);
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_PraListing_Officer(){
@@ -2797,11 +2884,767 @@ class ApiFlutter extends CI_Controller
         // Reject --------------------------------------------------------------
         // Template ------------------------------------------------------------
         // Count ---------------------------------------------------------------
+        
+        public function Count_Pralisting_Rejected(){
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Count_Pralisting_Rejected($id);
+            echo json_encode($data);
+        }
     
     // Listing ========================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
+        
+        public function Add_Template_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdTemplate = $input['IdTemplate'];
+            $Template = $input['Template'];
+            $TemplateBlank = $input['TemplateBlank'];
+            
+            $this->db->trans_start();
+            
+            $template = [
+                'Template' => $Template,
+                'TemplateBlank' => $TemplateBlank,
+            ];
+            $where = array('IdTemplate'=> $IdTemplate,);
+            $idtemplate = $this->ModelFlutter->Update_Data($where,$template,'template');
+            
+            if($idtemplate) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Tambah Template Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Template Gagal']));
+            }
+        }
+        
         // Update --------------------------------------------------------------
+        
+        public function Approve_Susulan(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Pending' => 0,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Approve Susulan Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Susulan Gagal']));
+            }
+        }
+        
+        public function Update_Kondisi_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Sold' => 0,
+                'SoldAgen' => 0,
+                'Rented' => 0,
+                'RentedAgen' => 0,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Up Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Up Listing']));
+            }
+        }
+        
+        public function Update_Sold_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Sold' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Sold Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Sold Listing Gagal']));
+            }
+        }
+        
+        public function Update_Sold_Agen_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'SoldAgen' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Sold Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Sold Listing Gagal']));
+            }
+        }
+        
+        public function Update_Rented_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Rented' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Rented Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Rented Listing Gagal']));
+            }
+        }
+        
+        public function Update_Rented_Agen_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'RentedAgen' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Rented Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Rented Listing Gagal']));
+            }
+        }
+        
+        public function Update_Marketable_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Marketable' => 1,
+                'StatusHarga' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Berhasil Update Marketable']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Marketable']));
+            }
+        }
+        
+        public function Update_Spec_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $NamaListing = $input['NamaListing'];
+            $MetaNamaListing = $input['MetaNamaListing'];	
+            $Alamat = $input['Alamat'];	
+            $AlamatTemplate = $input['AlamatTemplate'];
+            $Wilayah = $input['Wilayah'];
+            $Daerah = $input['Daerah'];
+            $Wide = $input['Wide'];	
+            $Land = $input['Land'];	
+            $Dimensi = $input['Dimensi'];	
+            $Listrik = $input['Listrik'];	
+            $Level = $input['Level'];	
+            $Bed = $input['Bed'];	
+            $Bath = $input['Bath'];	
+            $BedArt = $input['BedArt'];	
+            $BathArt = $input['BathArt'];	
+            $Garage = $input['Garage'];	
+            $Carpot = $input['Carpot'];
+            $Hadap = $input['Hadap'];
+            $SHM = $input['SHM'];
+            $HGB = $input['HGB'];
+            $HSHP = $input['HSHP'];
+            $PPJB = $input['PPJB'];
+            $Stratatitle = $input['Stratatitle'];
+            $AJB = $input['AJB'];
+            $PetokD = $input['PetokD'];
+            $ImgSHM = $input['ImgSHM'];
+            $ImgHGB = $input['ImgHGB'];
+            $ImgHSHP = $input['ImgHSHP'];
+            $ImgPPJB = $input['ImgPPJB'];
+            $ImgStratatitle = $input['ImgStratatitle'];
+            $ImgAJB = $input['ImgAJB'];
+            $ImgPetokD = $input['ImgPetokD'];
+            $JenisProperti = $input['JenisProperti'];	
+            $SumberAir = $input['SumberAir'];	
+            $Kondisi = $input['Kondisi'];
+            $RuangTamu = $input['RuangTamu'];
+            $RuangMakan = $input['RuangMakan'];
+            $Dapur = $input['Dapur'];
+            $Jemuran = $input['Jemuran'];
+            $Masjid = $input['Masjid'];
+            $Taman = $input['Taman'];
+            $Playground = $input['Playground'];
+            $Cctv = $input['Cctv'];
+            $OneGateSystem = $input['OneGateSystem'];
+            $KolamRenang = $input['KolamRenang'];
+            $SportSpace = $input['SportSpace'];
+            $ParkingSpot = $input['ParkingSpot'];
+            $Deskripsi = $input['Deskripsi'];
+            $MetaDeskripsi = $input['MetaDeskripsi'];	
+            $Prabot = $input['Prabot'];	
+            $KetPrabot = $input['KetPrabot'];	
+            $Priority = $input['Priority'];
+            $Banner = $input['Banner'];
+            $Size = $input['Size'];
+            $TipeHarga = $input['TipeHarga'];
+            $Harga = $input['Harga'];	
+            $HargaSewa = $input['HargaSewa'];
+            $RangeHarga = $input['RangeHarga'];	
+            $Fee = $input['Fee'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'NamaListing'=> $NamaListing,
+                'MetaNamaListing'=> $MetaNamaListing,	
+                'Alamat'=> $Alamat,	
+                'AlamatTemplate'=> $AlamatTemplate,
+                'Wilayah' => $Wilayah,
+                'Daerah' => $Daerah,
+                'Wide'=> $Wide,	
+                'Land'=> $Land,	
+                'Dimensi'=> $Dimensi,	
+                'Listrik'=> $Listrik,	
+                'Level'=> $Level,	
+                'Bed'=> $Bed,
+                'Bath'=> $Bath,	
+                'BedArt'=> $BedArt,	
+                'BathArt'=> $BathArt,	
+                'Garage'=> $Garage,	
+                'Carpot'=> $Carpot,
+                'Hadap'=> $Hadap,
+                'SHM'=> $SHM,
+                'HGB'=> $HGB,
+                'HSHP'=> $HSHP,
+                'PPJB'=> $PPJB,
+                'Stratatitle'=> $Stratatitle,
+                'AJB'=> $AJB,
+                'PetokD'=> $PetokD,
+                'ImgSHM'=> $ImgSHM,
+                'ImgHGB'=> $ImgHGB,
+                'ImgHSHP'=> $ImgHSHP,
+                'ImgPPJB'=> $ImgPPJB,
+                'ImgStratatitle'=> $ImgStratatitle,
+                'ImgAJB'=> $ImgAJB,
+                'ImgPetokD'=> $ImgPetokD,
+                'JenisProperti'=> $JenisProperti,	
+                'SumberAir'=> $SumberAir,	
+                'Kondisi'=> $Kondisi,
+                'RuangTamu'=> $RuangTamu,
+                'RuangMakan'=> $RuangMakan,
+                'Dapur'=> $Dapur,
+                'Jemuran'=> $Jemuran,
+                'Masjid'=> $Masjid,
+                'Taman'=> $Taman,
+                'Playground'=> $Playground,
+                'Cctv'=> $Cctv,
+                'OneGateSystem'=> $OneGateSystem,
+                'KolamRenang'=> $KolamRenang,
+                'SportSpace'=> $SportSpace,
+                'ParkingSpot'=> $ParkingSpot,
+                'Deskripsi'=> $Deskripsi,
+                'MetaDeskripsi'=> $MetaDeskripsi,	
+                'Prabot'=> $Prabot,	
+                'KetPrabot'=> $KetPrabot,	
+                'Priority'=> $Priority,
+                'Banner'=> $Banner,
+                'Size'=> $Size,
+                'TipeHarga'=> $TipeHarga,
+                'Harga'=> $Harga,	
+                'HargaSewa'=> $HargaSewa,
+                'RangeHarga'=> $RangeHarga,	
+                'Fee'=> $Fee,	
+                'Pending'=> 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update Spesifikasi",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
+        public function Update_Lokasi_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $Latitude = $input['Latitude'];
+            $Longitude = $input['Longitude'];
+            $Location = $input['Location'];
+            $IsSelfie = $input['IsSelfie'];
+            $IsLokasi = $input['IsLokasi'];
+            $Selfie = $input['Selfie'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Latitude'=> $Latitude,
+                'Longitude'=> $Longitude,
+                'Location'=> $Location,
+                'IsSelfie' => $IsSelfie,
+                'IsLokasi' => $IsLokasi,
+                'Selfie' => $Selfie,
+                'Pending'=> 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update Lokasi dan Selfie",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
+        public function Update_Selfie_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $IsSelfie = $input['IsSelfie'];
+            $Selfie = $input['Selfie'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IsSelfie' => $IsSelfie,
+                'Selfie' => $Selfie,
+                'Pending' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update Selfie",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
+        public function Update_CoList_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $IdAgenCo = $input['IdAgenCo'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IdAgenCo' => $IdAgenCo,
+                'Pending' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update Co Listing",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
+        public function Update_Pjp_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $ImgPjp = $input['ImgPjp'];
+            $ImgPjp1 = $input['ImgPjp1'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'ImgPjp'=> $ImgPjp,
+                'ImgPjp1'=> $ImgPjp1,
+                'Pending' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update PJP",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
+        public function Update_Gambar_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $Img1 = $input['Img1'];
+            $Img2 = $input['Img2'];
+            $Img3 = $input['Img3'];
+            $Img4 = $input['Img4'];
+            $Img5 = $input['Img5'];
+            $Img6 = $input['Img6'];
+            $Img7 = $input['Img7'];
+            $Img8 = $input['Img8'];
+            $Img9 = $input['Img9'];
+            $Img10 = $input['Img10'];
+            $Img11 = $input['Img11'];
+            $Img12 = $input['Img12'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+				'Img1'=> $Img1,
+                'Img2'=> $Img2,
+                'Img3'=> $Img3,
+                'Img4'=> $Img4,
+                'Img5'=> $Img5,
+                'Img6'=> $Img6,
+                'Img7'=> $Img7,
+                'Img8'=> $Img8,
+                'Img9'=> $Img9,
+                'Img10'=> $Img10,
+                'Img11'=> $Img11,
+                'Img12'=> $Img12,
+                'Pending' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update Gambar",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
+        public function Update_Agen_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Idlisting = $input['IdListing'];
+            $IdAgen = $input['IdAgen'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IdAgen' => $IdAgen,
+                'Pending' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $susulan = array(
+                    'IdListing' => $Idlisting,
+                    'Keterangan' => "Update Agen Listing",
+                    'PoinTambahan' => 0,
+                    'PoinBerkurang' => 0,
+                    'TglInput' => $currentDate,
+                    'IsRead' => 0,
+                );
+                $insert_susulan = $this->db->insert('susulan',$susulan);
+                
+                if($insert_susulan) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+            }
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_Listing_Agen() {
@@ -2986,6 +3829,21 @@ class ApiFlutter extends CI_Controller
             echo json_encode($data);
         }
         
+        public function Get_List_Listing_Pending() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $data = $this->ModelFlutter->Get_List_Listing_Pending($limit, $offset);
+            echo json_encode($data);
+        }
+        
+        public function Get_List_Susulan() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $data = $this->ModelFlutter->Get_List_Susulan($id, $limit, $offset);
+            echo json_encode($data);
+        }
+        
         public function Get_Spec_Listing() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Spec_Listing($id);
@@ -3020,6 +3878,11 @@ class ApiFlutter extends CI_Controller
         // Reject --------------------------------------------------------------
         // Template ------------------------------------------------------------
         // Count ---------------------------------------------------------------
+        
+        public function Count_Listing_Pending(){
+            $data = $this->ModelFlutter->Count_Listing_Pending();
+            echo json_encode($data);
+        }
     
     // Info ===========================================================================================================================================================================================
     
@@ -3138,6 +4001,51 @@ class ApiFlutter extends CI_Controller
         }
         
         // Update --------------------------------------------------------------
+        
+        public function Update_Info(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $currentDate = date('Y-m-d');
+            $currentTime = date('H:i:s');
+            
+            $data = [
+                'JenisProperty' => $input['JenisProperty'],
+                'StatusProperty' => $input['StatusProperty'],
+                'StatusNarahubung' => $input['StatusNarahubung'],
+                'Narahubung' => $input['Narahubung'],
+                'NoTelp' => $input['NoTelp'],
+                'LTanah' => $input['LuasTanah'],
+                'LBangunan' => $input['LuasBangunan'],
+                'Keterangan' => $input['Keterangan'],
+                'Harga' => $input['HargaJual'],
+                'HargaSewa' => $input['HargaSewa'],
+                'Lokasi' => $input['Lokasi'],
+                'Alamat' => $input['Alamat'],
+                'Latitude' => $input['Latitude'],
+                'Longitude' => $input['Longitude'],
+                'ImgSelfie' => $input['ImgSelfie'],
+                'ImgProperty' => $input['ImgProperty'],
+                'IsSpek' => $input['IsSpek'],
+				'IsListing' => 0,
+            ];
+            
+            $where = array('IdInfo'=> $input['IdInfo'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'infoproperty');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Update Info Berhasil']));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Info Gagal']));
+            }
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_Info() {
@@ -3190,6 +4098,39 @@ class ApiFlutter extends CI_Controller
         }
         
         // Delete --------------------------------------------------------------
+        
+        public function Delete_Info() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+        
+            if (!isset($input['IdInfo'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'IdInfo tidak diberikan']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $this->db->where('IdInfo', $input['IdInfo']);
+            $deleteSuccessful = $this->db->delete('infoproperty');
+            
+            if ($deleteSuccessful) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Info berhasil dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal menghapus Info']));
+            }
+        }
+        
         // Count ---------------------------------------------------------------
     
     // Primary ========================================================================================================================================================================================
@@ -3362,6 +4303,8 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        // Update --------------------------------------------------------------
+        
         public function Update_Primary(){
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
@@ -3481,8 +4424,6 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Tipe Gagal']));
             }
         }
-        
-        // Update --------------------------------------------------------------
         // Get -----------------------------------------------------------------
         
         public function Get_List_Listing_Primary() {
