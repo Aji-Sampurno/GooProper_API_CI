@@ -196,6 +196,20 @@ class ModelFlutter extends CI_Model
         return $query->result_array();
     }
     
+        // Count ---------------------------------------------------------------
+        
+        public function Count_Pelamar(){
+            $query = $this->db->query(" SELECT 
+                                        	COUNT(*) AS Total
+                                        FROM 
+                                            agen 
+                                        WHERE 
+                                            agen.IsAkses = 1 AND
+                                            agen.Approve = 0 AND
+                                            agen.Reject = 0;");
+            return $query->result_array();
+        }
+    
     // Report Buyer ====================================================================================================================================================================================
     
     public function Get_Report_Buyer_Agen($id, $search = ''){
@@ -261,11 +275,33 @@ class ModelFlutter extends CI_Model
         return $query->result();
     }
     
-    public function Get_Report_Buyer(){
+    public function Get_Report_Buyer($search = ''){
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " WHERE reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
+        }
+            
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
                                         reportbuyer
+                                        $searchCondition
+                                    ORDER BY 
+                                        TglReport ASC; ");
+        return $query->result();
+    }
+    
+    public function Get_Report_Buyer_Ready(){
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        reportbuyer 
+                                    WHERE 
+                                        DATEDIFF(NOW(), TglReport)  < 20
+                                        AND IsClose = 0
                                     ORDER BY 
                                         TglReport ASC; ");
         return $query->result();
@@ -328,6 +364,33 @@ class ModelFlutter extends CI_Model
     
     // Pralisting ======================================================================================================================================================================================
     
+        // Count ---------------------------------------------------------------
+        
+        public function Count_Pralisting_Admin(){
+            $query = $this->db->query(" SELECT 
+                                        	COUNT(*) AS Total
+                                        FROM 
+                                            pralisting 
+                                        WHERE 
+                                            IsRejected = 0 AND
+                                            IsDelete = 0 AND
+                                            IsAdmin = 0;");
+            return $query->result_array();
+        }
+        
+        public function Count_Pralisting_Manager(){
+            $query = $this->db->query(" SELECT 
+                                        	COUNT(*) AS Total
+                                        FROM 
+                                            pralisting 
+                                        WHERE 
+                                            IsRejected = 0 AND
+                                            IsDelete = 0 AND
+                                            IsAdmin = 1 AND
+                                            IsManager = 0;");
+            return $query->result_array();
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_PraListing_Agen($id, $limit, $offset){
@@ -348,7 +411,8 @@ class ModelFlutter extends CI_Model
                                             IdAgen = $id AND
                                         	(IsAdmin = 0 OR
                                             IsManager = 0) AND 
-                                            IsRejected = 0
+                                            IsRejected = 0 AND
+                                            IsDelete = 0
                                         ORDER BY 
                                             Priority ASC, 
                                             IdPraListing DESC
@@ -372,7 +436,8 @@ class ModelFlutter extends CI_Model
                                         	pralisting
                                         WHERE
                                             IdAgen = $id AND
-                                            IsRejected = 1
+                                            IsRejected = 1 AND
+                                            IsDelete = 0
                                         ORDER BY 
                                             Priority ASC, 
                                             IdPraListing DESC
@@ -396,6 +461,7 @@ class ModelFlutter extends CI_Model
                                         WHERE
                                         	IsCekLokasi = 0 AND
                                             IsRejected = 0 AND
+                                            IsDelete = 0 AND
                                             IsAdmin = 0 AND
                                             IsManager = 0 ORDER BY 
                                             pralisting.Priority ASC, 
@@ -419,6 +485,7 @@ class ModelFlutter extends CI_Model
                                         	pralisting
                                         WHERE
                                             IsRejected = 0 AND
+                                            IsDelete = 0 AND
                                             IsAdmin = 0 ORDER BY 
                                             Priority ASC, 
                                             IdPraListing ASC; ");
@@ -441,6 +508,7 @@ class ModelFlutter extends CI_Model
                                         	pralisting
                                         WHERE
                                             IsRejected = 0 AND
+                                            IsDelete = 0 AND
                                             IsAdmin = 1 AND
                                             IsManager = 0 ORDER BY 
                                             Priority ASC, 
@@ -462,7 +530,8 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                         	pralisting
                                         WHERE
-                                        	IsRejected = 1 ORDER BY 
+                                        	IsRejected = 1 AND
+                                            IsDelete = 0 ORDER BY 
                                             pralisting.Priority ASC, 
                                             pralisting.IdPraListing ASC; ");
             return $query->result_array();
@@ -615,6 +684,20 @@ class ModelFlutter extends CI_Model
                                             LEFT JOIN template ON pralisting.IdPraListing = template.IdListing
                                         WHERE
                                             pralisting.IdPraListing = $id;");
+            return $query->result_array();
+        }
+        
+        // Count ---------------------------------------------------------------
+        
+        public function Count_Pralisting_Rejected($id){
+            $query = $this->db->query(" SELECT 
+                                        	COUNT(*) AS Total
+                                        FROM 
+                                        	pralisting
+                                        WHERE
+                                            IdAgen = $id AND
+                                            IsRejected = 1 AND
+                                            IsDelete = 0");
             return $query->result_array();
         }
         
@@ -1366,6 +1449,47 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
+        public function Get_List_Listing_Pending($limit, $offset){
+            
+            $query = $this->db->query(" SELECT 
+                                        	IdListing,
+                                            NamaListing,
+                                            Kondisi,
+                                            Harga,
+                                            HargaSewa,
+                                            Wide,
+                                            Land,
+                                            Priority,
+                                            NoArsip,
+                                            Img1
+                                        FROM 
+                                        	listing
+                                        WHERE
+                                            IsDouble = 0 AND 
+                                            IsDelete = 0 AND 
+                                            Sold = 0 AND 
+                                            SoldAgen = 0 AND 
+                                            Rented = 0 AND 
+                                            RentedAgen = 0 AND
+                                            Pending = 1
+                                        ORDER BY 
+                                            IdListing DESC
+                                        LIMIT $limit OFFSET $offset ");
+            return $query->result_array();
+        }
+        
+        public function Get_List_Susulan($id, $limit, $offset){
+            
+            $query = $this->db->query(" SELECT 
+                                        	*
+                                        FROM 
+                                        	susulan
+                                        WHERE
+                                            IdListing= $id
+                                        LIMIT $limit OFFSET $offset ");
+            return $query->result_array();
+        }
+        
         public function Get_Spec_Listing($id){
             $query = $this->db->query(" SELECT 
                                         	listing.IdListing,
@@ -1496,6 +1620,24 @@ class ModelFlutter extends CI_Model
                                             LEFT JOIN template ON listing.IdListing = template.IdListing
                                         WHERE
                                             listing.IdListing = $id;");
+            return $query->result_array();
+        }
+        
+        // Count ---------------------------------------------------------------
+        
+        public function Count_Listing_Pending(){
+            $query = $this->db->query(" SELECT 
+                                        	COUNT(*) AS Total
+                                        FROM 
+                                        	listing
+                                        WHERE
+                                            IsDouble = 0 AND 
+                                            IsDelete = 0 AND 
+                                            Sold = 0 AND 
+                                            SoldAgen = 0 AND 
+                                            Rented = 0 AND 
+                                            RentedAgen = 0 AND
+                                            Pending = 1;");
             return $query->result_array();
         }
         
