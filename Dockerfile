@@ -1,40 +1,53 @@
-# Use the official PHP image as a base image
-FROM php:7.4-apache
+# Use official Debian 12 (Bookworm) as the base image
+FROM debian:bookworm-slim
 
-# Install necessary PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Enable Apache mod_rewrite (necessary for CodeIgniter)
+# Install necessary packages and PHP extensions
+RUN apt-get update && apt-get install -y \
+    apache2 \
+    php \
+    php-cli \
+    php-fpm \
+    php-json \
+    php-common \
+    php-mysql \
+    php-zip \
+    php-gd \
+    php-mbstring \
+    php-curl \
+    php-xml \
+    php-bcmath \
+    libapache2-mod-php \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable Apache modules
 RUN a2enmod rewrite
 
-# Install Composer (if using Composer for dependencies)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy the contents of your application to the working directory
+# Copy application files
 COPY . /var/www/html
 
-# Install dependencies with Composer (if applicable)
-RUN composer install --no-dev --optimize-autoloader
+# Install dependencies
+RUN composer install --no-dev
 
-# Debug: List files in the application directory
-RUN ls -la /var/www/html
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Debug: List files in vendor directory
-RUN find /var/www/html/vendor -type f
+# Configure Apache
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Apply a fix for vfsStream.php if it exists
-RUN if [ -f /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php ]; then \
-    sed -i s/name{0}/name[0]/ /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php; \
-fi
-
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html
-
-# Expose port 80 to the outside world
+# Expose port 80
 EXPOSE 80
 
-# Start Apache in the foreground
+# Start Apache
 CMD ["apache2-foreground"]
