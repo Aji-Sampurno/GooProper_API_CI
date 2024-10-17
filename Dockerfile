@@ -50,4 +50,4 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available
 EXPOSE 80
 
 # Start Apache
-CMD ["apache2-foreground"]
+CMD ["apache2ctl", "-D", "FOREGROUND"]
