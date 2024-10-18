@@ -2,7 +2,7 @@
 FROM php:7.4-apache
 
 # Install necessary PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+RUN docker-php-ext-install pdo pdo_mysql mysqli nano
 
 # Enable Apache mod_rewrite (necessary for CodeIgniter)
 RUN a2enmod rewrite
