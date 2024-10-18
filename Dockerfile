@@ -33,10 +33,9 @@ fi
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html
 
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
 # Expose port 80 to the outside world
 EXPOSE 80
 
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
