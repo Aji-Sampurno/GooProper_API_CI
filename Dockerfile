@@ -32,6 +32,6 @@ RUN find /var/www/html -type f -exec chmod 644 {} \; && \
 # Expose port 80 to the outside world
 EXPOSE 80
 
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN echo "ServerName app.gooproper.com" >> /etc/apache2/apache2.conf
 
 CMD ["apache2-foreground"]
