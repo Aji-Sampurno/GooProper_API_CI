@@ -1,8 +1,10 @@
 # Use the official PHP image as a base image
 FROM php:7.4-apache
 
-# Install necessary PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring json xml
+# Install necessary dependencies for PHP extensions (oniguruma is for mbstring)
+RUN apt-get update && apt-get install -y \
+    libonig-dev \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring json xml
 
 # Enable Apache mod_rewrite (necessary for CodeIgniter)
 RUN a2enmod rewrite
@@ -32,16 +34,10 @@ fi
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 755 /var/www/html
-
-# Add ServerName to Apache configuration
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Allow .htaccess overrides for mod_rewrite
-RUN echo "<Directory /var/www/html>\nAllowOverride All\n</Directory>" >> /etc/apache2/apache2.conf
 
 # Expose port 80 to the outside world
 EXPOSE 80
 
-# Start Apache in foreground
-CMD ["apache2", "-D", "FOREGROUND"]
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+CMD ["apache2-foreground"]
