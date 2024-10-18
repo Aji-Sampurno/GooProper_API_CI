@@ -1,8 +1,10 @@
 # Use the official PHP image as a base image
 FROM php:7.4-apache
 
-# Install necessary PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql mysqli nano
+# Install necessary PHP extensions and nano
+RUN apt-get update && apt-get install -y nano \
+    && docker-php-ext-install pdo pdo_mysql mysqli \
+    && apt-get clean
 
 # Enable Apache mod_rewrite (necessary for CodeIgniter)
 RUN a2enmod rewrite
