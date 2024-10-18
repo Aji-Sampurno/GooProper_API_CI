@@ -1,10 +1,8 @@
 # Use the official PHP image as a base image
 FROM php:7.4-apache
 
-# Install necessary dependencies for PHP extensions (oniguruma is for mbstring)
-RUN apt-get update && apt-get install -y \
-    libonig-dev \
-    && docker-php-ext-install pdo pdo_mysql mysqli mbstring json xml
+# Install necessary PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 
 # Enable Apache mod_rewrite (necessary for CodeIgniter)
 RUN a2enmod rewrite
