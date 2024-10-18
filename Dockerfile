@@ -1,38 +1,40 @@
 # Use the official PHP image as a base image
 FROM php:7.4-apache
 
-RUN apt-get update
-RUN apt-get install --yes --force-yes cron g++ gettext libicu-dev openssl libc-client-dev libkrb5-dev libxml2-dev libfreetype6-dev libgd-dev libmcrypt-dev bzip2 libbz2-dev libtidy-dev libcurl4-openssl-dev libz-dev libmemcached-dev libxslt-dev
+# Install necessary PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 
+# Enable Apache mod_rewrite (necessary for CodeIgniter)
 RUN a2enmod rewrite
 
-RUN docker-php-ext-install mysqli 
-RUN docker-php-ext-enable mysqli
-
-RUN docker-php-ext-configure gd --with-freetype=/usr --with-jpeg=/usr
-RUN docker-php-ext-install gd
-
-COPY ./ /var/www/html/
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+# Install Composer (if using Composer for dependencies)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set the working directory in the container
 WORKDIR /var/www/html
 
+# Copy the contents of your application to the working directory
+COPY . /var/www/html
+
 # Install dependencies with Composer (if applicable)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader
 
 # Debug: List files in the application directory
 RUN ls -la /var/www/html
 
+# Debug: List files in vendor directory
+RUN find /var/www/html/vendor -type f
+
+# Apply a fix for vfsStream.php if it exists
+RUN if [ -f /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php ]; then \
+    sed -i s/name{0}/name[0]/ /var/www/html/vendor/mikey179/vfsstream/src/main/php/org/bovigo/vfs/vfsStream.php; \
+fi
+
 # Set proper permissions
-RUN find /var/www/html -type f -exec chmod 644 {} \; && \
-    find /var/www/html -type d -exec chmod 755 {} \; && \
-    chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 # Expose port 80 to the outside world
 EXPOSE 80
 
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
+# Start Apache in the foreground
 CMD ["apache2-foreground"]
