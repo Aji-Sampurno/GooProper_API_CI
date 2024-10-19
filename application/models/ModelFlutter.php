@@ -20,11 +20,11 @@ class ModelFlutter extends CI_Model
         
     public function Login_Admin($username, $password) {
         $hashed_password = md5($password);
-
+        
         $this->db->where('Username', $username);
         $this->db->where('Password', $hashed_password);
         $query = $this->db->get('admin');
-
+        
         if ($query->num_rows() == 1) {
             return $query->row_array();
         } else {
@@ -34,11 +34,11 @@ class ModelFlutter extends CI_Model
     
     public function Login_Agen($username, $password) {
         $hashed_password = md5($password);
-
+        
         $this->db->where('Username', $username);
         $this->db->where('Password', $hashed_password);
         $query = $this->db->get('agen');
-
+        
         if ($query->num_rows() == 1) {
             return $query->row_array();
         } else {
@@ -48,10 +48,22 @@ class ModelFlutter extends CI_Model
     
     public function Login_Customer($username, $password) {
         $hashed_password = md5($password);
-
+        
         $this->db->where('Username', $username);
         $this->db->where('Password', $hashed_password);
         $query = $this->db->get('customer');
+        
+        if ($query->num_rows() == 1) {
+            return $query->row_array();
+        } else {
+            return false;
+        }
+    }
+    
+    public function Check_Login($idAgen) {
+
+        $this->db->where('IdAgen', $idAgen);
+        $query = $this->db->get('agen');
 
         if ($query->num_rows() == 1) {
             return $query->row_array();
@@ -1623,6 +1635,38 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
+        // Report Vendor -------------------------------------------------------
+        
+        public function Get_Report_Vendor($limit, $offset){
+            
+            $query = $this->db->query(" SELECT 
+                                        	IdListing,
+                                            NamaListing,
+                                            Kondisi,
+                                            Harga,
+                                            HargaSewa,
+                                            Wide,
+                                            Land,
+                                            Priority,
+                                            NoArsip,
+                                            Img1
+                                        FROM 
+                                        	listing
+                                        WHERE
+                                            IsDouble = 0 AND 
+                                            IsDelete = 0 AND 
+                                            Sold = 0 AND 
+                                            SoldAgen = 0 AND 
+                                            Rented = 0 AND 
+                                            RentedAgen = 0 AND
+                                            Pending = 0 AND
+                                            DAY(TglInput) = DAY(CURDATE())
+                                        ORDER BY 
+                                            IdListing DESC
+                                        LIMIT $limit OFFSET $offset ");
+            return $query->result_array();
+        }
+        
         // Count ---------------------------------------------------------------
         
         public function Count_Listing_Pending(){
@@ -1826,6 +1870,25 @@ class ModelFlutter extends CI_Model
                                             infoproperty.IdInfo = $id;");
             return $query->result_array();
         }
+        
+    // Count ===================================================================
+    
+    public function Count_Report_Vendor(){
+        $query = $this->db->query(" SELECT 
+                                    	COUNT(*) AS Total
+                                    FROM 
+                                    	listing
+                                    WHERE
+                                        IsDouble = 0 AND 
+                                        IsDelete = 0 AND 
+                                        Sold = 0 AND 
+                                        SoldAgen = 0 AND 
+                                        Rented = 0 AND 
+                                        RentedAgen = 0 AND
+                                        Pending = 0 AND
+                                        DAY(TglInput) = DAY(CURDATE());");
+        return $query->result_array();
+    }
         
     
 }
