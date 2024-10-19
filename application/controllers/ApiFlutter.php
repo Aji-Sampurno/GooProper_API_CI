@@ -71,7 +71,44 @@ class ApiFlutter extends CI_Controller
         }
     }
     
-    // Customer ----------------------------------------------------------------
+    public function Check_Login() {
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+    
+        if (!isset($input['IdAgen'])) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            return;
+        }
+    
+        $idAgen = $input['IdAgen'];
+    
+        if (empty($idAgen)) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            return;
+        }
+    
+        $userAdmin = $this->ModelFlutter->Check_Login($idAgen);
+    
+        if ($userAdmin) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
+        } else {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(401)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+        }
+    }
+    
+    // Customer ======================================================================================================================================================================================
     
     public function Registrasi_Customer() {
         $inputJSON = file_get_contents('php://input');
@@ -184,14 +221,7 @@ class ApiFlutter extends CI_Controller
         }
     }
     
-    // Agen --------------------------------------------------------------------
-    
-        // Count ---------------------------------------------------------------
-        
-        public function Count_Pelamar(){
-            $data = $this->ModelFlutter->Count_Pelamar();
-            echo json_encode($data);
-        }
+    // Agen ==========================================================================================================================================================================================
     
     public function Registrasi_Agen() {
         $inputJSON = file_get_contents('php://input');
@@ -2269,6 +2299,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_No_Pjp_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdPralisting = $input['IdPraListing'];
+            $NoPjp = $input['NoPjp'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Pjp'=> $NoPjp,
+            ];
+            $where = array('IdPralisting'=> $IdPralisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah No PJP Pra-Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah No PJP Pra-Listing Gagal']));
+            }
+        }
+        
         // Approve -------------------------------------------------------------
         
         public function Approve_Admin_PraListing(){
@@ -2794,16 +2854,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
-        // Count ---------------------------------------------------------------
-        
-        public function Count_Pralisting_Admin(){
-            $data = $this->ModelFlutter->Count_Pralisting_Admin();
-            echo json_encode($data);
-        }
-        
-        public function Count_Pralisting_Manager(){
-            $data = $this->ModelFlutter->Count_Pralisting_Manager();
-            echo json_encode($data);
+        public function Update_Data_Vendor(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdVendor = $input['IdVendor'];
+            $NamaVendor = $input['NamaVendor'];
+            $TelpVendor = $input['TelpVendor'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'NamaLengkap'=> $NamaVendor,
+                'NoTelp'=> $TelpVendor,
+            ];
+            $where = array('IdVendor'=> $IdVendor,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'vendor');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Update Vendor Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Vendor Gagal, Tidak Ada Data Yang Diupdate']));
+            }
         }
         
         // Get -----------------------------------------------------------------
@@ -2883,17 +2963,18 @@ class ApiFlutter extends CI_Controller
         // Delete --------------------------------------------------------------
         // Reject --------------------------------------------------------------
         // Template ------------------------------------------------------------
-        // Count ---------------------------------------------------------------
-        
-        public function Count_Pralisting_Rejected(){
-            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Count_Pralisting_Rejected($id);
-            echo json_encode($data);
-        }
     
     // Listing ========================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
+        
+        public function Add_View(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $sql = "UPDATE listing SET View = View + 1 WHERE IdListing = ?";
+            $this->db->query($sql, array($input['IdListing']));
+        }
         
         public function Add_Template_Listing(){
             $inputJSON = file_get_contents('php://input');
@@ -2924,6 +3005,66 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Template Gagal']));
+            }
+        }
+        
+        public function Add_No_Arsip_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            $NoArsip = $input['NoArsip'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'NoArsip'=> $NoArsip,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah No Arsip Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah No Arsip Listing Gagal']));
+            }
+        }
+        
+        public function Add_No_Pjp_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            $NoPjp = $input['NoPjp'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Pjp'=> $NoPjp,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah No PJP Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah No PJP Listing Gagal']));
             }
         }
         
@@ -3874,16 +4015,21 @@ class ApiFlutter extends CI_Controller
             echo json_encode($data);
         }
         
+        // Report Vendor -------------------------------------------------------
+        
+        public function Get_Report_Vendor() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            
+            $data = $this->ModelFlutter->Get_Report_Vendor($limit, $offset);
+            
+            echo json_encode($data);
+        }
+        
         // Delete --------------------------------------------------------------
         // Reject --------------------------------------------------------------
         // Template ------------------------------------------------------------
-        // Count ---------------------------------------------------------------
         
-        public function Count_Listing_Pending(){
-            $data = $this->ModelFlutter->Count_Listing_Pending();
-            echo json_encode($data);
-        }
-    
     // Info ===========================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
@@ -4130,8 +4276,6 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal menghapus Info']));
             }
         }
-        
-        // Count ---------------------------------------------------------------
     
     // Primary ========================================================================================================================================================================================
     
@@ -4424,6 +4568,7 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Tipe Gagal']));
             }
         }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_Listing_Primary() {
@@ -4455,5 +4600,38 @@ class ApiFlutter extends CI_Controller
         // Delete --------------------------------------------------------------
         // Reject --------------------------------------------------------------
         // Template ------------------------------------------------------------
-        // Count ---------------------------------------------------------------
+        
+    // Count ==========================================================================================================================================================================================
+    
+    public function Count_Pelamar(){
+        $data = $this->ModelFlutter->Count_Pelamar();
+        echo json_encode($data);
+    }
+    
+    public function Count_Pralisting_Admin(){
+        $data = $this->ModelFlutter->Count_Pralisting_Admin();
+        echo json_encode($data);
+    }
+    
+    public function Count_Pralisting_Manager(){
+        $data = $this->ModelFlutter->Count_Pralisting_Manager();
+        echo json_encode($data);
+    }
+    
+    public function Count_Pralisting_Rejected(){
+        $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $data = $this->ModelFlutter->Count_Pralisting_Rejected($id);
+        echo json_encode($data);
+    }
+    
+    public function Count_Listing_Pending(){
+        $data = $this->ModelFlutter->Count_Listing_Pending();
+        echo json_encode($data);
+    }
+    
+    public function Count_Report_Vendor(){
+        $data = $this->ModelFlutter->Count_Report_Vendor();
+        echo json_encode($data);
+    }
+    
 }
