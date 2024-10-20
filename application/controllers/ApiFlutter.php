@@ -19,6 +19,45 @@ class ApiFlutter extends CI_Controller
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
     
+        if (!isset($input['IdAgen'])) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            return;
+        }
+    
+        $idAgen = $input['IdAgen'];
+    
+        if (empty($idAgen)) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            return;
+        }
+    
+        $userAdmin = $this->ModelFlutter->Check_Login($idAgen);
+    
+        if ($userAdmin) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
+        } else {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(401)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+        }
+    }
+    
+    // Authentication ================================================================================================================================================================================
+    
+    public function Check_Login() {
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+    
         if (!isset($input['Username']) || !isset($input['Password'])) {
             $this->output
                 ->set_content_type('application/json')
@@ -68,45 +107,6 @@ class ApiFlutter extends CI_Controller
                         ->set_output(json_encode(['status' => 'fail', 'message' => 'Username atau Password Salah']));
                 }
             }
-        }
-    }
-    
-    // Authentication ================================================================================================================================================================================
-    
-    public function Check_Login() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, TRUE);
-    
-        if (!isset($input['IdAgen'])) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
-            return;
-        }
-    
-        $idAgen = $input['IdAgen'];
-    
-        if (empty($idAgen)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
-            return;
-        }
-    
-        $userAdmin = $this->ModelFlutter->Check_Login($idAgen);
-    
-        if ($userAdmin) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(401)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
         }
     }
     
