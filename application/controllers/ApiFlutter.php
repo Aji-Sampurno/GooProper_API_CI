@@ -70,7 +70,63 @@ class ApiFlutter extends CI_Controller
             }
         }
     }
+	
+    public function Login_As() {
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
     
+        if (!isset($input['Username']) || !isset($input['Password'])) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Username dan Password']));
+            return;
+        }
+    
+        $username = $input['Username'];
+        $password = $input['Password'];
+    
+        if (empty($username) || empty($password)) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Username dan Password']));
+            return;
+        }
+    
+        $userAdmin = $this->ModelFlutter->Login_Admin($username, $password);
+    
+        if ($userAdmin) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
+        } else {
+            $userAgen = $this->ModelFlutter->Login_Agen($username, $password);
+            
+            if ($userAgen) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'success', 'user' => $userAgen]));
+            } else {
+                $userCustomer = $this->ModelFlutter->Login_Customer($username, $password);
+                
+                if ($userCustomer) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user' => $userCustomer]));
+                } else {
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(401)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Username atau Password Salah']));
+                }
+            }
+        }
+    }
+	
     public function Login_Cek() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
