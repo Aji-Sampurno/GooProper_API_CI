@@ -71,6 +71,44 @@ class ApiFlutter extends CI_Controller
         }
     }
 	
+    public function Login_Cek() {
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+    
+        if (!isset($input['IdAgen'])) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            return;
+        }
+    
+        $idAgen = $input['IdAgen'];
+    
+        if (empty($idAgen)) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            return;
+        }
+    
+        $userAdmin = $this->ModelFlutter->Check_Login($idAgen);
+    
+        if ($userAdmin) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
+        } else {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(401)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+        }
+    }
+    
+    // Customer ======================================================================================================================================================================================
     public function Login_As() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
@@ -127,45 +165,6 @@ class ApiFlutter extends CI_Controller
         }
     }
 	
-    public function Login_Cek() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, TRUE);
-    
-        if (!isset($input['IdAgen'])) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
-            return;
-        }
-    
-        $idAgen = $input['IdAgen'];
-    
-        if (empty($idAgen)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
-            return;
-        }
-    
-        $userAdmin = $this->ModelFlutter->Check_Login($idAgen);
-    
-        if ($userAdmin) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(401)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
-        }
-    }
-    
-    // Customer ======================================================================================================================================================================================
-    
     public function Registrasi_Customer() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
