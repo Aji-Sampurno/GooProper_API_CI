@@ -71,6 +71,8 @@ class ApiFlutter extends CI_Controller
         }
     }
     
+    // Authentication ================================================================================================================================================================================
+    
     public function Check_Login() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
