@@ -107,8 +107,6 @@ class ApiFlutter extends CI_Controller
                 ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
         }
     }
-    
-    // Customer ======================================================================================================================================================================================
     public function Login_As() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
@@ -164,7 +162,8 @@ class ApiFlutter extends CI_Controller
             }
         }
     }
-	
+    // Customer ======================================================================================================================================================================================
+    	
     public function Registrasi_Customer() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
