@@ -1363,12 +1363,8 @@ class ModelFlutter extends CI_Model
             if (!empty($search)) {
                 $keywords = explode(' ', $search);
                 foreach ($keywords as $keyword) {
-                    $searchCondition .= " AND listing.MetaNamaListing LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                    $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
                 }
-            }
-            
-            if (!empty($sold) && !empty($rented) && !empty($soldagen) && !empty($rentedagen)) {
-                $searchCondition .= " AND Sold = " . $this->db->escape($sold) . " OR SoldAgen = " . $this->db->escape($soldagen) . " OR Rented = " . $this->db->escape($rented) . " OR RentedAgen = " . $this->db->escape($rentedagen) . " ";
             }
             
             if (!empty($priority)) {
@@ -1452,6 +1448,99 @@ class ModelFlutter extends CI_Model
                     Rented = 0 AND 
                     RentedAgen = 0 AND
                     Pending = 0 
+                    $searchCondition
+                ORDER BY
+                    IdListing DESC
+                LIMIT ? OFFSET ?
+            ", array($limit, $offset));
+        
+            return $query->result_array();
+        }
+        
+        public function Get_List_Listing_Sold_Pencarian($limit, $offset, $search = '', $priority = '', $sold = null, $rented = null, $soldagen = null, $rentedagen = null, $status = '', $jenis = '', $kota = '', $wilayah = '', $prabot = '', $bed = null, $bath = null, $hargaMin = '', $hargaMax ='', $landMin = null, $landMax = null, $wideMin = null, $wideMax = null) {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
+            if (!empty($priority)) {
+                $searchCondition .= " AND listing.Priority = " . $this->db->escape($priority) . " ";
+            }
+            
+            if (!empty($status)) {
+                $searchCondition .= " AND listing.Kondisi = " . $this->db->escape($status) . " ";
+            }
+            
+            if (!empty($jenis)) {
+                $searchCondition .= " AND listing.JenisProperti = " . $this->db->escape($jenis) . " ";
+            }
+            
+            if (!empty($kota)) {
+                $searchCondition .= " AND listing.Daerah = " . $this->db->escape($kota) . " ";
+            }
+            
+            if (!empty($wilayah)) {
+                $searchCondition .= " AND listing.Wilayah = " . $this->db->escape($wilayah) . " ";
+            }
+            
+            if (!empty($prabot)) {
+                $searchCondition .= " AND listing.Prabot = " . $this->db->escape($prabot) . " ";
+            }
+            
+            if (!empty($bed)) {
+                $searchCondition .= " AND listing.Bed = " . $this->db->escape($bed) . " ";
+            }
+            
+            if (!empty($bath)) {
+                $searchCondition .= " AND listing.Bath = " . $this->db->escape($bath) . " ";
+            }
+        
+            if ($status === 'Jual') {
+                if (!empty($hargaMin) && !empty($hargaMax)) {
+                    $searchCondition .= " AND CAST(listing.Harga AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " ";
+                }
+            } elseif ($status === 'Sewa') {
+                if (!empty($hargaMin) && !empty($hargaMax)) {
+                    $searchCondition .= " AND CAST(listing.HargaSewa AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " ";
+                }
+            } elseif ($status === 'Jual/Sewa') {
+                if (!empty($hargaMin) && !empty($hargaMax)) {
+                    $searchCondition .= " AND (CAST(listing.Harga AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " OR CAST(listing.HargaSewa AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . ") ";
+                }
+            } elseif (empty($status)) {
+                if (!empty($hargaMin) && !empty($hargaMax)) {
+                    $searchCondition .= " AND (CAST(listing.Harga AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . " OR CAST(listing.HargaSewa AS UNSIGNED) BETWEEN " . $this->db->escape($hargaMin) . " AND " . $this->db->escape($hargaMax) . ") ";
+                }
+            }
+        
+            if (!empty($landMin) && !empty($landMax)) {
+                $searchCondition .= " AND CAST(REPLACE(listing.Land, ' m²', '') AS UNSIGNED) BETWEEN " . $this->db->escape($landMin) . " AND " . $this->db->escape($landMax) . " ";
+            }
+        
+            if (!empty($wideMin) && !empty($wideMax)) {
+                $searchCondition .= " AND CAST(REPLACE(listing.Wide, ' m²', '') AS UNSIGNED) BETWEEN " . $this->db->escape($wideMin) . " AND " . $this->db->escape($wideMax) . " ";
+            }
+            
+            $query = $this->db->query("
+                SELECT 
+                    IdListing,
+                    NamaListing,
+                    MetaNamaListing,
+                    Kondisi,
+                    Harga,
+                    HargaSewa,
+                    Wide,
+                    Land,
+                    Priority,
+                    NoArsip,
+                    Img1
+                FROM 
+                    listing
+                WHERE
+                    IsDouble = 0 AND IsDelete = 0 AND (Sold = 1 OR SoldAgen = 1 OR Rented = 1 OR RentedAgen = 1) AND Pending = 0 
                     $searchCondition
                 ORDER BY
                     IdListing DESC
