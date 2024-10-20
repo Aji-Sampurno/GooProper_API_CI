@@ -2329,6 +2329,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_Daerah_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdPralisting = $input['IdPraListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Wilayah' => $input['Wilayah'],
+                'Daerah' => $input['Daerah'],
+            ];
+            $where = array('IdPralisting'=> $IdPralisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah Daerah Pra-Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Daerah Pra-Listing Gagal']));
+            }
+        }
+        
         // Approve -------------------------------------------------------------
         
         public function Approve_Admin_PraListing(){
@@ -3068,6 +3098,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_Daerah_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Wilayah' => $input['Wilayah'],
+                'Daerah' => $input['Daerah'],
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah Daerah Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Daerah Listing Gagal']));
+            }
+        }
+        
         // Update --------------------------------------------------------------
         
         public function Approve_Susulan(){
@@ -3244,6 +3304,38 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Rented Listing Gagal']));
+            }
+        }
+        
+        public function Update_Iklan_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Sold' => 0,
+                'SoldAgen' => 0,
+                'Rented' => 0,
+                'RentedAgen' => 0,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal']));
             }
         }
         
@@ -3966,6 +4058,34 @@ class ApiFlutter extends CI_Controller
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             
             $data = $this->ModelFlutter->Get_List_Listing_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
+            
+            echo json_encode($data);
+        }
+        
+        public function Get_List_Listing_Sold_Pencarian() {
+            $search = $this->input->get('search');
+            $priority = $this->input->get('priority');
+            $sold = $this->input->get('sold');
+            $rented = $this->input->get('rented');
+            $soldagen = $this->input->get('soldagen');
+            $rentedagen = $this->input->get('rentedagen');
+            $status = $this->input->get('status');
+            $jenis = $this->input->get('jenis');
+            $kota = $this->input->get('kota');
+            $wilayah = $this->input->get('wilayah');
+            $prabot = $this->input->get('prabot');
+            $bed = $this->input->get('bed');
+            $bath = $this->input->get('bath');
+            $hargaMin = $this->input->get('hargaMin');
+            $hargaMax = $this->input->get('hargaMax');
+            $landMin = $this->input->get('landMin');
+            $landMax = $this->input->get('landMax');
+            $wideMin = $this->input->get('wideMin');
+            $wideMax = $this->input->get('wideMax');
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            
+            $data = $this->ModelFlutter->Get_List_Listing_Sold_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
             
             echo json_encode($data);
         }
