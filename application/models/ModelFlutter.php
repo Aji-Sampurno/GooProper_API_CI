@@ -1926,7 +1926,7 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                         	infoproperty
                                         WHERE 
-                                        	StatusProperty = 'Jual?Sewa'
+                                        	StatusProperty = 'Jual/Sewa'
                                         ORDER BY
                                         	IdInfo DESC
                                         LIMIT $limit OFFSET $offset;");
