@@ -1697,6 +1697,7 @@ class ModelFlutter extends CI_Model
             $query = $this->db->query(" SELECT 
                                         	listing.*,
                                             penilaian.*,
+                                            reportvendor.*,
                                             vendor.IdVendor,
                                             vendor.NamaLengkap AS NamaVendor,
                                             vendor.NoTelp AS NoTelpVendor,
@@ -1715,6 +1716,7 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             `listing`
                                             LEFT JOIN penilaian ON listing.IdListing = penilaian.IdListing
+                                            LEFT JOIN reportvendor ON listing.IdListing = reportvendor.IdListing
                                         	LEFT JOIN vendor USING(IdVendor)
                                             LEFT JOIN agen AS agen1 ON listing.IdAgen = agen1.IdAgen
                                             LEFT JOIN agen AS agen2 ON listing.IdAgenCo = agen2.IdAgen
@@ -1753,6 +1755,17 @@ class ModelFlutter extends CI_Model
                                         ORDER BY 
                                             IdListing DESC
                                         LIMIT $limit OFFSET $offset ");
+            return $query->result_array();
+        }
+        
+        public function Get_Data_Report_Vendor($id){
+            
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                        	reportvendor
+                                        WHERE
+                                            IdListing = $id");
             return $query->result_array();
         }
         
