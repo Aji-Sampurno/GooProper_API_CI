@@ -4085,6 +4085,66 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        // Delete --------------------------------------------------------------
+        
+        public function Delete_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IsDelete' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Listing Dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Listing Gagal Dihapus']));
+            }
+        }
+        
+        public function Double_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IsDouble' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Listing Dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Listing Gagal Dihapus']));
+            }
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_Listing_Agen() {
@@ -4353,7 +4413,6 @@ class ApiFlutter extends CI_Controller
             echo json_encode($data);
         }
         
-        // Delete --------------------------------------------------------------
         // Reject --------------------------------------------------------------
         // Template ------------------------------------------------------------
         
