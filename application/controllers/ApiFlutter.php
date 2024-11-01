@@ -650,7 +650,13 @@ class ApiFlutter extends CI_Controller
     }
     
     public function Get_Daerah(){
-        $data = $this->ModelFlutter->Get_Daerah();
+        $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $data = $this->ModelFlutter->Get_Daerah($id);
+        echo json_encode($data);
+    }
+    
+    public function Get_Provinsi(){
+        $data = $this->ModelFlutter->Get_Provinsi();
         echo json_encode($data);
     }
     
@@ -1503,6 +1509,7 @@ class ApiFlutter extends CI_Controller
             $Location = $input['Location'];
             $Wilayah = $input['Wilayah'];
             $Daerah = $input['Daerah'];
+            $Provinsi = $input['Provinsi'];
             $Wide = $input['Wide'];	
             $Land = $input['Land'];	
             $Dimensi = $input['Dimensi'];	
@@ -1608,7 +1615,7 @@ class ApiFlutter extends CI_Controller
 			);
 			$this->db->insert('vendor',$vendor);
 			$idvendor = $this->db->insert_id();
-    
+			
             if($idvendor) {
                 $data = [
                     'IdAgen' => $IdAgen,
@@ -1624,6 +1631,7 @@ class ApiFlutter extends CI_Controller
                     'Location'=> $Location,
                     'Wilayah' => $Wilayah,
                     'Daerah' => $Daerah,
+                    'Provinsi' => $Provinsi,
                     'Wide'=> $Wide,	
                     'Land'=> $Land,	
                     'Dimensi'=> $Dimensi,	
@@ -1668,18 +1676,18 @@ class ApiFlutter extends CI_Controller
                     'SportSpace'=> $SportSpace,
                     'ParkingSpot'=> $ParkingSpot,
                     'Deskripsi'=> $Deskripsi,
-                    'MetaDeskripsi'=> $MetaDeskripsi,	
-    				'Prabot'=> $Prabot,	
-    				'KetPrabot'=> $KetPrabot,	
-    				'Priority'=> $Priority,
-    				'Banner'=> $Banner,
-    				'Size'=> $Size,
-    				'TipeHarga'=> $TipeHarga,
-    				'Harga'=> $Harga,	
-    				'HargaSewa'=> $HargaSewa,
-    				'RangeHarga'=> $RangeHarga,	
-    				'TglInput'=> $makeDate,
-    				'Img1'=> $Img1,
+                    'MetaDeskripsi'=> $MetaDeskripsi,
+                    'Prabot'=> $Prabot,	
+                    'KetPrabot'=> $KetPrabot,
+                    'Priority'=> $Priority,
+                    'Banner'=> $Banner,
+                    'Size'=> $Size,
+                    'TipeHarga'=> $TipeHarga,
+                    'Harga'=> $Harga,
+                    'HargaSewa'=> $HargaSewa,
+                    'RangeHarga'=> $RangeHarga,	
+                    'TglInput'=> $makeDate,
+                    'Img1'=> $Img1,
                     'Img2'=> $Img2,
                     'Img3'=> $Img3,
                     'Img4'=> $Img4,
@@ -1691,16 +1699,16 @@ class ApiFlutter extends CI_Controller
                     'Img10'=> $Img10,
                     'Img11'=> $Img11,
                     'Img12'=> $Img12,
-    				'Video'=> $Video,	
-    				'LinkFacebook'=> $LinkFacebook,	
-    				'LinkTiktok'=> $LinkTiktok,	
-    				'LinkInstagram'=> $LinkInstagram,	
-    				'LinkYoutube'=> $LinkYoutube,	
-    				'Fee'=> $Fee,
-    				'IsAdmin' => 0,
-    				'IsManager' => 0,
-    				'Marketable' => $Marketable,
-    				'StatusHarga' => $StatusHarga,
+                    'Video'=> $Video,
+                    'LinkFacebook'=> $LinkFacebook,	
+                    'LinkTiktok'=> $LinkTiktok,	
+                    'LinkInstagram'=> $LinkInstagram,	
+                    'LinkYoutube'=> $LinkYoutube,
+                    'Fee'=> $Fee,
+                    'IsAdmin' => 0,
+                    'IsManager' => 0,
+                    'Marketable' => $Marketable,
+                    'StatusHarga' => $StatusHarga,
                     'IsSelfie' => $IsSelfie,
                     'IsLokasi' => $IsLokasi,
                     'Selfie' => $Selfie,
@@ -1709,11 +1717,11 @@ class ApiFlutter extends CI_Controller
                     'Pending' => 0,
                 ];
                 
-			    $this->db->insert('pralisting',$data);
-			    $insert_id = $this->db->insert_id();
-			    
-			    if($insert_id) {
-			        $nilai = [
+                $this->db->insert('pralisting',$data);
+                $insert_id = $this->db->insert_id();
+                
+                if($insert_id) {
+                    $nilai = [
                         'IdPralisting' => $insert_id,
                         'AksesJalanAgen' => $AksesJalanAgen,
                         'KondisiAgen' => $KondisiAgen,
@@ -1781,6 +1789,7 @@ class ApiFlutter extends CI_Controller
             $Location = $input['Location'];
             $Wilayah = $input['Wilayah'];
             $Daerah = $input['Daerah'];
+            $Provinsi = $input['Provinsi'];
             $Wide = $input['Wide'];	
             $Land = $input['Land'];	
             $Dimensi = $input['Dimensi'];	
@@ -1886,7 +1895,7 @@ class ApiFlutter extends CI_Controller
 			);
 			$this->db->insert('vendor',$vendor);
 			$idvendor = $this->db->insert_id();
-    
+			
             if($idvendor) {
                 $data = [
                     'IdAgen' => $IdAgen,
@@ -1902,6 +1911,7 @@ class ApiFlutter extends CI_Controller
                     'Location'=> $Location,
                     'Wilayah' => $Wilayah,
                     'Daerah' => $Daerah,
+                    'Provinsi' => $Provinsi,
                     'Wide'=> $Wide,	
                     'Land'=> $Land,	
                     'Dimensi'=> $Dimensi,	
@@ -1946,18 +1956,18 @@ class ApiFlutter extends CI_Controller
                     'SportSpace'=> $SportSpace,
                     'ParkingSpot'=> $ParkingSpot,
                     'Deskripsi'=> $Deskripsi,
-                    'MetaDeskripsi'=> $MetaDeskripsi,	
-    				'Prabot'=> $Prabot,	
-    				'KetPrabot'=> $KetPrabot,	
-    				'Priority'=> $Priority,
-    				'Banner'=> $Banner,
-    				'Size'=> $Size,
-    				'TipeHarga'=> $TipeHarga,
-    				'Harga'=> $Harga,	
-    				'HargaSewa'=> $HargaSewa,
-    				'RangeHarga'=> $RangeHarga,	
-    				'TglInput'=> $makeDate,
-    				'Img1'=> $Img1,
+                    'MetaDeskripsi'=> $MetaDeskripsi,
+                    'Prabot'=> $Prabot,	
+                    'KetPrabot'=> $KetPrabot,
+                    'Priority'=> $Priority,
+                    'Banner'=> $Banner,
+                    'Size'=> $Size,
+                    'TipeHarga'=> $TipeHarga,
+                    'Harga'=> $Harga,
+                    'HargaSewa'=> $HargaSewa,
+                    'RangeHarga'=> $RangeHarga,	
+                    'TglInput'=> $makeDate,
+                    'Img1'=> $Img1,
                     'Img2'=> $Img2,
                     'Img3'=> $Img3,
                     'Img4'=> $Img4,
@@ -1969,16 +1979,16 @@ class ApiFlutter extends CI_Controller
                     'Img10'=> $Img10,
                     'Img11'=> $Img11,
                     'Img12'=> $Img12,
-    				'Video'=> $Video,	
-    				'LinkFacebook'=> $LinkFacebook,	
-    				'LinkTiktok'=> $LinkTiktok,	
-    				'LinkInstagram'=> $LinkInstagram,	
-    				'LinkYoutube'=> $LinkYoutube,	
-    				'Fee'=> $Fee,
-    				'IsAdmin' => 0,
-    				'IsManager' => 0,
-    				'Marketable' => $Marketable,
-    				'StatusHarga' => $StatusHarga,
+                    'Video'=> $Video,
+                    'LinkFacebook'=> $LinkFacebook,	
+                    'LinkTiktok'=> $LinkTiktok,	
+                    'LinkInstagram'=> $LinkInstagram,
+                    'LinkYoutube'=> $LinkYoutube,
+                    'Fee'=> $Fee,
+                    'IsAdmin' => 0,
+                    'IsManager' => 0,
+                    'Marketable' => $Marketable,
+                    'StatusHarga' => $StatusHarga,
                     'IsSelfie' => $IsSelfie,
                     'IsLokasi' => $IsLokasi,
                     'Selfie' => $Selfie,
@@ -1987,11 +1997,11 @@ class ApiFlutter extends CI_Controller
                     'Pending' => 0,
                 ];
                 
-			    $this->db->insert('pralisting',$data);
-			    $insert_id = $this->db->insert_id();
-			    
-			    if($insert_id) {
-			        $nilai = [
+                $this->db->insert('pralisting',$data);
+                $insert_id = $this->db->insert_id();
+                
+                if($insert_id) {
+                    $nilai = [
                         'IdPralisting' => $insert_id,
                         'AksesJalanAgen' => $AksesJalanAgen,
                         'KondisiAgen' => $KondisiAgen,
@@ -2073,6 +2083,7 @@ class ApiFlutter extends CI_Controller
             $Location = $input['Location'];
             $Wilayah = $input['Wilayah'];
             $Daerah = $input['Daerah'];
+            $Provinsi = $input['Provinsi'];
             $Wide = $input['Wide'];	
             $Land = $input['Land'];	
             $Dimensi = $input['Dimensi'];	
@@ -2194,6 +2205,7 @@ class ApiFlutter extends CI_Controller
                     'Location'=> $Location,
                     'Wilayah' => $Wilayah,
                     'Daerah' => $Daerah,
+                    'Provinsi' => $Provinsi,
                     'Wide'=> $Wide,	
                     'Land'=> $Land,	
                     'Dimensi'=> $Dimensi,	
@@ -2238,18 +2250,18 @@ class ApiFlutter extends CI_Controller
                     'SportSpace'=> $SportSpace,
                     'ParkingSpot'=> $ParkingSpot,
                     'Deskripsi'=> $Deskripsi,
-                    'MetaDeskripsi'=> $MetaDeskripsi,	
-    				'Prabot'=> $Prabot,	
-    				'KetPrabot'=> $KetPrabot,	
-    				'Priority'=> $Priority,
-    				'Banner'=> $Banner,
-    				'Size'=> $Size,
-    				'TipeHarga'=> $TipeHarga,
-    				'Harga'=> $Harga,	
-    				'HargaSewa'=> $HargaSewa,
-    				'RangeHarga'=> $RangeHarga,	
-    				'TglInput'=> $makeDate,
-    				'Img1'=> $Img1,
+                    'MetaDeskripsi'=> $MetaDeskripsi,
+                    'Prabot'=> $Prabot,
+                    'KetPrabot'=> $KetPrabot,
+                    'Priority'=> $Priority,
+                    'Banner'=> $Banner,
+                    'Size'=> $Size,
+                    'TipeHarga'=> $TipeHarga,
+                    'Harga'=> $Harga,
+                    'HargaSewa'=> $HargaSewa,
+                    'RangeHarga'=> $RangeHarga,	
+                    'TglInput'=> $makeDate,
+                    'Img1'=> $Img1,
                     'Img2'=> $Img2,
                     'Img3'=> $Img3,
                     'Img4'=> $Img4,
@@ -2261,16 +2273,16 @@ class ApiFlutter extends CI_Controller
                     'Img10'=> $Img10,
                     'Img11'=> $Img11,
                     'Img12'=> $Img12,
-    				'Video'=> $Video,	
-    				'LinkFacebook'=> $LinkFacebook,	
-    				'LinkTiktok'=> $LinkTiktok,	
-    				'LinkInstagram'=> $LinkInstagram,	
-    				'LinkYoutube'=> $LinkYoutube,	
-    				'Fee'=> $Fee,
-    				'IsAdmin' => 0,
-    				'IsManager' => 0,
-    				'Marketable' => $Marketable,
-    				'StatusHarga' => $StatusHarga,
+                    'Video'=> $Video,	
+                    'LinkFacebook'=> $LinkFacebook,
+                    'LinkTiktok'=> $LinkTiktok,
+                    'LinkInstagram'=> $LinkInstagram,
+                    'LinkYoutube'=> $LinkYoutube,
+                    'Fee'=> $Fee,
+                    'IsAdmin' => 0,
+                    'IsManager' => 0,
+                    'Marketable' => $Marketable,
+                    'StatusHarga' => $StatusHarga,
                     'IsSelfie' => $IsSelfie,
                     'IsLokasi' => $IsLokasi,
                     'Selfie' => $Selfie,
@@ -2279,11 +2291,11 @@ class ApiFlutter extends CI_Controller
                     'Pending' => 0,
                 ];
                 
-			    $this->db->insert('pralisting',$data);
-			    $insert_id = $this->db->insert_id();
-			    
-			    if($insert_id) {
-			        $nilai = [
+                $this->db->insert('pralisting',$data);
+                $insert_id = $this->db->insert_id();
+                
+                if($insert_id) {
+                    $nilai = [
                         'IdPralisting' => $insert_id,
                         'AksesJalanAgen' => $AksesJalanAgen,
                         'KondisiAgen' => $KondisiAgen,
@@ -2375,6 +2387,7 @@ class ApiFlutter extends CI_Controller
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
             
+            $IdPralisting = $input['IdPraListing'];
             $IdPenilaian = $input['IdPenilaian'];
             $AksesJalan = $input['AksesJalanManager'];
             $Kondisi = $input['KondisiManager'];
@@ -2393,11 +2406,67 @@ class ApiFlutter extends CI_Controller
             $insertnilai = $this->ModelFlutter->Update_Data($where,$nilai,'penilaian');
             
             if($insertnilai) {
-                $this->db->trans_commit();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Tambah Nilai Berhasil']));
+                
+                $data = [
+                    'IsManager'=> 1,
+                    'Marketable' => $input['Marketable'],
+                    'StatusHarga' => $input['StatusHarga'],
+                ];
+                $where = array('IdPralisting'=> $IdPralisting,);
+                $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+                
+                if($insert_id) {
+                    $newId = $this->ModelFlutter->Add_Listing($IdPralisting);
+                    
+                    if($newId) {
+                        $templateId = [
+                            'IdListing' => $newId,
+                        ];
+                        $whereId = array('IdListing' => $IdPralisting,);
+                        $updateTemplate = $this->ModelFlutter->Update_Data($whereId,$templateId,'template');
+                        
+                        if($updateTemplate) {
+                            $PenilaianId = [
+                                'IdListing' => $newId,
+                            ];
+                            $whereId = array('IdPraListing' => $IdPralisting,);
+                            $updatePenilaian = $this->ModelFlutter->Update_Data($whereId,$PenilaianId,'penilaian');
+                            
+                            if($updatePenilaian) {
+                                $this->db->trans_commit();
+                                    $this->output
+                                        ->set_content_type('application/json')
+                                        ->set_status_header(200)
+                                        ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                            } else {
+                                $this->db->trans_rollback();
+                                $this->output
+                                    ->set_content_type('application/json')
+                                    ->set_status_header(500)
+                                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Penilaian Gagal Diupdate']));
+                            }
+                        } else {
+                            $this->db->trans_rollback();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(500)
+                                ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Template Gagal Diupdate']));
+                        }
+                    } else {
+                        $this->db->trans_rollback();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(500)
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Pra-Listing Gagal di Approve']));
+                    }
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Status Gagal Diupdate']));
+                }
+                
             } else {
                 $this->db->trans_rollback();
                 $this->output
@@ -2545,6 +2614,7 @@ class ApiFlutter extends CI_Controller
             $this->db->trans_start();
             
             $data = [
+                'Provinsi' => $input['Provinsi'],
                 'Wilayah' => $input['Wilayah'],
                 'Daerah' => $input['Daerah'],
             ];
@@ -2770,6 +2840,7 @@ class ApiFlutter extends CI_Controller
             $AlamatTemplate = $input['AlamatTemplate'];
             $Wilayah = $input['Wilayah'];
             $Daerah = $input['Daerah'];
+            $Provinsi = $input['Provinsi'];
             $Wide = $input['Wide'];	
             $Land = $input['Land'];	
             $Dimensi = $input['Dimensi'];	
@@ -2833,6 +2904,7 @@ class ApiFlutter extends CI_Controller
                 'AlamatTemplate'=> $AlamatTemplate,
                 'Wilayah' => $Wilayah,
                 'Daerah' => $Daerah,
+                'Provinsi' => $Provinsi,
                 'Wide'=> $Wide,	
                 'Land'=> $Land,	
                 'Dimensi'=> $Dimensi,	
@@ -3196,10 +3268,6 @@ class ApiFlutter extends CI_Controller
             $data = $this->ModelFlutter->Get_Lampiran_PraListing($id);
             echo json_encode($data);
         }
-        
-        // Delete --------------------------------------------------------------
-        // Reject --------------------------------------------------------------
-        // Template ------------------------------------------------------------
     
     // Listing ========================================================================================================================================================================================
     
@@ -3314,6 +3382,7 @@ class ApiFlutter extends CI_Controller
             $this->db->trans_start();
             
             $data = [
+                'Provinsi' => $input['Provinsi'],
                 'Wilayah' => $input['Wilayah'],
                 'Daerah' => $input['Daerah'],
             ];
@@ -3589,6 +3658,7 @@ class ApiFlutter extends CI_Controller
             $AlamatTemplate = $input['AlamatTemplate'];
             $Wilayah = $input['Wilayah'];
             $Daerah = $input['Daerah'];
+            $Provinsi = $input['Provinsi'];
             $Wide = $input['Wide'];	
             $Land = $input['Land'];	
             $Dimensi = $input['Dimensi'];	
@@ -3652,6 +3722,7 @@ class ApiFlutter extends CI_Controller
                 'AlamatTemplate'=> $AlamatTemplate,
                 'Wilayah' => $Wilayah,
                 'Daerah' => $Daerah,
+                'Provinsi' => $Provinsi,
                 'Wide'=> $Wide,	
                 'Land'=> $Land,	
                 'Dimensi'=> $Dimensi,	
