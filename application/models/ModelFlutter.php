@@ -762,6 +762,9 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
+                                            Wilayah,
+                                            Daerah,
+                                            Provinsi,
                                             Img1
                                         FROM 
                                         	listing
@@ -781,35 +784,6 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
-        public function Get_List_Listing_Terbaru() {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT 50;");
-            
-            return $query->result_array();
-        }
-        
         public function Get_List_Listing_Terbaru_Pagination($limit, $offset) {
             $query = $this->db->query(" SELECT 
                                             IdListing,
@@ -821,6 +795,9 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
+                                            Wilayah,
+                                            Daerah,
+                                            Provinsi,
                                             Img1
                                         FROM 
                                             listing
@@ -850,6 +827,9 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
+                                            Wilayah,
+                                            Daerah,
+                                            Provinsi,
                                             Img1
                                         FROM 
                                             listing
@@ -880,6 +860,9 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
+                                            Wilayah,
+                                            Daerah,
+                                            Provinsi,
                                             Img1
                                         FROM 
                                             listing
@@ -910,6 +893,9 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
+                                            Wilayah,
+                                            Daerah,
+                                            Provinsi,
                                             Img1
                                         FROM 
                                             listing
@@ -1705,9 +1691,26 @@ class ModelFlutter extends CI_Model
         
         public function Get_Lampiran_Listing($id){
             $query = $this->db->query(" SELECT 
-                                        	listing.*,
-                                            penilaian.*,
-                                            reportvendor.*,
+                                            listing.*,
+                                            penilaian.IdPenilaian,
+                                            penilaian.IdPralisting,
+                                            penilaian.IdListing AS IdListingPenilaian,
+                                            penilaian.AksesJalanAgen,
+                                            penilaian.AksesJalanOfficer,
+                                            penilaian.AksesJalanManager,
+                                            penilaian.KondisiAgen,
+                                            penilaian.KondisiOfficer,
+                                            penilaian.KondisiManager,
+                                            penilaian.AreaSekitarAgen,
+                                            penilaian.AreaSekitarOfficer,
+                                            penilaian.AreaSekitarManager,
+                                            penilaian.HargaAgen,
+                                            penilaian.HargaOfficer,
+                                            penilaian.HargaManager,
+                                            reportvendor.IdReport,
+                                            reportvendor.IdListing AS IdListingReportVendor,
+                                            reportvendor.Repost,
+                                            reportvendor.Catatan,
                                             vendor.IdVendor,
                                             vendor.NamaLengkap AS NamaVendor,
                                             vendor.NoTelp AS NoTelpVendor,
@@ -1720,7 +1723,7 @@ class ModelFlutter extends CI_Model
                                             agen2.NoTelp AS NoTelpCo,
                                             agen2.Instagram AS InstagramCo,
                                             template.IdTemplate,
-                                            template.IdListing,
+                                            template.IdListing AS IdListingTemplate,
                                             template.Template,
                                             template.TemplateBlank
                                         FROM 
