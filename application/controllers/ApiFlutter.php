@@ -153,74 +153,6 @@ class ApiFlutter extends CI_Controller
         }
     }
     
-    public function Update_Customer() {
-        $username = $this->input->post('Username');
-        $namalengkap = $this->input->post('NamaLengkap');
-        $notelp = $this->input->post('NoTelp');
-        $email = $this->input->post('Email');
-
-        if(empty($username) || empty($namalengkap) || empty($notelp) || empty($email)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
-            return;
-        }
-
-        $data = [
-            'Username' => $username,
-            'NamaLengkap' => $namalengkap,
-            'NoTelp' => $notelp,
-            'Email' => $email,
-        ];
-
-        $where = array('IdCustomer' => $this->input->post('IdCustomer'),);
-        $insert_id = $this->ModelFlutter->Update_Data($where,$data,'customer');
-
-        if($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(201)
-                ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Akun']));
-        }
-    }
-    
-    public function Update_Password_Customer() {
-        $password = $this->input->post('Password');
-
-        if(empty($password)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Password']));
-            return;
-        }
-
-        $data = [
-            'Password' => $password,
-        ];
-
-        $where = array('IdCustomer' => $this->input->post('IdCustomer'),);
-        $insert_id = $this->ModelFlutter->Update_Data($where,$data,'customer');
-
-        if($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(201)
-                ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Password']));
-        }
-    }
-    
     // Agen ==========================================================================================================================================================================================
     
     public function Registrasi_Agen() {
@@ -335,136 +267,8 @@ class ApiFlutter extends CI_Controller
         }
     }
     
-    public function Update_Ktp_Agen() {
-        $NoKtp = $this->input->post('NoKtp');
-        $ImgKtp = $this->input->post('ImgKtp');
-
-        if(empty($NoKtp) || empty($ImgKtp)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
-            return;
-        }
-
-        $data = [
-            'NoKtp' => $NoKtp,
-            'ImgKtp' => $ImgKtp,
-        ];
-
-        $where = array('IdAgen' => $this->input->post('IdAgen'),);
-        $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
-
-        if($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(201)
-                ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update KTP']));
-        }
-    }
-    
-    public function Update_Photo_Agen() {
-        $Photo = $this->input->post('Photo');
-
-        if(empty($Photo)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
-            return;
-        }
-
-        $data = [
-            'Photo' => $Photo,
-        ];
-
-        $where = array('IdAgen' => $this->input->post('IdAgen'),);
-        $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
-
-        if($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(201)
-                ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Photo']));
-        }
-    }
-    
-    public function Update_Kantor_Agen() {
-        $KotaAgen = $this->input->post('KotaAgen');
-
-        if(empty($KotaAgen)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
-            return;
-        }
-
-        $data = [
-            'KotaAgen' => $KotaAgen,
-        ];
-
-        $where = array('IdAgen' => $this->input->post('IdAgen'),);
-        $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
-
-        if($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(201)
-                ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Kantor Agen']));
-        }
-    }
-    
-    public function Update_Password_Agen() {
-        $Password = $this->input->post('Password');
-
-        if(empty($Password)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
-            return;
-        }
-        
-        $hashed_password = md5($password);
-
-        $data = [
-            'Password' => $hashed_password,
-        ];
-
-        $where = array('IdAgen' => $this->input->post('IdAgen'),);
-        $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
-
-        if($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(201)
-                ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Password']));
-        }
-    }
-    
     public function Get_Agen(){
-        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 30;
+        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
         $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
         $search = $this->input->get('search');
     
@@ -485,7 +289,7 @@ class ApiFlutter extends CI_Controller
     }
     
     public function Get_Pelamar(){
-        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 30;
+        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
         $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
         $data = $this->ModelFlutter->Get_Pelamar($limit, $offset);
         echo json_encode($data);
@@ -510,6 +314,9 @@ class ApiFlutter extends CI_Controller
             'Approve'=> 1,
             'IsAktif'=> 1,
             'IsLogin'=> 1,
+            'NamaTemp'=> $input['NamaTemp'],
+            'KodeAgen'=> $input['KodeAgen'],
+            'KotaAgen'=> $input['KotaAgen'],
         ];
         $where = array('IdAgen'=> $IdAgen,);
         $edit_agen = $this->ModelFlutter->Update_Data($where,$data,'agen');
@@ -660,6 +467,107 @@ class ApiFlutter extends CI_Controller
         echo json_encode($data);
     }
     
+    // Closing =======================================================================================================================================================================================
+    
+        // Add -----------------------------------------------------------------
+        
+        public function Add_Closing() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            if (!isset($input['IdAgen'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+                return;
+            }
+            
+            $data = [
+                'IdAgen' => $input['IdAgen'],
+                'JenisTransaksi' => $input['JenisTransaksi'],
+                'NamaPemilik' => $input['NamaPemilik'],
+                'NoPemilik' => $input['NoPemilik'],
+                'AlamatPemilik' => $input['AlamatPemilik'],
+                'NamaBuyer' => $input['NamaBuyer'],
+                'NoBuyer' => $input['NoBuyer'],
+                'AlamatBuyer' => $input['AlamatBuyer'],
+                'JenisProperti' => $input['JenisProperti'],
+                'AlamatProperti' => $input['AlamatProperti'],
+                'Legalitas' => $input['Legalitas'],
+                'NoLegalitas' => $input['NoLegalitas'],
+                'HargaJual' => $input['HargaJual'],
+                'HargaSewa' => $input['HargaSewa'],
+                'DP' => $input['DP'],
+                'PeriodeSewa' => $input['PeriodeSewa'],
+                'TanggalMasukSewa' => $input['TanggalMasukSewa'],
+                'Deposit' => $input['Deposit'],
+                'MetodePembayaran' => $input['MetodePembayaran'],
+                'GracePeriode' => $input['GracePeriode'],
+                'TglMaksDP' => $input['TglMaksDP'],
+                'TglMaksPelunasan' => $input['TglMaksPelunasan'],
+                'Note' => $input['Note'],
+                'KtpPemilik' => $input['KtpPemilik'],
+                'KtpPenyewa' => $input['KtpPenyewa']
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'closing');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Closing Gagal']));
+            }
+        }
+        
+        // Update --------------------------------------------------------------
+        public function Update_Read(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $sql = "UPDATE reportsold SET IsRead = '1' WHERE IdListing = ?";
+            $this->db->query($sql, array($input['IdListing']));
+        }
+        
+        // Get -----------------------------------------------------------------
+        
+        public function Get_Closing_Agen() {
+            $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $search = $this->input->get('search');
+            $data = $this->ModelFlutter->Get_Closing_Agen($id, $limit, $offset, $search);
+            echo json_encode($data);
+        }
+        
+        public function Get_Closing() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $search = $this->input->get('search');
+            $data = $this->ModelFlutter->Get_Closing($limit, $offset, $search);
+            echo json_encode($data);
+        }
+        
+        public function Get_Detail_Closing() {
+            $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Detail_Closing($id);
+            echo json_encode($data);
+        }
+        
+        public function Get_Report_Closing() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $search = $this->input->get('search');
+            $data = $this->ModelFlutter->Get_Report_Closing($limit, $offset, $search);
+            echo json_encode($data);
+        }
+        
     // Report Buyer ==================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
@@ -700,7 +608,7 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Report Buyer Gagal']));
             }
         }
-    
+        
         // Update --------------------------------------------------------------
         
         public function Update_Report_Buyer() {
@@ -783,8 +691,10 @@ class ApiFlutter extends CI_Controller
         
         public function Get_Report_Buyer_Agen() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen($id, $search);
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen($id, $limit, $offset, $search);
             
             $current_date = new DateTime();
             $response = [];
@@ -836,7 +746,9 @@ class ApiFlutter extends CI_Controller
         
         public function Get_Report_Buyer_Agen_Ready() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_Ready($id);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_Ready($id, $limit, $offset);
             
             $current_date = new DateTime();
             $response = [];
@@ -888,7 +800,9 @@ class ApiFlutter extends CI_Controller
         
         public function Get_Report_Buyer_Agen_To_Expired() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_To_Expired($id);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_To_Expired($id, $limit, $offset);
             
             $current_date = new DateTime();
             $response = [];
@@ -940,7 +854,9 @@ class ApiFlutter extends CI_Controller
         
         public function Get_Report_Buyer_Agen_Expired() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_Expired($id);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Agen_Expired($id, $limit, $offset);
             
             $current_date = new DateTime();
             $response = [];
@@ -991,8 +907,10 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_Report_Buyer() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
-            $status_data = $this->ModelFlutter->Get_Report_Buyer($search);
+            $status_data = $this->ModelFlutter->Get_Report_Buyer($limit, $offset, $search);
             
             $current_date = new DateTime();
             $response = [];
@@ -1043,7 +961,9 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_Report_Buyer_Ready() {
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_Ready();
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Ready($limit, $offset);
             
             $current_date = new DateTime();
             $response = [];
@@ -1094,7 +1014,9 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_Report_Buyer_To_Expired() {
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_To_Expired();
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_To_Expired($limit, $offset);
             
             $current_date = new DateTime();
             $response = [];
@@ -1145,7 +1067,9 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_Report_Buyer_Expired() {
-            $status_data = $this->ModelFlutter->Get_Report_Buyer_Expired();
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $status_data = $this->ModelFlutter->Get_Report_Buyer_Expired($limit, $offset);
             
             $current_date = new DateTime();
             $response = [];
@@ -1386,6 +1310,15 @@ class ApiFlutter extends CI_Controller
         }
         
         // Get -----------------------------------------------------------------
+        
+        public function Get_Report_Vendor() {
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            
+            $data = $this->ModelFlutter->Get_Report_Vendor($limit, $offset);
+            
+            echo json_encode($data);
+        }
         
         public function Get_Data_Report_Vendor() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -2636,6 +2569,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_Rumah123_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdPralisting = $input['IdPraListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Akun1' => $input['Akun1'],
+                'Akun2' => $input['Akun2'],
+            ];
+            $where = array('IdPralisting'=> $IdPralisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah Link Rumah123 Pra-Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Link Rumah123 Pra-Listing Gagal']));
+            }
+        }
+        
         // Approve -------------------------------------------------------------
         
         public function Approve_Admin_PraListing(){
@@ -3197,24 +3160,23 @@ class ApiFlutter extends CI_Controller
         
         // Get -----------------------------------------------------------------
         
-        public function Get_List_PraListing_Officer(){
-            $data = $this->ModelFlutter->Get_List_PraListing_Officer();
-            echo json_encode($data);
-        }
-        
         public function Get_List_PraListing_Admin(){
-            $data = $this->ModelFlutter->Get_List_PraListing_Admin();
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $data = $this->ModelFlutter->Get_List_PraListing_Admin($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_PraListing_Manager(){
-            $data = $this->ModelFlutter->Get_List_PraListing_Manager();
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $data = $this->ModelFlutter->Get_List_PraListing_Manager($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_PraListing_Agen(){
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_PraListing_Agen($id, $limit, $offset);
             echo json_encode($data);
@@ -3222,7 +3184,7 @@ class ApiFlutter extends CI_Controller
         
         public function Get_List_PraListing_Rejected_Agen(){
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_PraListing_Rejected_Agen($id, $limit, $offset);
             echo json_encode($data);
@@ -3404,6 +3366,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_Rumah123_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Akun1' => $input['Akun1'],
+                'Akun2' => $input['Akun2'],
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah Link Rumah123 Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Link Rumah123 Listing Gagal']));
+            }
+        }
+        
         // Update --------------------------------------------------------------
         
         public function Approve_Susulan(){
@@ -3580,6 +3572,92 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Rented Listing Gagal']));
+            }
+        }
+        
+        public function Update_Sold_Report_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Sold' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $reportsold = array(
+                    'IdListing' => $Idlisting,
+                    'Report' => $input['Report'],
+                );
+                $insert_reportsold = $this->db->insert('reportsold',$reportsold);
+                
+                if($insert_reportsold) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Sold Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Report Sold Listing Gagal, Gagal Tambah Report']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Report Sold Listing Gagal']));
+            }
+        }
+        
+        public function Update_Rented_Report_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Rented' => 1,
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $reportsold = array(
+                    'IdListing' => $Idlisting,
+                    'Report' => $input['Report'],
+                );
+                $insert_reportsold = $this->db->insert('reportsold',$reportsold);
+                
+                if($insert_reportsold) {
+                    $this->db->trans_commit();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(200)
+                            ->set_output(json_encode(['status' => 'success', 'Rented Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Report Rented Listing Gagal, Gagal Tambah Report']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Report Rented Listing Gagal']));
             }
         }
         
@@ -4220,7 +4298,7 @@ class ApiFlutter extends CI_Controller
         
         public function Get_List_Listing_Agen() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
             $data = $this->ModelFlutter->Get_List_Listing_Agen($limit, $offset, $id, $search);
@@ -4228,148 +4306,45 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_List_Listing_Terbaru_Pagination() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 30;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_Pagination($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Listing_Terbaru_Jual() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_Jual($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Listing_Terbaru_Sewa() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_Sewa($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Listing_Terbaru_JualSewa() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_JualSewa($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Listing_Exclusive() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Exclusive($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Listing_Sold() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Sold($limit, $offset);
             echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Rumah() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_rumah($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Ruko() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_ruko($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Tanah() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_tanah($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Gudang() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_gudang($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_RuangUsaha() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_ruangusaha($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Villa() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_villa($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Apartemen() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_Appartemen($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Pabrik() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_Pabrik($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Kantor() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_kantor($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Hotel() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_hotel($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Rukost() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->get_list_listing_rukost($limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_Detail_Listing() {
-            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Get_Detail_Listing($id);
-            echo json_encode($data);
-        }
-        
-        public function Get_List_Listing_Filter() {
-            $filters = array(
-                'Alamat' => $this->input->post('Alamat'),
-                'Wilayah' => $this->input->post('Wilayah'),
-                'Daerah' => $this->input->post('Daerah'),
-                'Wide' => $this->input->post('Wide'),
-                'Land' => $this->input->post('Land'),
-                'Bed' => $this->input->post('Bed'),
-                'Bath' => $this->input->post('Bath'),
-                'JenisProperti' => $this->input->post('JenisProperti'),
-                'Kondisi' => $this->input->post('Kondisi'),
-                'HargaMin' => $this->input->post('HargaMin'),
-                'HargaMax' => $this->input->post('HargaMax'),
-            );
-            
-            $listings = $this->ModelFlutter->Get_List_Listing_Filter($filters);
-            
-            echo json_encode($listings);
         }
         
         public function Get_List_Listing_Pencarian() {
@@ -4392,7 +4367,7 @@ class ApiFlutter extends CI_Controller
             $landMax = $this->input->get('landMax');
             $wideMin = $this->input->get('wideMin');
             $wideMax = $this->input->get('wideMax');
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             
             $data = $this->ModelFlutter->Get_List_Listing_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
@@ -4420,7 +4395,7 @@ class ApiFlutter extends CI_Controller
             $landMax = $this->input->get('landMax');
             $wideMin = $this->input->get('wideMin');
             $wideMax = $this->input->get('wideMax');
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             
             $data = $this->ModelFlutter->Get_List_Listing_Sold_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
@@ -4429,7 +4404,7 @@ class ApiFlutter extends CI_Controller
         }
         
         public function Get_List_Listing_Pending() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Pending($limit, $offset);
             echo json_encode($data);
@@ -4437,15 +4412,9 @@ class ApiFlutter extends CI_Controller
         
         public function Get_List_Susulan() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Susulan($id, $limit, $offset);
-            echo json_encode($data);
-        }
-        
-        public function Get_Spec_Listing() {
-            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Get_Spec_Listing($id);
             echo json_encode($data);
         }
         
@@ -4472,20 +4441,6 @@ class ApiFlutter extends CI_Controller
             $data = $this->ModelFlutter->Get_Lampiran_Listing($id);
             echo json_encode($data);
         }
-        
-        // Report Vendor -------------------------------------------------------
-        
-        public function Get_Report_Vendor() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
-            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            
-            $data = $this->ModelFlutter->Get_Report_Vendor($limit, $offset);
-            
-            echo json_encode($data);
-        }
-        
-        // Reject --------------------------------------------------------------
-        // Template ------------------------------------------------------------
         
     // Info ===========================================================================================================================================================================================
     
@@ -4652,7 +4607,7 @@ class ApiFlutter extends CI_Controller
         // Get -----------------------------------------------------------------
         
         public function Get_List_Info() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
             $data = $this->ModelFlutter->Get_List_Info($limit, $offset, $search);
@@ -4661,28 +4616,28 @@ class ApiFlutter extends CI_Controller
         
         public function Get_List_Info_Agen() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_Agen($id, $limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Info_Jual() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_Jual($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Info_Sewa() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_Sewa($limit, $offset);
             echo json_encode($data);
         }
         
         public function Get_List_Info_JualSewa() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_JualSewa($limit, $offset);
             echo json_encode($data);
@@ -5029,7 +4984,7 @@ class ApiFlutter extends CI_Controller
         // Get -----------------------------------------------------------------
         
         public function Get_List_Listing_Primary() {
-            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 50;
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
             $data = $this->ModelFlutter->Get_List_Listing_Primary($limit, $offset, $search);
@@ -5053,10 +5008,6 @@ class ApiFlutter extends CI_Controller
             $data = $this->ModelFlutter->Get_List_Tipe_Listing_Primary($id);
             echo json_encode($data);
         }
-        
-        // Delete --------------------------------------------------------------
-        // Reject --------------------------------------------------------------
-        // Template ------------------------------------------------------------
         
     // Count ==========================================================================================================================================================================================
     
@@ -5090,5 +5041,322 @@ class ApiFlutter extends CI_Controller
         $data = $this->ModelFlutter->Count_Report_Vendor();
         echo json_encode($data);
     }
+    
+    public function Count_Report_Closing(){
+        $data = $this->ModelFlutter->Count_Report_Closing();
+        echo json_encode($data);
+    }
+    
+    // UnUsed =========================================================================================================================================================================================
+    
+    // public function Update_Customer() {
+    //     $username = $this->input->post('Username');
+    //     $namalengkap = $this->input->post('NamaLengkap');
+    //     $notelp = $this->input->post('NoTelp');
+    //     $email = $this->input->post('Email');
+
+    //     if(empty($username) || empty($namalengkap) || empty($notelp) || empty($email)) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
+    //         return;
+    //     }
+
+    //     $data = [
+    //         'Username' => $username,
+    //         'NamaLengkap' => $namalengkap,
+    //         'NoTelp' => $notelp,
+    //         'Email' => $email,
+    //     ];
+
+    //     $where = array('IdCustomer' => $this->input->post('IdCustomer'),);
+    //     $insert_id = $this->ModelFlutter->Update_Data($where,$data,'customer');
+
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(201)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Akun']));
+    //     }
+    // }
+    
+    // public function Update_Password_Customer() {
+    //     $password = $this->input->post('Password');
+
+    //     if(empty($password)) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Password']));
+    //         return;
+    //     }
+
+    //     $data = [
+    //         'Password' => $password,
+    //     ];
+
+    //     $where = array('IdCustomer' => $this->input->post('IdCustomer'),);
+    //     $insert_id = $this->ModelFlutter->Update_Data($where,$data,'customer');
+
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(201)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Password']));
+    //     }
+    // }
+    
+    // public function Update_Ktp_Agen() {
+    //     $NoKtp = $this->input->post('NoKtp');
+    //     $ImgKtp = $this->input->post('ImgKtp');
+
+    //     if(empty($NoKtp) || empty($ImgKtp)) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
+    //         return;
+    //     }
+
+    //     $data = [
+    //         'NoKtp' => $NoKtp,
+    //         'ImgKtp' => $ImgKtp,
+    //     ];
+
+    //     $where = array('IdAgen' => $this->input->post('IdAgen'),);
+    //     $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
+
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(201)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update KTP']));
+    //     }
+    // }
+    
+    // public function Update_Photo_Agen() {
+    //     $Photo = $this->input->post('Photo');
+
+    //     if(empty($Photo)) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
+    //         return;
+    //     }
+
+    //     $data = [
+    //         'Photo' => $Photo,
+    //     ];
+
+    //     $where = array('IdAgen' => $this->input->post('IdAgen'),);
+    //     $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
+
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(201)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Photo']));
+    //     }
+    // }
+    
+    // public function Update_Kantor_Agen() {
+    //     $KotaAgen = $this->input->post('KotaAgen');
+
+    //     if(empty($KotaAgen)) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
+    //         return;
+    //     }
+
+    //     $data = [
+    //         'KotaAgen' => $KotaAgen,
+    //     ];
+
+    //     $where = array('IdAgen' => $this->input->post('IdAgen'),);
+    //     $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
+
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(201)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Kantor Agen']));
+    //     }
+    // }
+    
+    // public function Update_Password_Agen() {
+    //     $Password = $this->input->post('Password');
+
+    //     if(empty($Password)) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
+    //         return;
+    //     }
+        
+    //     $hashed_password = md5($password);
+
+    //     $data = [
+    //         'Password' => $hashed_password,
+    //     ];
+
+    //     $where = array('IdAgen' => $this->input->post('IdAgen'),);
+    //     $insert_id = $this->ModelFlutter->Update_Data($where,$data,'agen');
+
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(201)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Password']));
+    //     }
+    // }
+    
+    // public function Get_List_PraListing_Officer(){
+    //     $data = $this->ModelFlutter->Get_List_PraListing_Officer();
+    //     echo json_encode($data);
+    // }
+        
+    // public function Get_List_Listing_Rumah() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_rumah($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Ruko() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_ruko($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Tanah() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_tanah($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Gudang() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_gudang($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_RuangUsaha() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_ruangusaha($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Villa() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_villa($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Apartemen() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_Appartemen($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Pabrik() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_Pabrik($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Kantor() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_kantor($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Hotel() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_hotel($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_List_Listing_Rukost() {
+    //     $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+    //     $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+    //     $data = $this->ModelFlutter->get_list_listing_rukost($limit, $offset);
+    //     echo json_encode($data);
+    // }
+    
+    // public function Get_Detail_Listing() {
+    //     $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    //     $data = $this->ModelFlutter->Get_Detail_Listing($id);
+    //     echo json_encode($data);
+    // }
+        
+    // public function Get_List_Listing_Filter() {
+    //     $filters = array(
+    //         'Alamat' => $this->input->post('Alamat'),
+    //         'Wilayah' => $this->input->post('Wilayah'),
+    //         'Daerah' => $this->input->post('Daerah'),
+    //         'Wide' => $this->input->post('Wide'),
+    //         'Land' => $this->input->post('Land'),
+    //         'Bed' => $this->input->post('Bed'),
+    //         'Bath' => $this->input->post('Bath'),
+    //         'JenisProperti' => $this->input->post('JenisProperti'),
+    //         'Kondisi' => $this->input->post('Kondisi'),
+    //         'HargaMin' => $this->input->post('HargaMin'),
+    //         'HargaMax' => $this->input->post('HargaMax'),
+    //     );
+        
+    //     $listings = $this->ModelFlutter->Get_List_Listing_Filter($filters);
+        
+    //     echo json_encode($listings);
+    // }
+        
+    // public function Get_Spec_Listing() {
+    //     $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    //     $data = $this->ModelFlutter->Get_Spec_Listing($id);
+    //     echo json_encode($data);
+    // }
     
 }
