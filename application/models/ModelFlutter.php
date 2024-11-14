@@ -218,23 +218,128 @@ class ModelFlutter extends CI_Model
         return $query->result_array();
     }
     
-        // Count ---------------------------------------------------------------
-        
-        public function Count_Pelamar(){
-            $query = $this->db->query(" SELECT 
-                                        	COUNT(*) AS Total
-                                        FROM 
-                                            agen 
-                                        WHERE 
-                                            agen.IsAkses = 1 AND
-                                            agen.Approve = 0 AND
-                                            agen.Reject = 0;");
-            return $query->result_array();
+    // Count ---------------------------------------------------------------
+    
+    public function Count_Pelamar(){
+        $query = $this->db->query(" SELECT 
+                                    	COUNT(*) AS Total
+                                    FROM 
+                                        agen 
+                                    WHERE 
+                                        agen.IsAkses = 1 AND
+                                        agen.Approve = 0 AND
+                                        agen.Reject = 0;");
+        return $query->result_array();
+    }
+    
+    // Closing =========================================================================================================================================================================================
+    
+    public function Get_Closing_Agen($id, $limit, $offset, $search = '') {
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " AND CONCAT(closing.NamaPemilik, ' ', closing.NamaBuyer, ' ', closing.JenisProperti, ' ', closing.AlamatProperti) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
         }
+        
+        $query = $this->db->query(" SELECT 
+                                        closing.*,
+                                        agen.IdAgen AS IdAgenAgen,
+                                        agen.NamaTemp,
+                                        agen.NoTelp,
+                                        agen.Instagram
+                                    FROM 
+                                        closing
+                                        LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
+                                    WHERE 
+                                        closing.IdAgen = $id
+                                        $searchCondition
+                                    ORDER BY 
+                                        closing.TglMaksPelunasan ASC
+                                    LIMIT $limit OFFSET $offset; ");
+        return $query->result_array();
+    }
+    
+    public function Get_Closing($limit, $offset, $search = '') {
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " WHERE CONCAT(closing.NamaPemilik, ' ', closing.NamaBuyer, ' ', closing.JenisProperti, ' ', closing.AlamatProperti) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
+        }
+        
+        $query = $this->db->query(" SELECT 
+                                        closing.*,
+                                        agen.IdAgen AS IdAgenAgen,
+                                        agen.NamaTemp,
+                                        agen.NoTelp,
+                                        agen.Instagram
+                                    FROM 
+                                        closing
+                                        LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
+                                        $searchCondition
+                                    ORDER BY 
+                                        closing.TglMaksPelunasan ASC
+                                    LIMIT $limit OFFSET $offset; ");
+        return $query->result_array();
+    }
+    
+    public function Get_Detail_Closing($id) {
+        $query = $this->db->query(" SELECT 
+                                        closing.*,
+                                        agen.IdAgen AS IdAgenAgen,
+                                        agen.NamaTemp,
+                                        agen.NoTelp,
+                                        agen.Instagram
+                                    FROM 
+                                        closing
+                                        LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
+                                    WHERE 
+                                        closing.IdClosing = $id; ");
+        return $query->result_array();
+    }
+    
+    public function Get_Report_Closing($limit, $offset, $search = '') {
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
+        }
+        
+        $query = $this->db->query(" SELECT
+                                        reportsold.IdReportSold,
+                                        reportsold.IdListing As IdListingReport,
+                                        reportsold.Report,
+                                        reportsold.IsRead,
+                                        listing.IdListing,
+                                        listing.NamaListing,
+                                        listing.Kondisi,
+                                        listing.Harga,
+                                        listing.HargaSewa,
+                                        listing.Wide,
+                                        listing.Land,
+                                        listing.Priority,
+                                        listing.NoArsip,
+                                        listing.Img1
+                                    FROM
+                                        reportsold
+                                        LEFT JOIN listing ON reportsold.IdListing = listing.IdListing
+                                    WHERE
+                                        IsRead = 0
+                                        $searchCondition
+                                    ORDER BY 
+                                        IdListing DESC
+                                    LIMIT $limit OFFSET $offset; ");
+        return $query->result_array();
+    }
     
     // Report Buyer ====================================================================================================================================================================================
     
-    public function Get_Report_Buyer_Agen($id, $search = ''){
+    public function Get_Report_Buyer_Agen($id, $limit, $offset, $search = ''){
         $searchCondition = '';
         if (!empty($search)) {
             $keywords = explode(' ', $search);
@@ -251,11 +356,12 @@ class ModelFlutter extends CI_Model
                                         IdAgen = $id   
                                         $searchCondition
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer_Agen_Ready($id){
+    public function Get_Report_Buyer_Agen_Ready($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
@@ -265,11 +371,12 @@ class ModelFlutter extends CI_Model
                                         AND DATEDIFF(NOW(), TglReport)  < 20
                                         AND IsClose = 0
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer_Agen_To_Expired($id){
+    public function Get_Report_Buyer_Agen_To_Expired($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
@@ -279,11 +386,12 @@ class ModelFlutter extends CI_Model
                                         AND DATEDIFF(NOW(), TglReport)  BETWEEN 20 AND 30
                                         AND IsClose = 0
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer_Agen_Expired($id){
+    public function Get_Report_Buyer_Agen_Expired($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
@@ -293,11 +401,12 @@ class ModelFlutter extends CI_Model
                                         AND DATEDIFF(NOW(), TglReport) > 30
                                         AND IsClose = 0
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer($search = ''){
+    public function Get_Report_Buyer($limit, $offset, $search = ''){
         $searchCondition = '';
         if (!empty($search)) {
             $keywords = explode(' ', $search);
@@ -312,11 +421,12 @@ class ModelFlutter extends CI_Model
                                         reportbuyer
                                         $searchCondition
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer_Ready(){
+    public function Get_Report_Buyer_Ready($limit, $offset){
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
@@ -325,11 +435,12 @@ class ModelFlutter extends CI_Model
                                         DATEDIFF(NOW(), TglReport)  < 20
                                         AND IsClose = 0
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer_Expired(){
+    public function Get_Report_Buyer_Expired($limit, $offset){
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
@@ -338,11 +449,12 @@ class ModelFlutter extends CI_Model
                                         DATEDIFF(NOW(), TglReport) > 30
                                         AND IsClose = 0
                                     ORDER BY 
-                                        TglReport ASC; ");
+                                        TglReport ASC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
-    public function Get_Report_Buyer_To_Expired(){
+    public function Get_Report_Buyer_To_Expired($limit, $offset){
         $query = $this->db->query(" SELECT 
                                         * 
                                     FROM 
@@ -351,7 +463,8 @@ class ModelFlutter extends CI_Model
                                         DATEDIFF(NOW(), TglReport)  BETWEEN 20 AND 30
                                         AND IsClose = 0
                                     ORDER BY
-                                        DATEDIFF(NOW(), TglReport) DESC; ");
+                                        DATEDIFF(NOW(), TglReport) DESC
+                                    LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
@@ -491,7 +604,7 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
-        public function Get_List_PraListing_Admin(){
+        public function Get_List_PraListing_Admin($limit, $offset){
             $query = $this->db->query(" SELECT 
                                         	IdPraListing,
                                             NamaListing,
@@ -510,11 +623,12 @@ class ModelFlutter extends CI_Model
                                             IsDelete = 0 AND
                                             IsAdmin = 0 ORDER BY 
                                             Priority ASC, 
-                                            IdPraListing ASC; ");
+                                            IdPraListing ASC
+                                        LIMIT $limit OFFSET $offset; ");
             return $query->result_array();
         }
         
-        public function Get_List_PraListing_Manager(){
+        public function Get_List_PraListing_Manager($limit, $offset){
             $query = $this->db->query(" SELECT
                                         	IdPraListing,
                                             NamaListing,
@@ -534,7 +648,8 @@ class ModelFlutter extends CI_Model
                                             IsAdmin = 1 AND
                                             IsManager = 0 ORDER BY 
                                             Priority ASC, 
-                                            IdPraListing ASC; ");
+                                            IdPraListing ASC
+                                        LIMIT $limit OFFSET $offset; ");
             return $query->result_array();
         }
         
@@ -731,10 +846,10 @@ class ModelFlutter extends CI_Model
         
         public function Add_Listing($id){
             $query = $this->db->query("INSERT INTO `listing` (
-                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`
+                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`
                                     ) 
                                     SELECT 
-                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`
+                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`
                                     FROM `pralisting` 
                                     WHERE `IdPraListing` = $id;
                                     ");
@@ -2002,6 +2117,16 @@ class ModelFlutter extends CI_Model
                                         RentedAgen = 0 AND
                                         Pending = 0 AND
                                         DAY(TglInput) = DAY(CURDATE());");
+        return $query->result_array();
+    }
+    
+    public function Count_Report_Closing(){
+        $query = $this->db->query(" SELECT 
+                                    	COUNT(*) AS Total
+                                    FROM 
+                                    	reportsold
+                                    WHERE
+                                        IsRead = 0;");
         return $query->result_array();
     }
         
