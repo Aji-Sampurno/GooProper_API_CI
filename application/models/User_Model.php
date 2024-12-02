@@ -149,7 +149,8 @@ class User_Model extends CI_Model
                                     LEFT JOIN 
                                     	agen ON infoproperty.IdAgen = agen.IdAgen
                                     WHERE 
-                                    	infoproperty.TglInput BETWEEN '2024-10-01' AND '2024-10-31'");
+				    	MONTH(infoproperty.TglInput) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+					AND YEAR(infoproperty.TglInput) = YEAR(CURDATE())");
         return $query->result_array();
     }
     
@@ -1518,7 +1519,10 @@ class User_Model extends CI_Model
                                     LEFT JOIN 
                                     	vendor USING(IdVendor) 
                                     WHERE 
-                                    	listing.TglInput BETWEEN '2024-10-01' AND '2024-10-31' AND listing.IsDouble = 0 AND listing.IsDelete = 0");
+                                    	MONTH(listing.TglInput) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+					AND YEAR(listing.TglInput) = YEAR(CURDATE()) 
+					AND listing.IsDouble = 0 
+	  				AND listing.IsDelete = 0");
         return $query->result_array();
     }
     
@@ -1537,7 +1541,10 @@ class User_Model extends CI_Model
                                         INNER JOIN agen ON listing.IdAgen = agen.IdAgen 
                                         LEFT JOIN vendor USING(IdVendor) 
                                     WHERE 
-                                        listing.TglInput BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND CURRENT_DATE() AND listing.IsDouble = 0 AND listing.IsDelete = 0");
+                                        listing.TglInput BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) 
+					AND CURRENT_DATE() 
+     					AND listing.IsDouble = 0 
+	  				AND listing.IsDelete = 0");
         return $query->result_array();
     }
     
@@ -1561,7 +1568,10 @@ class User_Model extends CI_Model
                                     LEFT JOIN 
                                     	vendor USING(IdVendor) 
                                     WHERE 
-                                    	pralisting.TglInput BETWEEN '2024-10-01' AND '2024-10-31' AND pralisting.IsCekLokasi = 0");
+				    	MONTH(pralisting.TglInput) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+					AND YEAR(pralisting.TglInput) = YEAR(CURDATE()) 
+					AND pralisting.IsAdmin = 0
+     					AND pralisting.IsManager = 0");
         return $query->result_array();
     }
     
@@ -1581,7 +1591,9 @@ class User_Model extends CI_Model
                                     JOIN
                                         agen ON listing.IdAgen = agen.IdAgen
                                     WHERE 
-                                    	MONTH(susulan.TglInput) <> MONTH(listing.TglInput) AND susulan.TglInput BETWEEN '2024-10-01' AND '2024-10-31'");
+                                    	MONTH(susulan.TglInput) <> MONTH(listing.TglInput)
+				     	AND MONTH(susulan.TglInput) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+					AND YEAR(susulan.TglInput) = YEAR(CURDATE())");
         return $query->result_array();
     }
     	
