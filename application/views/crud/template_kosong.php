@@ -62,241 +62,6 @@
                                             <img src="<?php echo base_url('assets/img/LOGO_GP_EXCLUSIVE.png'); ?>" alt="Ikon"  style="width: auto; height: 80px;" />
                                         </div>
                                         <div style="background: rgb(85,3,118); border: 1px solid black; position: absolute; height: 200px; width: 100%; bottom: 0px; left: 0px; box-sizing: border-box; border: 5px solid rgb(255,242,0);">
-                                            <div style="background: rgb(85,3,118,0); position: absolute; height: 200px; width: 35%; bottom: 0px; left: 45%; border-radius: 0px; display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; padding: 10px;">
-                                                <div style="width: 100%;">
-                                                    <?php 
-                                                        $rh = $baris->RangeHarga;
-                                                        $jp = $baris->JenisProperti;
-                                                        if (trim($jp) == 'Rukost') {
-                                                            function formatRangeHarga($rh) {
-                                                                if ($rh >= 100000000000000) {
-                                                                    $nilai = $rh / 1000000000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' T';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' T';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' T';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' T';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' T';
-                                                                    }
-                                                                } elseif ($rh >= 10000000000000) {
-                                                                    $nilai = $rh / 1000000000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' T';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' T';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' T';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' T';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' T';
-                                                                    }
-                                                                } elseif ($rh >= 1000000000000) {
-                                                                    $nilai = $rh / 1000000000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' T';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' T';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' T';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' T';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' T';
-                                                                    }
-                                                                } elseif ($rh >= 100000000000) {
-                                                                    $nilai = $rh / 1000000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' M';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' M';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' M';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' M';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' M';
-                                                                    }
-                                                                } elseif ($rh >= 10000000000) {
-                                                                    $nilai = $rh / 1000000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' M';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' M';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' M';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' M';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' M';
-                                                                    }
-                                                                } elseif ($rh >= 1000000000) {
-                                                                    $nilai = $rh / 1000000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' M';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' M';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' M';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' M';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' M';
-                                                                    }
-                                                                } elseif ($rh >= 100000000) {
-                                                                    $nilai = $rh / 1000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' Jt';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' Jt';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                    }
-                                                                } elseif ($rh >= 10000000) {
-                                                                    $nilai = $rh / 1000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' Jt';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' Jt';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                    }
-                                                                } elseif ($rh >= 1000000) {
-                                                                    $nilai = $rh / 1000000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' Jt';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' Jt';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' Jt';
-                                                                    }
-                                                                } elseif ($rh >= 100000) {
-                                                                    $nilai = $rh / 1000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' Ribu';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' Ribu';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                    }
-                                                                } elseif ($rh >= 10000) {
-                                                                    $nilai = $rh / 1000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' Ribu';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' Ribu';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                    }
-                                                                } elseif ($rh >= 1000) {
-                                                                    $nilai = $rh / 1000;
-                                                                    $string_nilai = strval($nilai);
-                                                                    $parts = explode('.', $string_nilai);
-                                                                    if (isset($parts[1])) {
-                                                                        $panjang_desimal = strlen($parts[1]);
-                                                                        if ($panjang_desimal == 0) {
-                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                        } elseif ($panjang_desimal == 2) {
-                                                                            return number_format($nilai, 2, ',', '') . ' Ribu';
-                                                                        } elseif ($panjang_desimal == 1) {
-                                                                            return number_format($nilai, 1, ',', '') . ' Ribu';
-                                                                        } else {
-                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                        }
-                                                                    } else {
-                                                                        return number_format($nilai, 0, ',', '') . ' Ribu';
-                                                                    }
-                                                                } else {
-                                                                    return number_format($rh);
-                                                                }
-                                                            }   
-                                                            echo '<div style="display: inline-block; background: rgb(255,242,0); border: 2px solid rgb(255,0,0); text-align: center;">
-                                                                        <h1 style="color: rgb(51,3,118); font-size: 130%; margin: 5px;">Harga Sewa Perbulan</h1>
-                                                                        <h1 style="color: rgb(51,3,118); font-size: 130%; margin: 5px;">Rp. ' . formatRangeHarga($rh) . '</h1>
-                                                                    </div>';
-                                                        }
-                                                    ?>
-                                                </div>
-                                            </div>
                                             <div style="background: rgb(85,3,118,0); position: absolute; height: 200px; width: 740px; bottom: 0px; left: 430px; border-radius: 0px; display: flex; justify-content: space-between; box-sizing: border-box; padding: 10px;">
                                                 <div style="width: 100%; text-align: left; margin-right: 5px">
                                                     <?php $kondisi = $baris->Kondisi;
@@ -1241,6 +1006,241 @@
                                                             }
                                                         ?>
                                                     </h1>
+                                                </div>
+                                                <div style="background: rgb(85,3,118,0); position: absolute; height: 200px; width: 35%; bottom: 0px; left: 45%; border-radius: 0px; display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; padding: 10px;">
+                                                    <div style="width: 100%;">
+                                                        <?php 
+                                                            $rh = $baris->RangeHarga;
+                                                            $jp = $baris->JenisProperti;
+                                                            if (trim($jp) == 'Rukost') {
+                                                                function formatRangeHarga($rh) {
+                                                                    if ($rh >= 100000000000000) {
+                                                                        $nilai = $rh / 1000000000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' T';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' T';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' T';
+                                                                        }
+                                                                    } elseif ($rh >= 10000000000000) {
+                                                                        $nilai = $rh / 1000000000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' T';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' T';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' T';
+                                                                        }
+                                                                    } elseif ($rh >= 1000000000000) {
+                                                                        $nilai = $rh / 1000000000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' T';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' T';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' T';
+                                                                        }
+                                                                    } elseif ($rh >= 100000000000) {
+                                                                        $nilai = $rh / 1000000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' M';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' M';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' M';
+                                                                        }
+                                                                    } elseif ($rh >= 10000000000) {
+                                                                        $nilai = $rh / 1000000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' M';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' M';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' M';
+                                                                        }
+                                                                    } elseif ($rh >= 1000000000) {
+                                                                        $nilai = $rh / 1000000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' M';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' M';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' M';
+                                                                        }
+                                                                    } elseif ($rh >= 100000000) {
+                                                                        $nilai = $rh / 1000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' Jt';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                        }
+                                                                    } elseif ($rh >= 10000000) {
+                                                                        $nilai = $rh / 1000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' Jt';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                        }
+                                                                    } elseif ($rh >= 1000000) {
+                                                                        $nilai = $rh / 1000000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' Jt';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                        }
+                                                                    } elseif ($rh >= 100000) {
+                                                                        $nilai = $rh / 1000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' Ribu';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                        }
+                                                                    } elseif ($rh >= 10000) {
+                                                                        $nilai = $rh / 1000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' Ribu';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                        }
+                                                                    } elseif ($rh >= 1000) {
+                                                                        $nilai = $rh / 1000;
+                                                                        $string_nilai = strval($nilai);
+                                                                        $parts = explode('.', $string_nilai);
+                                                                        if (isset($parts[1])) {
+                                                                            $panjang_desimal = strlen($parts[1]);
+                                                                            if ($panjang_desimal == 0) {
+                                                                                return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 2) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 1) {
+                                                                                return number_format($nilai, 1, ',', '') . ' Ribu';
+                                                                            } else {
+                                                                                return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            }
+                                                                        } else {
+                                                                            return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                        }
+                                                                    } else {
+                                                                        return number_format($rh);
+                                                                    }
+                                                                }   
+                                                                echo '<div style="display: inline-block; background: rgb(255,242,0); border: 2px solid rgb(255,0,0); text-align: center;">
+                                                                            <h1 style="color: rgb(51,3,118); font-size: 130%; margin: 5px;">Harga Sewa Perbulan</h1>
+                                                                            <h1 style="color: rgb(51,3,118); font-size: 130%; margin: 5px;">Rp. ' . formatRangeHarga($rh) . '</h1>
+                                                                        </div>';
+                                                            }
+                                                        ?>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div style="position: absolute; top: 30px; right: 30px;">
