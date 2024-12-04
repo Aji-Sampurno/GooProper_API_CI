@@ -60,6 +60,18 @@ class ModelFlutter extends CI_Model
         }
     }
     
+    public function Login_Kode($username, $kode) {
+        $this->db->where('Username', $username);
+        $this->db->where('KodeVerifikasi', $kode);
+        $query = $this->db->get('agen');
+        
+        if ($query->num_rows() == 1) {
+            return $query->row_array();
+        } else {
+            return false;
+        }
+    }
+    
     public function Check_Login($idAgen) {
 
         $this->db->where('IdAgen', $idAgen);
@@ -167,9 +179,40 @@ class ModelFlutter extends CI_Model
         return $query->result_array();
     }
     
+    public function Get_Agen_Kode_List($limit, $offset, $search = '') {
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " AND agen.NamaTemp LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
+        }
+    
+        $query = $this->db->query("
+            SELECT
+                agen.IdAgen,
+                agen.NamaTemp,
+                agen.NoTelp,
+                agen.Photo,
+                agen.Username,
+                agen.KodeVerifikasi
+            FROM
+                agen
+            WHERE
+                agen.IsAkses = 1
+                AND agen.Approve = 1
+                AND agen.IsAktif = 1
+                $searchCondition
+            LIMIT ? OFFSET ?", array($limit, $offset)
+            );
+            
+        return $query->result_array();
+    }
+    
     public function Get_Detail_Agen($id) {
         $query = $this->db->query(" SELECT 
                                         agen.*,
+                                        karyawan.NoKaryawan,
                                         COUNT(listing.IdListing) AS listing,
                                         COUNT(CASE WHEN listing.Kondisi = 'Jual' OR listing.Kondisi = 'Jual/Sewa' THEN 1 END) AS jual,
                                         COUNT(CASE WHEN listing.Kondisi = 'Sewa' THEN 1 END) AS sewa,
@@ -177,9 +220,10 @@ class ModelFlutter extends CI_Model
                                         COUNT(CASE WHEN listing.Rented = 1 OR listing.RentedAgen = 1 THEN 1 END) AS tersewa
                                     FROM 
                                         agen
-                                        LEFT JOIN listing ON agen.IdAgen = listing.IdAgen 
-                                        AND listing.IsDouble = 0 
+                                        LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
+                                        AND listing.IsDouble = 0
                                         AND listing.IsDelete = 0
+                                        LEFT JOIN karyawan ON agen.idAgen = karyawan.idAgen
                                     WHERE
                                         agen.IsAkses = 1 
                                         AND agen.Approve = 1 
@@ -349,59 +393,103 @@ class ModelFlutter extends CI_Model
         }
             
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        IdAgen = $id   
+                                        reportbuyer.IdAgen = $id
                                         $searchCondition
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
     public function Get_Report_Buyer_Agen_Ready($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        IdAgen = $id
-                                        AND DATEDIFF(NOW(), TglReport)  < 20
-                                        AND IsClose = 0
+                                        reportbuyer.IdAgen = $id
+                                        AND DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
+                                        AND reportbuyer.IsClose = 0
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
     public function Get_Report_Buyer_Agen_To_Expired($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        IdAgen = $id
-                                        AND DATEDIFF(NOW(), TglReport)  BETWEEN 20 AND 30
-                                        AND IsClose = 0
+                                        reportbuyer.IdAgen = $id
+                                        AND DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
+                                        AND reportbuyer.IsClose = 0
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
     public function Get_Report_Buyer_Agen_Expired($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        IdAgen = $id
-                                        AND DATEDIFF(NOW(), TglReport) > 30
-                                        AND IsClose = 0
+                                        reportbuyer.IdAgen = $id
+                                        AND DATEDIFF(NOW(), reportbuyer.TglReport) > 30
+                                        AND reportbuyer.IsClose = 0
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
@@ -416,54 +504,98 @@ class ModelFlutter extends CI_Model
         }
             
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
                                         reportbuyer
                                         $searchCondition
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
     public function Get_Report_Buyer_Ready($limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        DATEDIFF(NOW(), TglReport)  < 20
-                                        AND IsClose = 0
+                                        DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
+                                        AND reportbuyer.IsClose = 0
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
     public function Get_Report_Buyer_Expired($limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        DATEDIFF(NOW(), TglReport) > 30
-                                        AND IsClose = 0
+                                        DATEDIFF(NOW(), reportbuyer.TglReport) > 30
+                                        AND reportbuyer.IsClose = 0
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY 
-                                        TglReport ASC
+                                        reportbuyer.TglReport ASC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
     
     public function Get_Report_Buyer_To_Expired($limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        * 
+                                        reportbuyer.IdReportBuyer,
+                                        reportbuyer.IdAgen,
+                                        reportbuyer.NamaBuyer,
+                                        reportbuyer.TelpBuyer,
+                                        reportbuyer.JenisProperti,
+                                        reportbuyer.AlamatProperti,
+                                        reportbuyer.SumberInformasi,
+                                        reportbuyer.StatusFollowUp,
+                                        reportbuyer.TglReport,
+                                        reportbuyer.IsClose
                                     FROM 
-                                        reportbuyer 
+                                        reportbuyer
                                     WHERE 
-                                        DATEDIFF(NOW(), TglReport)  BETWEEN 20 AND 30
-                                        AND IsClose = 0
+                                        DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
+                                        AND reportbuyer.IsClose = 0
+                                    GROUP BY
+                                    	reportbuyer.IdReportBuyer
                                     ORDER BY
-                                        DATEDIFF(NOW(), TglReport) DESC
+                                        DATEDIFF(NOW(), reportbuyer.TglReport) DESC
                                     LIMIT $limit OFFSET $offset; ");
         return $query->result();
     }
@@ -480,6 +612,51 @@ class ModelFlutter extends CI_Model
                                         LEFT JOIN agen ON reportbuyer.IdAgen = agen.IdAgen
                                     WHERE 
                                         reportbuyer.IdReportBuyer = $id; ");
+        return $query->result();
+    }
+    
+    // Report Listing ==================================================================================================================================================================================
+    
+    public function Get_Report_Listing_Buyer_Agen($idAgen, $limit, $offset, $search = ''){
+        $searchCondition = '';
+        if (!empty($search)) {
+            $keywords = explode(' ', $search);
+            foreach ($keywords as $keyword) {
+                $searchCondition .= " AND CONCAT(reportlisting.NamaBuyer, ' ', listing.NamaListing, ' ', listing.AlamatTemplate) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+            }
+        }
+        
+        $query = $this->db->query(" SELECT
+                                    	reportlisting.*,
+                                        listing.NamaListing,
+                                        listing.AlamatTemplate,
+                                        listing.Img1
+                                    FROM
+                                    	reportlisting
+                                        LEFT JOIN listing ON reportlisting.IdListing = listing.IdListing
+                                    WHERE
+                                    	(IdAgenListing = $idAgen OR IdAgenCoListing = $idAgen OR IdAgenBuyer = $idAgen)
+                                        $searchCondition
+                                    ORDER BY 
+                                    	TglUpdateReport DESC
+                                    LIMIT $limit OFFSET $offset; ");
+        return $query->result();
+    }
+    
+    public function Get_Detail_Report_Listing_Buyer($id){
+        $query = $this->db->query(" SELECT 
+                                        reportlisting.*,
+                                        listing.*,
+                                        agen.IdAgen AS IdAgenAgen,
+                                        agen.NamaTemp,
+                                        agen.NoTelp,
+                                        agen.Instagram
+                                    FROM 
+                                        reportlisting
+                                        LEFT JOIN listing ON reportlisting.IdListing = listing.IdListing
+                                        LEFT JOIN agen ON reportlisting.IdAgenBuyer = agen.IdAgen
+                                    WHERE 
+                                        IdReportListing = $id; ");
         return $query->result();
     }
     
@@ -796,7 +973,21 @@ class ModelFlutter extends CI_Model
         public function Get_Lampiran_PraListing($id){
             $query = $this->db->query(" SELECT 
                                         	pralisting.*,
-                                            penilaian.*,
+                                            penilaian.IdPenilaian,
+                                            penilaian.IdPralisting AS IdPraListingPenilaian,
+                                            penilaian.IdListing,
+                                            penilaian.AksesJalanAgen,
+                                            penilaian.AksesJalanOfficer,
+                                            penilaian.AksesJalanManager,
+                                            penilaian.KondisiAgen,
+                                            penilaian.KondisiOfficer,
+                                            penilaian.KondisiManager,
+                                            penilaian.AreaSekitarAgen,
+                                            penilaian.AreaSekitarOfficer,
+                                            penilaian.AreaSekitarManager,
+                                            penilaian.HargaAgen,
+                                            penilaian.HargaOfficer,
+                                            penilaian.HargaManager,
                                             vendor.IdVendor,
                                             vendor.NamaLengkap AS NamaVendor,
                                             vendor.NoTelp AS NoTelpVendor,
@@ -808,13 +999,18 @@ class ModelFlutter extends CI_Model
                                             agen2.NamaTemp AS NamaTempCo,
                                             agen2.NoTelp AS NoTelpCo,
                                             agen2.Instagram AS InstagramCo,
+                                            reportvendor.IdReport,
+                                            reportvendor.IdPraListing AS IdPraListingReportVendor,
+                                            reportvendor.Repost,
+                                            reportvendor.Catatan,
                                             template.IdTemplate,
-                                            template.IdListing,
+                                            template.IdListing AS IdListingTemplate,
                                             template.Template,
                                             template.TemplateBlank
                                         FROM 
                                             `pralisting`
                                             LEFT JOIN penilaian ON pralisting.IdPraListing = penilaian.IdPraListing
+                                            LEFT JOIN reportvendor ON pralisting.IdPraListing = reportvendor.IdPraListing
                                         	LEFT JOIN vendor USING(IdVendor)
                                             LEFT JOIN agen AS agen1 ON pralisting.IdAgen = agen1.IdAgen
                                             LEFT JOIN agen AS agen2 ON pralisting.IdAgenCo = agen2.IdAgen
@@ -1690,6 +1886,37 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
+        public function Get_List_Listing_Selection($limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
+            $query = $this->db->query("
+                SELECT 
+                    *
+                FROM 
+                    listing
+                WHERE
+                    IsDouble = 0 AND 
+                    IsDelete = 0 AND 
+                    Sold = 0 AND 
+                    SoldAgen = 0 AND 
+                    Rented = 0 AND 
+                    RentedAgen = 0 AND
+                    Pending = 0 
+                    $searchCondition
+                ORDER BY
+                    IdListing DESC
+                LIMIT ? OFFSET ?
+            ", array($limit, $offset));
+        
+            return $query->result_array();
+        }
+        
         public function Get_List_Susulan($id, $limit, $offset){
             
             $query = $this->db->query(" SELECT 
@@ -1792,6 +2019,7 @@ class ModelFlutter extends CI_Model
                                             listing.Img10,
                                             listing.Img11,
                                             listing.Img12,
+                                            listing.Video,
                                             template.IdTemplate,
                                             template.IdListing,
                                             template.Template,
