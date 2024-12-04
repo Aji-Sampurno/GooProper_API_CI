@@ -27,18 +27,7 @@ class ApiFlutter extends CI_Controller
             return;
         }
     
-        $username = $input['Username'];
-        $password = $input['Password'];
-    
-        if (empty($username) || empty($password)) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(400)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Username dan Password']));
-            return;
-        }
-    
-        $userAdmin = $this->ModelFlutter->Login_Admin($username, $password);
+        $userAdmin = $this->ModelFlutter->Login_Admin($input['Username'], $input['Password']);
     
         if ($userAdmin) {
             $this->output
@@ -46,15 +35,28 @@ class ApiFlutter extends CI_Controller
                 ->set_status_header(200)
                 ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
         } else {
-            $userAgen = $this->ModelFlutter->Login_Agen($username, $password);
+            $userAgen = $this->ModelFlutter->Login_Agen($input['Username'], $input['Password']);
             
             if ($userAgen) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['status' => 'success', 'user' => $userAgen]));
+                $idAgen = $userAgen['IdAgen'];
+                
+                $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                $kodeBaru = 'agen' . $kodeRandom;
+                
+                $data = [
+                    'Password' => md5($kodeBaru),
+                    'KodeVerifikasi' => $kodeRandom,
+                ];
+        
+                $where = array('IdAgen' => $idAgen,);
+                $this->ModelFlutter->Update_Data($where,$data,'agen');
+                
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user' => $userAgen]));
             } else {
-                $userCustomer = $this->ModelFlutter->Login_Customer($username, $password);
+                $userCustomer = $this->ModelFlutter->Login_Customer($input['Username'], $input['Password']);
                 
                 if ($userCustomer) {
                 $this->output
@@ -105,6 +107,46 @@ class ApiFlutter extends CI_Controller
                 ->set_content_type('application/json')
                 ->set_status_header(401)
                 ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+        }
+    }
+    
+    public function Login_Kode() {
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+        
+        if (!isset($input['Username']) || !isset($input['Kode'])) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(400)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Username dan KodeVerifikasi']));
+            return;
+        }
+        
+        $userAgen = $this->ModelFlutter->Login_Kode($input['Username'], $input['Kode']);
+        
+        if ($userAgen) {
+            $idAgen = $userAgen['IdAgen'];
+            
+            $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $kodeBaru = 'agen' . $kodeRandom;
+            
+            $data = [
+                'Password' => md5($kodeBaru),
+                'KodeVerifikasi' => $kodeRandom,
+            ];
+            
+            $where = array('IdAgen' => $idAgen,);
+            $this->ModelFlutter->Update_Data($where,$data,'agen');
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode(['status' => 'success', 'user' => $userAgen]));
+        } else {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(401)
+                ->set_output(json_encode(['status' => 'fail', 'message' => 'Username atau Kode Salah']));
         }
     }
     
@@ -282,6 +324,16 @@ class ApiFlutter extends CI_Controller
         echo json_encode($data);
     }
     
+    public function Get_Agen_Kode_List(){
+        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+        $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+        $search = $this->input->get('search');
+    
+        $data = $this->ModelFlutter->Get_Agen_Kode_List($limit, $offset, $search);
+    
+        echo json_encode($data);
+    }
+    
     public function Get_Detail_Agen(){
         $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $data = $this->ModelFlutter->Get_Detail_Agen($id);
@@ -314,6 +366,7 @@ class ApiFlutter extends CI_Controller
             'Approve'=> 1,
             'IsAktif'=> 1,
             'IsLogin'=> 1,
+            'NoTelpTemp'=> $input['NoTelpTemp'],
             'NamaTemp'=> $input['NamaTemp'],
             'KodeAgen'=> $input['KodeAgen'],
             'KotaAgen'=> $input['KotaAgen'],
@@ -1175,6 +1228,108 @@ class ApiFlutter extends CI_Controller
                 ->set_output(json_encode($response));
         }
         
+    // Report Listing ================================================================================================================================================================================
+    
+        // Add -----------------------------------------------------------------
+        
+        public function Add_Report_Listing_Buyer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            if (!isset($input['IdListing'], $input['IdAgenListing'], $input['IdAgenCoListing'], $input['IdAgenBuyer'], $input['NamaBuyer'], $input['TelpBuyer'], $input['StatusReport'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+                return;
+            }
+            
+            $data = [
+                'IdListing' => $input['IdListing'],
+                'IdAgenListing' => $input['IdAgenListing'],
+                'IdAgenCoListing' => $input['IdAgenCoListing'],
+                'IdAgenBuyer' => $input['IdAgenBuyer'],
+                'NamaBuyer' => $input['NamaBuyer'],
+                'TelpBuyer' => $input['TelpBuyer'],
+                'StatusReport' => $input['StatusReport']
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'reportlisting');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Report Listing Buyer Gagal']));
+            }
+        }
+        
+        // Update --------------------------------------------------------------
+        
+        public function Update_Report_Listing_Buyer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            if (!isset($input['StatusReport'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+                return;
+            }
+            
+            date_default_timezone_set('Asia/Jakarta');
+            
+            $data = [
+                'StatusReport' => $input['StatusReport']
+            ];
+            
+            $where = array('IdReportListing'=> $input['IdReportListing'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'reportlisting');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Report Listing Buyer Gagal']));
+            }
+        }
+        
+        // Get -----------------------------------------------------------------
+        
+        public function Get_Report_Listing_Buyer_Agen() {
+            $idAgen = filter_var($_GET['IdAgen'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $search = $this->input->get('search');
+            
+            $data = $this->ModelFlutter->Get_Report_Listing_Buyer_Agen($idAgen, $limit, $offset, $search);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode($data));
+        }
+        
+        public function Get_Detail_Report_Listing_Buyer() {
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $status_data = $this->ModelFlutter->Get_Detail_Report_Listing_Buyer($id);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($status_data));
+        }
+        
     // Report Vendor =================================================================================================================================================================================
     
         // Add -----------------------------------------------------------------
@@ -1522,6 +1677,8 @@ class ApiFlutter extends CI_Controller
             $Selfie = $input['Selfie'];
             $NoKtp = $input['NoKtp'];
             $ImgKtp = $input['ImgKtp'];
+            $Area = $input['Area'];
+            $InUse = $input['InUse'];
             
             $AksesJalanAgen = $input['AksesJalanAgen'];
             $KondisiAgen = $input['KondisiAgen'];
@@ -1648,6 +1805,8 @@ class ApiFlutter extends CI_Controller
                     'NoKtp' => $NoKtp,
                     'ImgKtp' => $ImgKtp,
                     'Pending' => 0,
+                    'InUse' => $InUse,
+                    'Area' => $Area,
                 ];
                 
                 $this->db->insert('pralisting',$data);
@@ -1802,6 +1961,8 @@ class ApiFlutter extends CI_Controller
             $Selfie = $input['Selfie'];
             $NoKtp = $input['NoKtp'];
             $ImgKtp = $input['ImgKtp'];
+            $Area = $input['Area'];
+            $InUse = $input['InUse'];
             
             $AksesJalanAgen = $input['AksesJalanAgen'];
             $KondisiAgen = $input['KondisiAgen'];
@@ -1928,6 +2089,8 @@ class ApiFlutter extends CI_Controller
                     'NoKtp' => $NoKtp,
                     'ImgKtp' => $ImgKtp,
                     'Pending' => 0,
+                    'InUse' => $InUse,
+                    'Area' => $Area,
                 ];
                 
                 $this->db->insert('pralisting',$data);
@@ -2096,6 +2259,8 @@ class ApiFlutter extends CI_Controller
             $Selfie = $input['Selfie'];
             $NoKtp = $input['NoKtp'];
             $ImgKtp = $input['ImgKtp'];
+            $Area = $input['Area'];
+            $InUse = $input['InUse'];
             
             $AksesJalanAgen = $input['AksesJalanAgen'];
             $KondisiAgen = $input['KondisiAgen'];
@@ -2222,6 +2387,8 @@ class ApiFlutter extends CI_Controller
                     'NoKtp' => $NoKtp,
                     'ImgKtp' => $ImgKtp,
                     'Pending' => 0,
+                    'InUse' => $InUse,
+                    'Area' => $Area,
                 ];
                 
                 $this->db->insert('pralisting',$data);
@@ -2366,11 +2533,26 @@ class ApiFlutter extends CI_Controller
                             $updatePenilaian = $this->ModelFlutter->Update_Data($whereId,$PenilaianId,'penilaian');
                             
                             if($updatePenilaian) {
-                                $this->db->trans_commit();
+                                $repost = [
+                                    'IdListing' => $newId,
+                                ];
+                                
+                                $whereId = array('IdPraListing' => $input['IdPraListing'],);
+                                $updateRepost = $this->ModelFlutter->Update_Data($whereId,$repost,'reportvendor');
+                                
+                                if($updateRepost) {
+                                    $this->db->trans_commit();
+                                        $this->output
+                                            ->set_content_type('application/json')
+                                            ->set_status_header(200)
+                                            ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                } else {
+                                    $this->db->trans_rollback();
                                     $this->output
                                         ->set_content_type('application/json')
-                                        ->set_status_header(200)
-                                        ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                        ->set_status_header(500)
+                                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Report Vendor Gagal Diupdate']));
+                                }
                             } else {
                                 $this->db->trans_rollback();
                                 $this->output
@@ -2550,6 +2732,7 @@ class ApiFlutter extends CI_Controller
                 'Provinsi' => $input['Provinsi'],
                 'Wilayah' => $input['Wilayah'],
                 'Daerah' => $input['Daerah'],
+                'Area' => $input['Area'],
             ];
             $where = array('IdPralisting'=> $IdPralisting,);
             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
@@ -2585,11 +2768,27 @@ class ApiFlutter extends CI_Controller
             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
             
             if($insert_id) {
-                $this->db->trans_commit();
+                
+                $repost = [
+                    'IdPraListing' => $input['IdPraListing'],
+                    'Repost' => $input['Repost'],
+                ];
+                
+                $insert_repost = $this->ModelFlutter->Input_Data($repost, 'reportvendor');
+                
+                if($insert_repost) {
+                    $this->db->trans_commit();
                     $this->output
                         ->set_content_type('application/json')
                         ->set_status_header(200)
                         ->set_output(json_encode(['status' => 'success', 'Tambah Link Rumah123 Pra-Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Catatan Vendor Pra-Listing Gagal']));
+                }
             } else {
                 $this->db->trans_rollback();
                 $this->output
@@ -2662,11 +2861,25 @@ class ApiFlutter extends CI_Controller
                         $updatePenilaian = $this->ModelFlutter->Update_Data($whereId,$PenilaianId,'penilaian');
                         
                         if($updatePenilaian) {
-                            $this->db->trans_commit();
+                            $repost = [
+                                'IdListing' => $newId,
+                            ];
+                            $whereId = array('IdPraListing' => $input['IdPraListing'],);
+                            $updateRepost = $this->ModelFlutter->Update_Data($whereId,$repost,'reportvendor');
+                            
+                            if($updateRepost) {
+                                $this->db->trans_commit();
+                                    $this->output
+                                        ->set_content_type('application/json')
+                                        ->set_status_header(200)
+                                        ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                            } else {
+                                $this->db->trans_rollback();
                                 $this->output
                                     ->set_content_type('application/json')
-                                    ->set_status_header(200)
-                                    ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                    ->set_status_header(500)
+                                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Report Vendor Gagal Diupdate']));
+                            }
                         } else {
                             $this->db->trans_rollback();
                             $this->output
@@ -2921,6 +3134,7 @@ class ApiFlutter extends CI_Controller
                 'HargaSewa'=> $HargaSewa,
                 'RangeHarga'=> $RangeHarga,	
                 'Fee'=> $Fee,
+                'Area' => $input['Area'],
             ];
             $where = array('IdPralisting'=> $IdPralisting,);
             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
@@ -3158,6 +3372,52 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Update_Rumah123_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $IdPralisting = $input['IdPraListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Akun1' => $input['Akun1'],
+                'Akun2' => $input['Akun2'],
+            ];
+            $where = array('IdPralisting'=> $IdPralisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pralisting');
+            
+            if($insert_id) {
+                
+                $repost = [
+                    'Repost' => $input['Repost'],
+                ];
+            
+                $where = array('IdPraListing'=> $input['IdPraListing'],);
+                $insert_repost = $this->ModelFlutter->Update_Data($where,$repost,'reportvendor');
+                
+                if($insert_repost) {
+                    $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah Link Rumah123 Pra-Listing Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Catatan Vendor Pra-Listing Gagal']));
+                }
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Link Rumah123 Pra-Listing Gagal']));
+            }
+        }
+        
         // Get -----------------------------------------------------------------
         
         public function Get_List_PraListing_Admin(){
@@ -3347,6 +3607,7 @@ class ApiFlutter extends CI_Controller
                 'Provinsi' => $input['Provinsi'],
                 'Wilayah' => $input['Wilayah'],
                 'Daerah' => $input['Daerah'],
+                'Area' => $input['Area'],
             ];
             $where = array('IdListing'=> $Idlisting,);
             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
@@ -3393,6 +3654,36 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Link Rumah123 Listing Gagal']));
+            }
+        }
+        
+        public function Add_Video_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $Idlisting = $input['IdListing'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Video' => $input['Video'],
+                'LinkYoutube' => $input['LinkYoutube'],
+            ];
+            $where = array('IdListing'=> $Idlisting,);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if($insert_id) {
+                $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Tambah Video Listing Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Video Listing Gagal']));
             }
         }
         
@@ -3855,6 +4146,7 @@ class ApiFlutter extends CI_Controller
                 'RangeHarga'=> $RangeHarga,	
                 'Fee'=> $Fee,	
                 'Pending'=> 1,
+                'Area' => $input['Area'],
             ];
             $where = array('IdListing'=> $Idlisting,);
             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
@@ -4407,6 +4699,16 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Pending($limit, $offset);
+            echo json_encode($data);
+        }
+        
+        public function Get_List_Listing_Selection() {
+            $search = $this->input->get('search');
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            
+            $data = $this->ModelFlutter->Get_List_Listing_Selection($limit, $offset, $search);
+            
             echo json_encode($data);
         }
         
@@ -4994,7 +5296,10 @@ class ApiFlutter extends CI_Controller
         public function Get_Detail_Primary() {
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Detail_Primary($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Image_Primary() {
@@ -5242,6 +5547,41 @@ class ApiFlutter extends CI_Controller
     //             ->set_content_type('application/json')
     //             ->set_status_header(500)
     //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Password']));
+    //     }
+    // }
+    
+    // public function Add_Report_Listing() {
+    //     $inputJSON = file_get_contents('php://input');
+    //     $input = json_decode($inputJSON, TRUE);
+        
+    //     if (!isset($input['IdListing'], $input['IdAgenListing'], $input['IdAgenCoListing'], $input['IdAgenBuyer'], $input['StatusReport'])) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(400)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Data tidak lengkap']));
+    //         return;
+    //     }
+        
+    //     $data = [
+    //         'IdListing' => $input['IdListing'],
+    //         'IdAgenListing' => $input['IdAgenListing'],
+    //         'IdAgenCoListing' => $input['IdAgenCoListing'],
+    //         'IdAgenBuyer' => $input['IdAgenBuyer'],
+    //         'StatusReport' => $input['StatusReport']
+    //     ];
+        
+    //     $insert_id = $this->ModelFlutter->Input_Data($data, 'reportlisting');
+        
+    //     if($insert_id) {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(200)
+    //             ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+    //     } else {
+    //         $this->output
+    //             ->set_content_type('application/json')
+    //             ->set_status_header(500)
+    //             ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Report Buyer Gagal']));
     //     }
     // }
     
