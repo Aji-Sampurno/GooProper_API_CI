@@ -2547,11 +2547,26 @@ class ApiFlutter extends CI_Controller
                                             ->set_status_header(200)
                                             ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
                                 } else {
-                                    $this->db->trans_rollback();
-                                    $this->output
-                                        ->set_content_type('application/json')
-                                        ->set_status_header(500)
-                                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Report Vendor Gagal Diupdate']));
+                                    $repost = [
+                                        'IdPraListing' => $input['IdPraListing'],
+                                        'IdListing' => $newId,
+                                    ];
+                                    
+                                    $insert_repost = $this->ModelFlutter->Input_Data($repost, 'reportvendor');
+                                    
+                                    if($insert_repost) {
+                                        $this->db->trans_commit();
+                                        $this->output
+                                            ->set_content_type('application/json')
+                                            ->set_status_header(200)
+                                            ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                    } else {
+                                        $this->db->trans_rollback();
+                                        $this->output
+                                            ->set_content_type('application/json')
+                                            ->set_status_header(500)
+                                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Report Vendor Gagal Diupdate']));
+                                    }
                                 }
                             } else {
                                 $this->db->trans_rollback();
@@ -2874,11 +2889,26 @@ class ApiFlutter extends CI_Controller
                                         ->set_status_header(200)
                                         ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
                             } else {
-                                $this->db->trans_rollback();
-                                $this->output
-                                    ->set_content_type('application/json')
-                                    ->set_status_header(500)
-                                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Report Vendor Gagal Diupdate']));
+                                $repost = [
+                                    'IdPraListing' => $input['IdPraListing'],
+                                    'IdListing' => $newId,
+                                ];
+                                
+                                $insert_repost = $this->ModelFlutter->Input_Data($repost, 'reportvendor');
+                                
+                                if($insert_repost) {
+                                    $this->db->trans_commit();
+                                    $this->output
+                                        ->set_content_type('application/json')
+                                        ->set_status_header(200)
+                                        ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                } else {
+                                    $this->db->trans_rollback();
+                                    $this->output
+                                        ->set_content_type('application/json')
+                                        ->set_status_header(500)
+                                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Pra-Listing Gagal, Report Vendor Gagal Diupdate']));
+                                }
                             }
                         } else {
                             $this->db->trans_rollback();
@@ -4362,43 +4392,59 @@ class ApiFlutter extends CI_Controller
             $this->db->trans_start();
             
             $data = [
-                'ImgPjp'=> $ImgPjp,
-                'ImgPjp1'=> $ImgPjp1,
-                'Pending' => 1,
+                'IdListing' => $Idlisting,
+                'ImgPjp1'=> $input['ImagePjp1'],
+                'ImgPjp2'=> $input['ImagePjp2'],
             ];
-            $where = array('IdListing'=> $Idlisting,);
-            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+			$this->db->insert('pjp',$data);
+			$insert_id = $this->db->insert_id();
             
             if($insert_id) {
-                $susulan = array(
-                    'IdListing' => $Idlisting,
-                    'Keterangan' => "Update PJP",
-                    'PoinTambahan' => 0,
-                    'PoinBerkurang' => 0,
-                    'TglInput' => $currentDate,
-                    'IsRead' => 0,
-                );
-                $insert_susulan = $this->db->insert('susulan',$susulan);
+                $data = [
+                    'ImgPjp'=> $ImgPjp,
+                    'ImgPjp1'=> $ImgPjp1,
+                    'Pending' => 1,
+                ];
+                $where = array('IdListing'=> $Idlisting,);
+                $update_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
                 
-                if($insert_susulan) {
-                    $this->db->trans_commit();
+                if($update_id) {
+                    $susulan = array(
+                        'IdListing' => $Idlisting,
+                        'Keterangan' => "Update PJP",
+                        'PoinTambahan' => 0,
+                        'PoinBerkurang' => 0,
+                        'TglInput' => $currentDate,
+                        'IsRead' => 0,
+                    );
+                    $insert_susulan = $this->db->insert('susulan',$susulan);
+                    
+                    if($insert_susulan) {
+                        $this->db->trans_commit();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(200)
+                                ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                    } else {
+                        $this->db->trans_rollback();
                         $this->output
                             ->set_content_type('application/json')
-                            ->set_status_header(200)
-                            ->set_output(json_encode(['status' => 'success', 'Update Listing Berhasil']));
+                            ->set_status_header(500)
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                    }
                 } else {
                     $this->db->trans_rollback();
                     $this->output
                         ->set_content_type('application/json')
                         ->set_status_header(500)
-                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Gagal Tambah Susulan']));
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
                 }
             } else {
                 $this->db->trans_rollback();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Listing Gagal, Tidak Ada Data Yang Diupdate']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Simpan Backup PJP Gagal']));
             }
         }
         
