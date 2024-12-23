@@ -368,7 +368,7 @@
                                                                         return number_format($harga);
                                                                     }
                                                                 }    
-                                                                if ($tipeharga == 'Permeter') {
+                                                                if ($tipeharga == 'Permeter' || $jenisproperti == 'Tanah') {
                                                                     echo '
                                                                         <div style="display: inline-block; background: rgb(255,242,0); border: 2px solid rgb(51,3,118);">
                                                                             <h1 style="color: rgb(51,3,118); font-size: 150%; margin: 5px;">Rp. ' . formatHargaBlank($harga) . ' / m2</h1>
@@ -1054,7 +1054,7 @@
                                                                         return number_format($hargasewa);
                                                                     }
                                                                 }      
-                                                                if ($tipeharga == 'Permeter') {
+                                                                if ($tipeharga == 'Permeter' || $jenisproperti == 'Tanah') {
                                                                     echo '
                                                                         <div style="display: inline-block; background: rgb(255,242,0); border: 2px solid rgb(51,3,118);">
                                                                             <h1 style="color: rgb(51,3,118); font-size: 200%; margin: 5px;">Rp. ' . formatHargaBlank($harga) .' / m2 / Rp. '. formatHargaSewaBlank($hargasewa) . '</h1>
