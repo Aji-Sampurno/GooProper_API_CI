@@ -86,6 +86,65 @@ class ModelFlutter extends CI_Model
     
     // Data ============================================================================================================================================================================================
     
+    public function Check_Token($token) {
+        $this->db->where('Token', $token);
+        $query = $this->db->get('device');
+        return $query->row_array();
+    }
+    
+    public function Check_Token_Agen($token) {
+        $this->db->where('Token', $token);
+        $query = $this->db->get('deviceagen');
+        return $query->row_array();
+    }
+    
+    public function Check_Token_Customer($token) {
+        $this->db->where('Token', $token);
+        $query = $this->db->get('devicecustomer');
+        return $query->row_array();
+    }
+    
+    public function Get_Device($status) {
+        $query = $this->db->query(" SELECT 
+                                    	*
+                                    FROM 
+                                    	device
+                                    WHERE
+                                        Status = $status; ");
+        return $query->result_array();
+    }
+    
+    public function Get_Device_Agen($id) {
+        $query = $this->db->query(" SELECT 
+                                    	*
+                                    FROM 
+                                    	deviceagen
+                                    WHERE
+                                        IdAgen = $id; ");
+        return $query->result_array();
+    }
+    
+    public function Get_Device_Customer() {
+        $query = $this->db->query(" SELECT 
+                                    	*
+                                    FROM 
+                                    	devicecustomer; ");
+        return $query->result_array();
+    }
+    
+    public function Get_Device_All() {
+        $query = $this->db->query(" SELECT 
+                                    	*
+                                    FROM 
+                                    	devicecustomer
+                                    UNION ALL
+                                    SELECT 
+                                        *
+                                    FROM 
+                                        deviceagen; ");
+        return $query->result_array();
+    }
+    
     public function Get_Provinsi() {
         $query = $this->db->query(" SELECT 
                                     	*
@@ -262,6 +321,16 @@ class ModelFlutter extends CI_Model
         return $query->result_array();
     }
     
+    public function Get_Detail_Pertanyaan($id) {
+        $query = $this->db->query(" SELECT 
+                                        * 
+                                    FROM 
+                                        psikotes 
+                                    WHERE 
+                                        IdAgen = $id; ");
+        return $query->result_array();
+    }
+    
     // Count ---------------------------------------------------------------
     
     public function Count_Pelamar(){
@@ -368,7 +437,8 @@ class ModelFlutter extends CI_Model
                                         listing.Land,
                                         listing.Priority,
                                         listing.NoArsip,
-                                        listing.Img1
+                                        listing.Img1,
+                                        listing.TipeHarga
                                     FROM
                                         reportsold
                                         LEFT JOIN listing ON reportsold.IdListing = listing.IdListing
@@ -393,16 +463,7 @@ class ModelFlutter extends CI_Model
         }
             
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -418,16 +479,7 @@ class ModelFlutter extends CI_Model
     
     public function Get_Report_Buyer_Agen_Ready($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -444,16 +496,7 @@ class ModelFlutter extends CI_Model
     
     public function Get_Report_Buyer_Agen_To_Expired($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -470,16 +513,7 @@ class ModelFlutter extends CI_Model
     
     public function Get_Report_Buyer_Agen_Expired($id, $limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -504,16 +538,7 @@ class ModelFlutter extends CI_Model
         }
             
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                         $searchCondition
@@ -527,16 +552,7 @@ class ModelFlutter extends CI_Model
     
     public function Get_Report_Buyer_Ready($limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -552,16 +568,7 @@ class ModelFlutter extends CI_Model
     
     public function Get_Report_Buyer_Expired($limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -577,16 +584,7 @@ class ModelFlutter extends CI_Model
     
     public function Get_Report_Buyer_To_Expired($limit, $offset){
         $query = $this->db->query(" SELECT 
-                                        reportbuyer.IdReportBuyer,
-                                        reportbuyer.IdAgen,
-                                        reportbuyer.NamaBuyer,
-                                        reportbuyer.TelpBuyer,
-                                        reportbuyer.JenisProperti,
-                                        reportbuyer.AlamatProperti,
-                                        reportbuyer.SumberInformasi,
-                                        reportbuyer.StatusFollowUp,
-                                        reportbuyer.TglReport,
-                                        reportbuyer.IsClose
+                                        *
                                     FROM 
                                         reportbuyer
                                     WHERE 
@@ -716,7 +714,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -743,7 +742,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -767,7 +767,8 @@ class ModelFlutter extends CI_Model
                                             pralisting.Bath,
                                             pralisting.Level,
                                             pralisting.Garage,
-                                            pralisting.Img1
+                                            pralisting.Img1,
+                                            pralisting.TipeHarga
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -792,7 +793,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -816,7 +818,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -840,7 +843,8 @@ class ModelFlutter extends CI_Model
                                             pralisting.Bath,
                                             pralisting.Level,
                                             pralisting.Garage,
-                                            pralisting.Img1
+                                            pralisting.Img1,
+                                            pralisting.TipeHarga
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -1076,7 +1080,8 @@ class ModelFlutter extends CI_Model
                                             Wilayah,
                                             Daerah,
                                             Provinsi,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	listing
                                         WHERE
@@ -1109,7 +1114,8 @@ class ModelFlutter extends CI_Model
                                             Wilayah,
                                             Daerah,
                                             Provinsi,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                             listing
                                         WHERE
@@ -1141,7 +1147,8 @@ class ModelFlutter extends CI_Model
                                             Wilayah,
                                             Daerah,
                                             Provinsi,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                             listing
                                         WHERE
@@ -1174,7 +1181,8 @@ class ModelFlutter extends CI_Model
                                             Wilayah,
                                             Daerah,
                                             Provinsi,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                             listing
                                         WHERE
@@ -1207,7 +1215,8 @@ class ModelFlutter extends CI_Model
                                             Wilayah,
                                             Daerah,
                                             Provinsi,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                             listing
                                         WHERE
@@ -1226,335 +1235,335 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
-        public function Get_List_Listing_Rumah($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Rumah' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Rumah($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Rumah' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Ruko($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Ruko' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Ruko($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Ruko' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Tanah($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Tanah' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Tanah($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Tanah' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Gudang($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Gudang' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Gudang($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Gudang' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_RuangUsaha($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Ruang Usaha' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_RuangUsaha($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Ruang Usaha' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Villa($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Villa' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Villa($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Villa' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Apartemen($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Apartemen' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Apartemen($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Apartemen' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Pabrik($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Pabrik' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Pabrik($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Pabrik' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Kantor($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Kantor' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Kantor($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Kantor' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Hotel($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Hotel' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Hotel($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Hotel' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
-        public function Get_List_Listing_Rukost($limit, $offset) {
-            $query = $this->db->query(" SELECT 
-                                            IdListing,
-                                            NamaListing,
-                                            Kondisi,
-                                            Harga,
-                                            HargaSewa,
-                                            Wide,
-                                            Land,
-                                            Priority,
-                                            NoArsip,
-                                            Img1
-                                        FROM 
-                                            listing
-                                        WHERE
-                                            JenisProperti = 'Rukost' AND
-                                            IsDouble = 0 AND 
-                                            IsDelete = 0 AND 
-                                            Sold = 0 AND 
-                                            SoldAgen = 0 AND 
-                                            Rented = 0 AND 
-                                            RentedAgen = 0 AND
-                                            Pending = 0 
-                                        ORDER BY
-                                            IdListing DESC
-                                        LIMIT $limit OFFSET $offset;");
+        // public function Get_List_Listing_Rukost($limit, $offset) {
+        //     $query = $this->db->query(" SELECT 
+        //                                     IdListing,
+        //                                     NamaListing,
+        //                                     Kondisi,
+        //                                     Harga,
+        //                                     HargaSewa,
+        //                                     Wide,
+        //                                     Land,
+        //                                     Priority,
+        //                                     NoArsip,
+        //                                     Img1
+        //                                 FROM 
+        //                                     listing
+        //                                 WHERE
+        //                                     JenisProperti = 'Rukost' AND
+        //                                     IsDouble = 0 AND 
+        //                                     IsDelete = 0 AND 
+        //                                     Sold = 0 AND 
+        //                                     SoldAgen = 0 AND 
+        //                                     Rented = 0 AND 
+        //                                     RentedAgen = 0 AND
+        //                                     Pending = 0 
+        //                                 ORDER BY
+        //                                     IdListing DESC
+        //                                 LIMIT $limit OFFSET $offset;");
             
-            return $query->result_array();
-        }
+        //     return $query->result_array();
+        // }
         
         public function Get_List_Listing_Sold($limit, $offset){
             $query = $this->db->query(" SELECT 
@@ -1567,7 +1576,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	listing
                                         WHERE
@@ -1591,7 +1601,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	listing
                                         WHERE
@@ -1744,7 +1755,8 @@ class ModelFlutter extends CI_Model
                     Land,
                     Priority,
                     NoArsip,
-                    Img1
+                    Img1,
+                    TipeHarga
                 FROM 
                     listing
                 WHERE
@@ -1843,7 +1855,8 @@ class ModelFlutter extends CI_Model
                     Land,
                     Priority,
                     NoArsip,
-                    Img1
+                    Img1,
+                    TipeHarga
                 FROM 
                     listing
                 WHERE
@@ -1869,7 +1882,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	listing
                                         WHERE
@@ -2020,6 +2034,7 @@ class ModelFlutter extends CI_Model
                                             listing.Img11,
                                             listing.Img12,
                                             listing.Video,
+                                            listing.LinkYoutube,
                                             template.IdTemplate,
                                             template.IdListing,
                                             template.Template,
@@ -2079,6 +2094,26 @@ class ModelFlutter extends CI_Model
                                             LEFT JOIN template ON listing.IdListing = template.IdListing
                                         WHERE
                                             listing.IdListing = $id;");
+            return $query->result_array();
+        }
+        
+        public function Cek_Double_Template_Listing($id){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Jumlah
+                                        FROM 
+                                            template
+                                        WHERE 
+                                            IdListing = $id;");
+            return $query->result_array();
+        }
+        
+        public function Get_Double_Template_Listing($id){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            template
+                                        WHERE 
+                                            IdListing = $id;");
             return $query->result_array();
         }
         
