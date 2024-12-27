@@ -980,6 +980,7 @@
                                                                 }
                                                             } elseif ($kondisi == 'Jual/Sewa') {
                                                                 $tipeharga = $baris->TipeHarga;
+                                                                $jenisproperti = $baris->JenisProperti;
                                                                 $harga = $baris->Harga;
                                                                 function formatHargaBlank($harga) {
                                                                     if ($harga >= 100000000000000) {
