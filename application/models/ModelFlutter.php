@@ -2131,7 +2131,8 @@ class ModelFlutter extends CI_Model
                                             Land,
                                             Priority,
                                             NoArsip,
-                                            Img1
+                                            Img1,
+                                            TipeHarga
                                         FROM 
                                         	listing
                                         WHERE
