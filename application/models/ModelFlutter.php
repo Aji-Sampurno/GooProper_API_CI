@@ -288,7 +288,7 @@ class ModelFlutter extends CI_Model
                                         AND agen.Approve = 1 
                                         AND agen.IdAgen = $id
                                     GROUP BY 
-                                        agen.IdAgen;");
+                                        agen.IdAgen, karyawan.NoKaryawan;");
         return $query->result_array();
     }
     
