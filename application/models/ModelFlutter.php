@@ -968,7 +968,7 @@ class ModelFlutter extends CI_Model
             if (!empty($search)) {
                 $keywords = explode(' ', $search);
                 foreach ($keywords as $keyword) {
-                    $searchCondition .= " AND listing.MetaNamaListing LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                    $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
                 }
             }
             
