@@ -52,16 +52,20 @@ class ApiFlutter extends CI_Controller
             if ($userAgen) {
                 $idAgen = $userAgen['IdAgen'];
                 
-                $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-                $kodeBaru = 'agen' . $kodeRandom;
-                
-                $data = [
-                    'Password' => md5($kodeBaru),
-                    'KodeVerifikasi' => $kodeRandom,
-                ];
-        
-                $where = array('IdAgen' => $idAgen,);
-                $this->ModelFlutter->Update_Data($where,$data,'agen');
+                $idAgenTidakUpdate = ['66', '123'];
+                 
+                if (!in_array($idAgen, $idAgenTidakUpdate)) {
+                    $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                    $kodeBaru = 'agen' . $kodeRandom;
+                    
+                    $data = [
+                        'Password' => md5($kodeBaru),
+                        'KodeVerifikasi' => $kodeRandom,
+                    ];
+            
+                    $where = array('IdAgen' => $idAgen,);
+                    $this->ModelFlutter->Update_Data($where,$data,'agen');
+                }
                 
                 $this->output
                     ->set_content_type('application/json')
@@ -159,16 +163,20 @@ class ApiFlutter extends CI_Controller
         if ($userAgen) {
             $idAgen = $userAgen['IdAgen'];
             
-            $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-            $kodeBaru = 'agen' . $kodeRandom;
-            
-            $data = [
-                'Password' => md5($kodeBaru),
-                'KodeVerifikasi' => $kodeRandom,
-            ];
-            
-            $where = array('IdAgen' => $idAgen,);
-            $this->ModelFlutter->Update_Data($where,$data,'agen');
+            $idAgenTidakUpdate = ['66', '123'];
+             
+            if (!in_array($idAgen, $idAgenTidakUpdate)) {
+                $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                $kodeBaru = 'agen' . $kodeRandom;
+                
+                $data = [
+                    'Password' => md5($kodeBaru),
+                    'KodeVerifikasi' => $kodeRandom,
+                ];
+                
+                $where = array('IdAgen' => $idAgen,);
+                $this->ModelFlutter->Update_Data($where,$data,'agen');
+            }
             
             $this->output
                 ->set_content_type('application/json')
@@ -763,337 +771,448 @@ class ApiFlutter extends CI_Controller
     
     // Data ================================================================================================================================================
     
-    public function Add_Device() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, TRUE);
+        // Add -----------------------------------------------------------------
         
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
-        }
-        
-        $IdAdmin = $input['IdAdmin'];
-        $Status = $input['Status'];
-        $Token = $input['Token'];
-        
-        $existingToken = $this->ModelFlutter->Check_Token($Token);
-        
-        if ($existingToken) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(409)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Token Sudah Ada']));
-            return;
-        }
-        
-        $data = [
-            'IdAdmin' => $IdAdmin,
-            'Status' => $Status,
-            'Token' => $Token,
-        ];
-        
-        $insert_id = $this->ModelFlutter->Input_Data($data, 'device');
-        
-        if ($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['status' => 'success', 'message' => 'Add Device Berhasil']));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Add Device Gagal']));
-        }
-    }
-    
-    public function Add_Device_Agen() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, TRUE);
-        
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
-        }
-        
-        $Status = $input['Status'];
-        $Token = $input['Token'];
-        
-        $existingToken = $this->ModelFlutter->Check_Token_Agen($Token);
-        
-        if ($existingToken) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(409)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Token Sudah Ada']));
-            return;
-        }
-        
-        $data = [
-            'IdAgen' => $input['IdAgen'],
-            'Status' => $Status,
-            'Token' => $Token,
-        ];
-        
-        $insert_id = $this->ModelFlutter->Input_Data($data, 'deviceagen');
-        
-        if ($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['status' => 'success', 'message' => 'Add Device Berhasil']));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Add Device Gagal']));
-        }
-    }
-    
-    public function Add_Device_Customer() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, TRUE);
-        
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
-        }
-        
-        $Status = $input['Status'];
-        $Token = $input['Token'];
-        
-        $existingToken = $this->ModelFlutter->Check_Token_Customer($Token);
-        
-        if ($existingToken) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(409)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Token Sudah Ada']));
-            return;
-        }
-        
-        $data = [
-            'IdCustomer' => $input['IdCustomer'],
-            'Status' => $Status,
-            'Token' => $Token,
-        ];
-        
-        $insert_id = $this->ModelFlutter->Input_Data($data, 'devicecustomer');
-        
-        if ($insert_id) {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(200)
-                ->set_output(json_encode(['status' => 'success', 'message' => 'Add Device Berhasil']));
-        } else {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_status_header(500)
-                ->set_output(json_encode(['status' => 'fail', 'message' => 'Add Device Gagal']));
-        }
-    }
-    
-    public function Get_Device(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
-        }
-        
-        $status = filter_var($_GET['status'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        
-        $data = $this->ModelFlutter->Get_Device_($status);
-        
-        $tokens = [];
-        
-        if (!empty($data)) {
-            foreach ($data as $item) {
-                if (isset($item['Token'])) {
-                    $tokens[] = $item['Token'];
-                }
+        public function Add_Device() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $IdAdmin = $input['IdAdmin'];
+            $Status = $input['Status'];
+            $Token = $input['Token'];
+            
+            $existingToken = $this->ModelFlutter->Check_Token($Token);
+            
+            if ($existingToken) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(409)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Token Sudah Ada']));
+                return;
+            }
+            
+            $data = [
+                'IdAdmin' => $IdAdmin,
+                'Status' => $Status,
+                'Token' => $Token,
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'device');
+            
+            if ($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Add Device Berhasil']));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Add Device Gagal']));
             }
         }
         
-        $unique_tokens = array_unique($tokens);
-        
-        $tokens_string = implode(',', $unique_tokens);
-        
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode(['tokens' => $tokens_string]));
-    }
-    
-    public function Get_Device_Agen(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
-        }
-        
-        $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        
-        $data = $this->ModelFlutter->Get_Device_Agen($id);
-        
-        $tokens = [];
-        
-        if (!empty($data)) {
-            foreach ($data as $item) {
-                if (isset($item['Token'])) {
-                    $tokens[] = $item['Token'];
-                }
+        public function Add_Device_Agen() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $Status = $input['Status'];
+            $Token = $input['Token'];
+            
+            $existingToken = $this->ModelFlutter->Check_Token_Agen($Token);
+            
+            if ($existingToken) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(409)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Token Sudah Ada']));
+                return;
+            }
+            
+            $data = [
+                'IdAgen' => $input['IdAgen'],
+                'Status' => $Status,
+                'Token' => $Token,
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'deviceagen');
+            
+            if ($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Add Device Berhasil']));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Add Device Gagal']));
             }
         }
         
-        $unique_tokens = array_unique($tokens);
-        
-        $tokens_string = implode(',', $unique_tokens);
-        
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode(['tokens' => $tokens_string]));
-    }
-    
-    public function Get_Device_All(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
-        }
-        
-        $data = $this->ModelFlutter->Get_Device_All();
-        
-        $tokens = [];
-        
-        if (!empty($data)) {
-            foreach ($data as $item) {
-                if (isset($item['Token'])) {
-                    $tokens[] = $item['Token'];
-                }
+        public function Add_Device_Customer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $Status = $input['Status'];
+            $Token = $input['Token'];
+            
+            $existingToken = $this->ModelFlutter->Check_Token_Customer($Token);
+            
+            if ($existingToken) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(409)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Token Sudah Ada']));
+                return;
+            }
+            
+            $data = [
+                'IdCustomer' => $input['IdCustomer'],
+                'Status' => $Status,
+                'Token' => $Token,
+            ];
+            
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'devicecustomer');
+            
+            if ($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Add Device Berhasil']));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Add Device Gagal']));
             }
         }
         
-        $unique_tokens = array_unique($tokens);
+        // Delete --------------------------------------------------------------
         
-        $tokens_string = implode(',', $unique_tokens);
+        public function Delete_Device() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
         
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode(['tokens' => $tokens_string]));
-    }
-    
-    public function Get_Jenis_Properti(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            $this->db->trans_start();
+            
+            $this->db->where('Token', $input['Token']);
+            $deleteSuccessful = $this->db->delete('device');
         
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
+            if ($deleteSuccessful) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Device berhasil dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal menghapus device']));
+            }
         }
         
-        $data = $this->ModelFlutter->Get_Jenis_Properti();
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
-    }
-    
-    public function Get_Wilayah(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
+        public function Delete_Device_Agen() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
         
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
+            $this->db->trans_start();
+            
+            $this->db->where('Token', $input['Token']);
+            $deleteSuccessful = $this->db->delete('deviceagen');
+        
+            if ($deleteSuccessful) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Device berhasil dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal menghapus device']));
+            }
         }
         
-        $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $data = $this->ModelFlutter->Get_Wilayah($id);
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
-    }
-    
-    public function Get_Daerah(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
+        public function Delete_Device_Customer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
         
-        if ($authHeader !== "Bearer $this->validApiKey") {
-            $this->output
-                ->set_status_header(401)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
+            $this->db->trans_start();
+            
+            $this->db->where('Token', $input['Token']);
+            $deleteSuccessful = $this->db->delete('devicecustomer');
+        
+            if ($deleteSuccessful) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Device berhasil dihapus']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal menghapus device']));
+            }
         }
         
-        $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $data = $this->ModelFlutter->Get_Daerah($id);
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
-    }
-    
-    public function Get_Provinsi(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
+        // Get -----------------------------------------------------------------
         
-        if ($authHeader !== "Bearer $this->validApiKey") {
+        public function Get_Device(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $status = filter_var($_GET['status'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            
+            $data = $this->ModelFlutter->Get_Device_($status);
+            
+            $tokens = [];
+            
+            if (!empty($data)) {
+                foreach ($data as $item) {
+                    if (isset($item['Token'])) {
+                        $tokens[] = $item['Token'];
+                    }
+                }
+            }
+            
+            $unique_tokens = array_unique($tokens);
+            
+            $tokens_string = implode(',', $unique_tokens);
+            
             $this->output
-                ->set_status_header(401)
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
+                ->set_output(json_encode(['tokens' => $tokens_string]));
         }
         
-        $data = $this->ModelFlutter->Get_Provinsi();
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
-    }
-    
-    public function Get_Kota_Agen(){
-        $authHeader = $this->input->get_request_header('Authorization', TRUE);
-        
-        if ($authHeader !== "Bearer $this->validApiKey") {
+        public function Get_Device_Agen(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            
+            $data = $this->ModelFlutter->Get_Device_Agen($id);
+            
+            $tokens = [];
+            
+            if (!empty($data)) {
+                foreach ($data as $item) {
+                    if (isset($item['Token'])) {
+                        $tokens[] = $item['Token'];
+                    }
+                }
+            }
+            
+            $unique_tokens = array_unique($tokens);
+            
+            $tokens_string = implode(',', $unique_tokens);
+            
             $this->output
-                ->set_status_header(401)
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'Unauthorized']));
-            return;
+                ->set_output(json_encode(['tokens' => $tokens_string]));
         }
         
-        $data = $this->ModelFlutter->Get_Kota_Agen();
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
-    }
+        public function Get_Device_All(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+        
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+        
+            $limit = $this->input->get('limit', TRUE) ?? 10; // Default 10
+            $offset = $this->input->get('offset', TRUE) ?? 0; // Default 0
+        
+            if (!is_numeric($limit) || !is_numeric($offset)) {
+                $this->output
+                    ->set_status_header(400)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Invalid limit or offset']));
+                return;
+            }
+        
+            $data = $this->ModelFlutter->Get_Device_All((int)$limit, (int)$offset);
+        
+            $tokens = array_column($data, 'Token'); // Ambil kolom 'Token'
+            $unique_tokens = array_unique($tokens);
+        
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'tokens' => implode(',', $unique_tokens),
+                    'count' => count($unique_tokens),
+                ]));
+        }
+        
+        public function Get_Jenis_Properti(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $data = $this->ModelFlutter->Get_Jenis_Properti();
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
+        public function Get_Wilayah(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Wilayah($id);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
+        public function Get_Daerah(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Daerah($id);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
+        public function Get_Provinsi(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $data = $this->ModelFlutter->Get_Provinsi();
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
+        public function Get_Kota_Agen(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $data = $this->ModelFlutter->Get_Kota_Agen();
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
     
     // Event ===============================================================================================================================================
     
@@ -1143,10 +1262,10 @@ class ApiFlutter extends CI_Controller
         }
         
         // Get -----------------------------------------------------------------
-    
-        public function Get_Event(){
+        
+        public function Get_Event() {
             $authHeader = $this->input->get_request_header('Authorization', TRUE);
-            
+        
             if ($authHeader !== "Bearer $this->validApiKey") {
                 $this->output
                     ->set_status_header(401)
@@ -1154,14 +1273,18 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['error' => 'Unauthorized']));
                 return;
             }
-            
-            $tgl = filter_var($_GET['tanggal'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Get_Event($tgl);
+        
+            $tgl = filter_var($this->input->get('tanggal'), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        
+            // Periksa apakah tanggal memiliki tahun
+            $hasYear = preg_match('/^\d{4}-/', $tgl);
+            $data = $this->ModelFlutter->Get_Event($tgl, $hasYear);
+        
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
         }
-    
+        
         public function Get_Event_All(){
             $authHeader = $this->input->get_request_header('Authorization', TRUE);
             
@@ -2446,7 +2569,9 @@ class ApiFlutter extends CI_Controller
             
             $data = $this->ModelFlutter->Get_Report_Vendor($limit, $offset);
             
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
     // Tampungan ===========================================================================================================================================
@@ -2563,7 +2688,9 @@ class ApiFlutter extends CI_Controller
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_List_Tampungan($id, $limit, $offset);
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
     // Pasang Banner =======================================================================================================================================
@@ -2589,6 +2716,7 @@ class ApiFlutter extends CI_Controller
             $data = [
                 'IdListing' => $input['IdListing'],
                 'Bukti' => $input['Bukti'],
+                'Keterangan' => $input['Keterangan'],
             ];
             $insert_id = $this->ModelFlutter->Input_Data($data, 'pasangbanner');
             
@@ -2724,6 +2852,83 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Bukti_Pasang_Banner($id);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
+    // Pasang Ulang ========================================================================================================================================
+    
+        // Add -----------------------------------------------------------------
+        
+        public function Update_Pasang_Ulang_Banner_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IdListing' => $input['IdListing'],
+                'Keterangan' => $input['Keterangan'],
+            ];
+            $insert_id = $this->ModelFlutter->Input_Data($data, 'pasangulang');
+            
+            if($insert_id) {
+                
+                $dataup = [
+                    'IsPasangBanner' => 0,
+                ];
+                $where = array('IdListing'=> $input['IdListing'],);
+                $insert_up = $this->ModelFlutter->Update_Data($where,$dataup,'listing');
+                
+                if($insert_up) {
+                    $this->db->trans_commit();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'Pasang Ulang Banner Berhasil']));
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Pasang Ulang Banner Gagal']));
+                }
+                
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Pasang Ulang Banner Gagal']));
+            }
+        }
+        
+        // Get -----------------------------------------------------------------
+        
+        public function Get_Keterangan_Pasang_Ulang_Banner() {
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $data = $this->ModelFlutter->Get_Keterangan_Pasang_Ulang_Banner($id);
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
@@ -4087,6 +4292,36 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_Single_Open_PraListing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $sql = "UPDATE pralisting SET IsSingleOpen = IsSingleOpen + 1 WHERE IdPralisting = ?";
+            $this->db->query($sql, array($input['IdPraListing']));
+            
+            if ($this->db->affected_rows() > 0) {
+                $this->output
+                    ->set_status_header(200)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Tambah PraListing Double Single Berhasil']));
+            } else {
+                $this->output
+                    ->set_status_header(400)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Tambah PraListing Double Single']));
+            }
+        }
+        
         // Approve -------------------------------------------------------------
         
         public function Approve_Admin_PraListing(){
@@ -4759,10 +4994,13 @@ class ApiFlutter extends CI_Controller
                 return;
             }
             
+            $search = $this->input->get('search');
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->Get_List_PraListing_Admin($limit, $offset);
-            echo json_encode($data);
+            $data = $this->ModelFlutter->Get_List_PraListing_Admin($limit, $offset, $search);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_PraListing_Manager(){
@@ -4776,10 +5014,13 @@ class ApiFlutter extends CI_Controller
                 return;
             }
             
+            $search = $this->input->get('search');
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->Get_List_PraListing_Manager($limit, $offset);
-            echo json_encode($data);
+            $data = $this->ModelFlutter->Get_List_PraListing_Manager($limit, $offset, $search);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_PraListing_Agen(){
@@ -4793,11 +5034,14 @@ class ApiFlutter extends CI_Controller
                 return;
             }
             
+            $search = $this->input->get('search');
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->Get_List_PraListing_Agen($id, $limit, $offset);
-            echo json_encode($data);
+            $data = $this->ModelFlutter->Get_List_PraListing_Agen($id, $limit, $offset, $search);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_PraListing_Rejected_Agen(){
@@ -4811,11 +5055,14 @@ class ApiFlutter extends CI_Controller
                 return;
             }
             
+            $search = $this->input->get('search');
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
-            $data = $this->ModelFlutter->Get_List_PraListing_Rejected_Agen($id, $limit, $offset);
-            echo json_encode($data);
+            $data = $this->ModelFlutter->Get_List_PraListing_Rejected_Agen($id, $limit, $offset, $search);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Meta_PraListing() {
@@ -4831,7 +5078,9 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Meta_PraListing($id);
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Image_PraListing() {
@@ -4847,7 +5096,9 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Image_PraListing($id);
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Lampiran_PraListing() {
@@ -4863,7 +5114,9 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Lampiran_PraListing($id);
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
     
     // Listing ========================================================================================================================================================================================
@@ -5129,6 +5382,36 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Video Listing Gagal']));
+            }
+        }
+        
+        public function Add_Single_Open_Listing() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $sql = "UPDATE listing SET IsSingleOpen = IsSingleOpen + 1 WHERE IdListing = ?";
+            $this->db->query($sql, array($input['IdListing']));
+            
+            if ($this->db->affected_rows() > 0) {
+                $this->output
+                    ->set_status_header(200)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Tambah Listing Double Single Berhasil']));
+            } else {
+                $this->output
+                    ->set_status_header(400)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Tambah Listing Double Single']));
             }
         }
         
@@ -5458,6 +5741,7 @@ class ApiFlutter extends CI_Controller
                 'SoldAgen' => 0,
                 'Rented' => 0,
                 'RentedAgen' => 0,
+                'TglInput' => date('Y-m-d')
             ];
             $where = array('IdListing'=> $Idlisting,);
             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
@@ -6211,7 +6495,9 @@ class ApiFlutter extends CI_Controller
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
             $data = $this->ModelFlutter->Get_List_Listing_Agen($limit, $offset, $id, $search);
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Terbaru_Pagination() {
@@ -6228,7 +6514,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_Pagination($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Terbaru_Jual() {
@@ -6245,7 +6534,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_Jual($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Terbaru_Sewa() {
@@ -6262,7 +6554,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_Sewa($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Terbaru_JualSewa() {
@@ -6279,7 +6574,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->get_list_listing_terbaru_JualSewa($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Exclusive() {
@@ -6296,7 +6594,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Exclusive($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Sold() {
@@ -6313,7 +6614,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Sold($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Pencarian() {
@@ -6351,7 +6655,9 @@ class ApiFlutter extends CI_Controller
             
             $data = $this->ModelFlutter->Get_List_Listing_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
             
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Sold_Pencarian() {
@@ -6389,7 +6695,9 @@ class ApiFlutter extends CI_Controller
             
             $data = $this->ModelFlutter->Get_List_Listing_Sold_Pencarian($limit, $offset, $search, $priority, $sold, $rented, $soldagen, $rentedagen, $status, $jenis, $kota, $wilayah, $prabot, $bed, $bath, $hargaMin, $hargaMax, $landMin, $landMax, $wideMin, $wideMax);
             
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Pending() {
@@ -6406,7 +6714,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Listing_Pending($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Listing_Selection() {
@@ -6426,7 +6737,9 @@ class ApiFlutter extends CI_Controller
             
             $data = $this->ModelFlutter->Get_List_Listing_Selection($limit, $offset, $search);
             
-            echo json_encode($data);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Susulan() {
@@ -6444,7 +6757,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Susulan($id, $limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Agen_Listing() {
@@ -6460,7 +6776,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Agen_Listing($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Meta_Listing() {
@@ -6476,7 +6795,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Meta_Listing($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Image_Listing() {
@@ -6492,7 +6814,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Image_Listing($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Lampiran_Listing() {
@@ -6508,6 +6833,7 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Lampiran_Listing($id);
+            
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
@@ -6526,6 +6852,7 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Cek_Double_Template_Listing($id);
+            
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
@@ -6544,6 +6871,7 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Double_Template_Listing($id);
+            
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
@@ -6758,7 +7086,10 @@ class ApiFlutter extends CI_Controller
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
             $data = $this->ModelFlutter->Get_List_Info($limit, $offset, $search);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Info_Agen() {
@@ -6776,7 +7107,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_Agen($id, $limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Info_Jual() {
@@ -6793,7 +7127,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_Jual($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Info_Sewa() {
@@ -6810,7 +7147,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_Sewa($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Info_JualSewa() {
@@ -6827,7 +7167,10 @@ class ApiFlutter extends CI_Controller
             $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $data = $this->ModelFlutter->Get_List_Info_JualSewa($limit, $offset);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Image_Info() {
@@ -6843,7 +7186,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Image_Info($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Lampiran_Info() {
@@ -6859,7 +7205,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Lampiran_Info($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         // Delete --------------------------------------------------------------
@@ -7382,7 +7731,10 @@ class ApiFlutter extends CI_Controller
             $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
             $search = $this->input->get('search');
             $data = $this->ModelFlutter->Get_List_Listing_Primary($limit, $offset, $search);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_Detail_Primary() {
@@ -7417,7 +7769,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_Image_Primary($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
         public function Get_List_Tipe_Listing_Primary() {
@@ -7433,7 +7788,10 @@ class ApiFlutter extends CI_Controller
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $data = $this->ModelFlutter->Get_List_Tipe_Listing_Primary($id);
-            echo json_encode($data);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
         }
         
     // Count ==========================================================================================================================================================================================
@@ -7450,7 +7808,10 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Pelamar();
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Pralisting_Admin(){
@@ -7465,7 +7826,10 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Pralisting_Admin();
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Pralisting_Manager(){
@@ -7480,7 +7844,10 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Pralisting_Manager();
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Pralisting_Rejected(){
@@ -7496,7 +7863,10 @@ class ApiFlutter extends CI_Controller
         
         $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $data = $this->ModelFlutter->Count_Pralisting_Rejected($id);
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Listing_Pending(){
@@ -7511,7 +7881,10 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Listing_Pending();
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Report_Vendor(){
@@ -7526,7 +7899,10 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Report_Vendor();
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Report_Closing(){
@@ -7541,7 +7917,10 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Report_Closing();
-        echo json_encode($data);
+        
+        $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
     }
     
     public function Count_Pasang_Banner(){
@@ -7556,6 +7935,7 @@ class ApiFlutter extends CI_Controller
         }
         
         $data = $this->ModelFlutter->Count_Pasang_Banner();
+        
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($data));
@@ -7574,6 +7954,25 @@ class ApiFlutter extends CI_Controller
         
         $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $data = $this->ModelFlutter->Count_Pasang_Banner_Agen($id);
+        
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($data));
+    }
+    
+    public function Count_Pasang_Banner_Hari_Ini(){
+        $authHeader = $this->input->get_request_header('Authorization', TRUE);
+        
+        if ($authHeader !== "Bearer $this->validApiKey") {
+            $this->output
+                ->set_status_header(401)
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['error' => 'Unauthorized']));
+            return;
+        }
+        
+        $data = $this->ModelFlutter->Count_Pasang_Banner_Hari_Ini();
+        
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($data));
