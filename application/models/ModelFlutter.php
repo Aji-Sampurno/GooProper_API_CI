@@ -132,16 +132,14 @@ class ModelFlutter extends CI_Model
         return $query->result_array();
     }
     
-    public function Get_Device_All() {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	devicecustomer
-                                    UNION ALL
-                                    SELECT 
-                                        *
-                                    FROM 
-                                        deviceagen; ");
+    public function Get_Device_All($limit, $offset) {
+        $query = $this->db->query("
+            SELECT * FROM devicecustomer
+            UNION ALL
+            SELECT * FROM deviceagen
+            LIMIT $offset, $limit
+        ");
+    
         return $query->result_array();
     }
     
@@ -288,7 +286,7 @@ class ModelFlutter extends CI_Model
                                         AND agen.Approve = 1 
                                         AND agen.IdAgen = $id
                                     GROUP BY 
-                                        agen.IdAgen, karyawan.NoKaryawan;");
+                                        agen.IdAgen;");
         return $query->result_array();
     }
     
@@ -341,21 +339,33 @@ class ModelFlutter extends CI_Model
     
     // Event =============================================================================================================================================================================================
     
-    public function Get_Event($tgl) {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	event
-                                    WHERE 
-                                        TglEvent = '$tgl'; ");
-        return $query->result_array();
+    public function Get_Event($tgl, $includeYear = true) {
+        if ($includeYear) {
+            // Query dengan tahun (format penuh)
+            $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
+        } else {
+            // Query tanpa tahun (hanya bulan dan hari)
+            $query = $this->db->query("
+                SELECT *
+                FROM event
+                WHERE DATE_FORMAT(TglEvent, '%m-%d') = DATE_FORMAT(STR_TO_DATE('$tgl', '%m-%d'), '%m-%d');
+            ");
+        }
+    
+        if ($query) {
+            return $query->result_array();
+        } else {
+            return [];
+        }
     }
     
     public function Get_Event_All() {
         $query = $this->db->query(" SELECT 
                                     	*
                                     FROM 
-                                    	event; ");
+                                    	event
+                                    WHERE
+                                        TipeEvent != 'Ultah'; ");
         return $query->result_array();
     }
     
@@ -732,7 +742,15 @@ class ModelFlutter extends CI_Model
         
         // Get -----------------------------------------------------------------
         
-        public function Get_List_PraListing_Agen($id, $limit, $offset){
+        public function Get_List_PraListing_Agen($id, $limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(pralisting.NamaListing, ' ', pralisting.MetaNamaListing, ' ', pralisting.Alamat, ' ', pralisting.Location, ' ', pralisting.Wilayah, ' ', pralisting.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
             $query = $this->db->query(" SELECT 
                                         	IdPraListing,
                                             NamaListing,
@@ -744,7 +762,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	pralisting
                                         WHERE
@@ -753,6 +772,7 @@ class ModelFlutter extends CI_Model
                                             IsManager = 0) AND 
                                             IsRejected = 0 AND
                                             IsDelete = 0
+                                            $searchCondition
                                         ORDER BY 
                                             Priority ASC, 
                                             IdPraListing DESC
@@ -760,7 +780,15 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
-        public function Get_List_PraListing_Rejected_Agen($id, $limit, $offset){
+        public function Get_List_PraListing_Rejected_Agen($id, $limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(pralisting.NamaListing, ' ', pralisting.MetaNamaListing, ' ', pralisting.Alamat, ' ', pralisting.Location, ' ', pralisting.Wilayah, ' ', pralisting.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
             $query = $this->db->query(" SELECT 
                                         	IdPraListing,
                                             NamaListing,
@@ -772,13 +800,15 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	pralisting
                                         WHERE
                                             IdAgen = $id AND
                                             IsRejected = 1 AND
                                             IsDelete = 0
+                                            $searchCondition
                                         ORDER BY 
                                             Priority ASC, 
                                             IdPraListing DESC
@@ -786,7 +816,15 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
-        public function Get_List_PraListing_Admin($limit, $offset){
+        public function Get_List_PraListing_Admin($limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(pralisting.NamaListing, ' ', pralisting.MetaNamaListing, ' ', pralisting.Alamat, ' ', pralisting.Location, ' ', pralisting.Wilayah, ' ', pralisting.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
             $query = $this->db->query(" SELECT 
                                         	IdPraListing,
                                             NamaListing,
@@ -798,20 +836,30 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	pralisting
                                         WHERE
                                             IsRejected = 0 AND
                                             IsDelete = 0 AND
-                                            IsAdmin = 0 ORDER BY 
+                                            IsAdmin = 0
+                                            $searchCondition ORDER BY 
                                             Priority ASC, 
                                             IdPraListing ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result_array();
         }
         
-        public function Get_List_PraListing_Manager($limit, $offset){
+        public function Get_List_PraListing_Manager($limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(pralisting.NamaListing, ' ', pralisting.MetaNamaListing, ' ', pralisting.Alamat, ' ', pralisting.Location, ' ', pralisting.Wilayah, ' ', pralisting.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
             $query = $this->db->query(" SELECT
                                         	IdPraListing,
                                             NamaListing,
@@ -823,14 +871,16 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	pralisting
                                         WHERE
                                             IsRejected = 0 AND
                                             IsDelete = 0 AND
                                             IsAdmin = 1 AND
-                                            IsManager = 0 ORDER BY 
+                                            IsManager = 0
+                                            $searchCondition ORDER BY 
                                             Priority ASC, 
                                             IdPraListing ASC
                                         LIMIT $limit OFFSET $offset; ");
@@ -951,10 +1001,10 @@ class ModelFlutter extends CI_Model
         
         public function Add_Listing($id){
             $query = $this->db->query("INSERT INTO `listing` (
-                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,`InUse`,`Area`
+                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,`InUse`,`Area`,`IsSingleOpen`
                                     ) 
                                     SELECT 
-                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,`InUse`,`Area`
+                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,`InUse`,`Area`,`IsSingleOpen`
                                     FROM `pralisting` 
                                     WHERE `IdPraListing` = $id;
                                     ");
@@ -968,7 +1018,7 @@ class ModelFlutter extends CI_Model
             if (!empty($search)) {
                 $keywords = explode(' ', $search);
                 foreach ($keywords as $keyword) {
-                    $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                    $searchCondition .= " AND listing.MetaNamaListing LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
                 }
             }
             
@@ -986,7 +1036,8 @@ class ModelFlutter extends CI_Model
                                             Daerah,
                                             Provinsi,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1020,7 +1071,8 @@ class ModelFlutter extends CI_Model
                                             Daerah,
                                             Provinsi,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                             listing
                                         WHERE
@@ -1053,7 +1105,8 @@ class ModelFlutter extends CI_Model
                                             Daerah,
                                             Provinsi,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                             listing
                                         WHERE
@@ -1087,7 +1140,8 @@ class ModelFlutter extends CI_Model
                                             Daerah,
                                             Provinsi,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                             listing
                                         WHERE
@@ -1121,7 +1175,8 @@ class ModelFlutter extends CI_Model
                                             Daerah,
                                             Provinsi,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                             listing
                                         WHERE
@@ -1152,7 +1207,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1177,7 +1233,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1274,7 +1331,8 @@ class ModelFlutter extends CI_Model
                     Priority,
                     NoArsip,
                     Img1,
-                    TipeHarga
+                    TipeHarga,
+                    IsSingleOpen
                 FROM 
                     listing
                 WHERE
@@ -1284,7 +1342,7 @@ class ModelFlutter extends CI_Model
                     SoldAgen = 0 AND 
                     Rented = 0 AND 
                     RentedAgen = 0 AND
-                    Pending = 0 
+                    Pending = 0
                     $searchCondition
                 ORDER BY
                     IdListing DESC
@@ -1374,7 +1432,8 @@ class ModelFlutter extends CI_Model
                     Priority,
                     NoArsip,
                     Img1,
-                    TipeHarga
+                    TipeHarga,
+                    IsSingleOpen
                 FROM 
                     listing
                 WHERE
@@ -1401,7 +1460,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1469,7 +1529,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1509,7 +1570,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1549,7 +1611,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1590,7 +1653,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
@@ -1612,13 +1676,26 @@ class ModelFlutter extends CI_Model
         }
         
         public function Get_Bukti_Pasang_Banner($id){
-            
             $query = $this->db->query(" SELECT 
                                         	*
                                         FROM 
                                         	pasangbanner
                                         WHERE
-                                            IdListing = $id; ");
+                                            IdListing = $id
+                                        ORDER BY IdListing DESC
+                                        LIMIT 1; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Keterangan_Pasang_Ulang_Banner($id){
+            $query = $this->db->query(" SELECT 
+                                        	*
+                                        FROM 
+                                        	pasangulang
+                                        WHERE
+                                            IdListing = $id
+                                        ORDER BY IdListing DESC
+                                        LIMIT 1; ");
             return $query->result_array();
         }
         
@@ -2070,6 +2147,16 @@ class ModelFlutter extends CI_Model
                                         Banner = 'Ya' AND 
                                         IsPasangBanner = 0 AND 
                                         (IdAgen = $id OR IdAgenCo = $id);");
+        return $query->result_array();
+    }
+    
+    public function Count_Pasang_Banner_Hari_Ini(){
+        $query = $this->db->query(" SELECT 
+                                    	COUNT(*) AS Total
+                                    FROM 
+                                    	pasangbanner
+                                    WHERE
+                                        DATE(UpdatedAt) = CURDATE();");
         return $query->result_array();
     }
     
