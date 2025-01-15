@@ -22,15 +22,15 @@
         </style>
     </head>
     <body id="page-top">
-    	<div id="wrapper">
-    		<div id="content-wrapper" class="d-flex flex-column">
-    			<div id="content">
-    				<div id="source-in" style="width: 1200px; height: 1200px; border: 1px solid; font-family: Calibri;">
-    				    <?php foreach($listing as $baris):?>
-    				        <table style="width: 100%; height: 100%; border: 1px solid;">
-    				        <tbody>
-    				            <tr style="height: 100%;">
-    				                <td colspan="6" style="background-image: url('<?php echo $baris->Img1 ?>'); background-repeat: no-repeat; background-size: cover; background-position: center center; position: relative;">
+        <div id="wrapper">
+            <div id="content-wrapper" class="d-flex flex-column">
+                <div id="content">
+                    <div id="source-in" style="width: 1200px; height: 1200px; border: 1px solid; font-family: Calibri;">
+                        <?php foreach($listing as $baris):?>
+                        <table style="width: 100%; height: 100%; border: 1px solid;">
+                            <tbody>
+                                <tr style="height: 100%;">
+                                    <td colspan="6" style="background-image: url('<?php echo $baris->Img1 ?>'); background-repeat: no-repeat; background-size: cover; background-position: center center; position: relative;">
                                         <div style="position: absolute; width: 200px; top: 300px; left: 50px; border-radius: 0px;">
                                             <?php 
                                                 $img = $baris->Img2;
@@ -92,6 +92,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -110,6 +112,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -128,6 +132,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -146,6 +152,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -164,6 +172,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -182,6 +192,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -200,6 +212,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -218,6 +232,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -236,6 +252,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -254,6 +272,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -272,6 +292,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -290,6 +312,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -328,6 +352,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -346,6 +372,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -364,6 +392,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -382,6 +412,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -400,6 +432,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -418,6 +452,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -436,6 +472,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -454,6 +492,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -472,6 +512,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -490,6 +532,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -508,6 +552,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -526,6 +572,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -557,6 +605,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -575,6 +625,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -593,6 +645,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -611,6 +665,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -629,6 +685,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -647,6 +705,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -665,6 +725,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -683,6 +745,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -701,6 +765,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -719,6 +785,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -737,6 +805,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -755,6 +825,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -779,6 +851,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -797,6 +871,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -815,6 +891,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -833,6 +911,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -851,6 +931,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -869,6 +951,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -887,6 +971,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -905,6 +991,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -923,6 +1011,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -941,6 +1031,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -959,6 +1051,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -977,6 +1071,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -990,7 +1086,7 @@
                                                                     } else {
                                                                         return number_format($hargasewa);
                                                                     }
-                                                                }    
+                                                                }   
                                                                 if ($tipeharga == 'Permeter' || $jenisproperti == 'Tanah') {
                                                                     echo '
                                                                         <div style="display: inline-block; background: rgb(255,242,0); border: 2px solid rgb(51,3,118);">
@@ -1023,6 +1119,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1041,6 +1139,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1059,6 +1159,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' T';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' T';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1077,6 +1179,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1095,6 +1199,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1113,6 +1219,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' M';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' M';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1131,6 +1239,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1149,6 +1259,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1167,6 +1279,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Jt';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Jt';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1185,6 +1299,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1203,6 +1319,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1221,6 +1339,8 @@
                                                                             $panjang_desimal = strlen($parts[1]);
                                                                             if ($panjang_desimal == 0) {
                                                                                 return number_format($nilai, 0, ',', '') . ' Ribu';
+                                                                            } elseif ($panjang_desimal == 3) {
+                                                                                return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 2) {
                                                                                 return number_format($nilai, 2, ',', '') . ' Ribu';
                                                                             } elseif ($panjang_desimal == 1) {
@@ -1259,8 +1379,6 @@
                                                         } else {
                                                             echo '<h1 style="color: rgb(255,242,0, 0.5); font-size: 150%; margin: 0px; line-height: 1;">'. $baris -> KodeAgen .' - '. $baris -> KodeAgenCo .'</h1>';
                                                         }
-                                                        
-                                                        
                                                     ?>
                                                 </div>
                                             </div>
@@ -1385,14 +1503,14 @@
                                     </td>
                                 </tr>
                             </tbody>
-    				    </table>
+                        </table>
                         <?php endforeach ?>
                     </div>
                     <div id="resultContainer" style="width: 300px;height: 300px;object-fit:cover"></div>
-    			</div>
-    		</div>
-    	</div>
-    
+                </div>
+            </div>
+        </div>
+        
         <!-- Bootstrap core JavaScript-->
         <script src="<?= base_url(); ?>/assets/vendor/jquery/jquery.min.js"></script>
         <script src="<?= base_url(); ?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -1414,15 +1532,15 @@
             document.addEventListener('DOMContentLoaded', function() {
                 function downloadURI(uri, name) {
                     var link = document.createElement("a");
-        
+                    
                     link.download = name;
                     link.href = uri;
                     document.body.appendChild(link);
                     link.click();
-        
+                    
                     $("#source-in").css("display", "none");
                     $("#resultContainer").attr('src', uri);
-        
+                    
                 }
                 //return;
                 html2canvas($("#resultContainer")[0], {
@@ -1438,14 +1556,14 @@
             document.addEventListener('DOMContentLoaded', function() {
                 function downloadURI(uri, name) {
                     var link = document.createElement("a");
-        
+                    
                     link.download = name;
                     link.href = uri;
                     document.body.appendChild(link);
                     link.click();
-        
+                    
                     $("#source-in").css("display", "none");
-        
+                    
                 }
                 //return;
                 html2canvas($("#source-in")[0], {
