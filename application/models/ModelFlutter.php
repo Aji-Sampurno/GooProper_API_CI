@@ -1862,7 +1862,8 @@ class ModelFlutter extends CI_Model
                                             Priority,
                                             NoArsip,
                                             Img1,
-                                            TipeHarga
+                                            TipeHarga,
+                                            IsSingleOpen
                                         FROM 
                                         	listing
                                         WHERE
