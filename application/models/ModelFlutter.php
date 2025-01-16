@@ -476,7 +476,8 @@ class ModelFlutter extends CI_Model
                                         listing.Priority,
                                         listing.NoArsip,
                                         listing.Img1,
-                                        listing.TipeHarga
+                                        listing.TipeHarga,
+					listing.IsSingleOpen
                                     FROM
                                         reportsold
                                         LEFT JOIN listing ON reportsold.IdListing = listing.IdListing
