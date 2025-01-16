@@ -1682,7 +1682,7 @@ class ModelFlutter extends CI_Model
                                         	pasangbanner
                                         WHERE
                                             IdListing = $id
-                                        ORDER BY IdListing DESC
+                                        ORDER BY IdPasangBanner DESC
                                         LIMIT 1; ");
             return $query->result_array();
         }
