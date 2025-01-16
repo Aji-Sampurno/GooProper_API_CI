@@ -278,15 +278,15 @@ class ModelFlutter extends CI_Model
                                     FROM 
                                         agen
                                         LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
-                                        AND listing.IsDouble = 0
-                                        AND listing.IsDelete = 0
-                                        LEFT JOIN karyawan ON agen.idAgen = karyawan.idAgen
+                                            AND listing.IsDouble = 0
+                                            AND listing.IsDelete = 0
+                                        LEFT JOIN karyawan ON agen.IdAgen = karyawan.IdAgen
                                     WHERE
                                         agen.IsAkses = 1 
                                         AND agen.Approve = 1 
                                         AND agen.IdAgen = $id
                                     GROUP BY 
-                                        agen.IdAgen;");
+                                        agen.IdAgen, karyawan.NoKaryawan;");
         return $query->result_array();
     }
     
