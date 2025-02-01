@@ -1037,7 +1037,7 @@ class ApiFlutter extends CI_Controller
             
             $status = filter_var($_GET['status'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             
-            $data = $this->ModelFlutter->Get_Device_($status);
+            $data = $this->ModelFlutter->Get_Device($status);
             
             $tokens = [];
             
@@ -1504,7 +1504,9 @@ class ApiFlutter extends CI_Controller
                 'Budget' => $input['Budget'],
                 'AlamatProperti' => $input['AlamatProperti'],
                 'SumberInformasi' => $input['SumberBuyer'],
-                'StatusFollowUp' => $input['StatusFollowUp']
+                'StatusFollowUp' => $input['StatusFollowUp'],
+                'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'Selfie' => $input['Selfie']
             ];
             
             $insert_id = $this->ModelFlutter->Input_Data($data, 'reportbuyer');
@@ -1549,7 +1551,11 @@ class ApiFlutter extends CI_Controller
             date_default_timezone_set('Asia/Jakarta');
             
             $data = [
+                'NamaBuyer' => $input['NamaBuyer'],
+                'TelpBuyer' => $input['NoTelp'],
                 'StatusFollowUp' => $input['StatusFollowUp'],
+                'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'Selfie' => $input['Selfie'],
                 'TglReport' => date('Y-m-d H:i:s')
             ];
             
@@ -1645,6 +1651,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -1663,6 +1671,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -1715,6 +1725,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -1733,6 +1745,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -1785,6 +1799,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -1803,6 +1819,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -1855,6 +1873,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -1873,6 +1893,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -1925,6 +1947,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -1943,6 +1967,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -1994,6 +2020,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -2012,6 +2040,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -2063,6 +2093,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -2081,6 +2113,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -2132,6 +2166,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -2150,6 +2186,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -2203,6 +2241,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => $interval->days,
@@ -2222,6 +2262,8 @@ class ApiFlutter extends CI_Controller
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
                         'StatusFollowUp' => $data->StatusFollowUp,
+                        'KeteranganFollowUp' => $data->KeteranganFollowUp,
+                        'Selfie' => $data->Selfie,
                         'TglReport' => $data->TglReport,
                         'IsClose' => $data->IsClose,
                         'days_remaining' => 0,
@@ -7606,6 +7648,12 @@ class ApiFlutter extends CI_Controller
                 'Garage'=> $input['Garage'],
                 'Carpot'=> $input['Carpot'],
                 'SumberAir'=> $input['SumberAir'],
+                'Hadap'=> $input['Hadap'],
+				'Prabot'=> $input['Prabot'],
+                'RuangTamu'=> $input['RuangTamu'],
+                'RuangMakan'=> $input['RuangMakan'],
+                'Dapur'=> $input['Dapur'],
+                'Jemuran'=> $input['Laundry'],
 				'Harga'=> $input['Harga'],
             ];
             $where = array('IdListing'=> $input['IdListing'],);
