@@ -340,7 +340,17 @@ class ModelFlutter extends CI_Model
     // Event =============================================================================================================================================================================================
     
     public function Get_Event($tgl, $includeYear = true) {
-        $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
+        if ($includeYear) {
+            // Query dengan tahun (format penuh)
+            $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
+        } else {
+            // Query tanpa tahun (hanya bulan dan hari)
+            $query = $this->db->query("
+                SELECT *
+                FROM event
+                WHERE DATE_FORMAT(TglEvent, '%m-%d') = DATE_FORMAT(STR_TO_DATE('$tgl', '%m-%d'), '%m-%d');
+            ");
+        }
     
         if ($query) {
             return $query->result_array();
@@ -467,7 +477,7 @@ class ModelFlutter extends CI_Model
                                         listing.NoArsip,
                                         listing.Img1,
                                         listing.TipeHarga,
-					listing.IsSingleOpen
+                                        listing.IsSingleOpen
                                     FROM
                                         reportsold
                                         LEFT JOIN listing ON reportsold.IdListing = listing.IdListing
