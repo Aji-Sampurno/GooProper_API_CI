@@ -1242,11 +1242,58 @@ class ApiFlutter extends CI_Controller
 				'IsiEvent' => $input['IsiEvent'],
 				'DeskripsiEvent' => $input['DeskripsiEvent'],
 				'GambarEvent' => $input['GambarEvent'],
+				'IdListing' => $input['IdListing'],
 			);
 			$this->db->insert('event',$data);
 			$idpsikotes = $this->db->insert_id();
     
             if($idpsikotes) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'message' => 'Berhasil Tambah Event']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Tambah Event']));
+            }
+        }
+        
+        // Update --------------------------------------------------------------
+        
+        public function Update_Event(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $data = array(
+				'JudulEvent' => $input['JudulEvent'],
+				'TipeEvent' => $input['TipeEvent'],
+				'NamaEvent' => $input['NamaEvent'],
+				'TglEvent' => $input['TglEvent'],
+				'IsiEvent' => $input['IsiEvent'],
+				'DeskripsiEvent' => $input['DeskripsiEvent'],
+				'GambarEvent' => $input['GambarEvent'],
+				'IdListing' => $input['IdListing'],
+			);
+			$where = array('IdEvent'=> $input['IdEvent'],);
+            $update = $this->ModelFlutter->Update_Data($where,$data,'event');
+            
+            if($update) {
                 $this->db->trans_commit();
                 $this->output
                     ->set_content_type('application/json')
@@ -7330,6 +7377,9 @@ class ApiFlutter extends CI_Controller
 				'Deskripsi' => $input['Deskripsi'],
 				'Benefit' => $input['Benefit'],
 				'Payment' => $input['Payment'],
+				'Brosur' => '0',
+				'Siteplan' => '0',
+				'Pricelist' => '0',
 				'Img' => $input['Img'],
 				'ImgDetail' => $input['ImgDetail'],
 			);
@@ -7841,6 +7891,71 @@ class ApiFlutter extends CI_Controller
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
         }
+    
+    // SOP ============================================================================================================================================================================================
+    
+        // Add -----------------------------------------------------------------
+        
+        public function Add_Sop(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $data = array(
+				'FileSop' => $input['FileSop'],
+				'JudulSop' => $input['JudulSop']
+			);
+			$this->db->insert('sop',$data);
+			$idsop = $this->db->insert_id();
+    
+            if($idsop) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $idsop]));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah SOP Gagal']));
+            }
+        }
+        
+        // Get -----------------------------------------------------------------
+        
+        public function Get_Sop() {
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $data = $this->ModelFlutter->Get_Sop($limit, $offset);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
         
     // Count ==========================================================================================================================================================================================
     
