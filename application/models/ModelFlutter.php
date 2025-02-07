@@ -339,24 +339,18 @@ class ModelFlutter extends CI_Model
     
     // Event =============================================================================================================================================================================================
     
-    public function Get_Event($tgl, $includeYear = true) {
-        if ($includeYear) {
+    public function Get_Event($tgl, $hasYear = true) {
+        if ($hasYear) {
             // Query dengan tahun (format penuh)
             $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
         } else {
             // Query tanpa tahun (hanya bulan dan hari)
             $query = $this->db->query("
-                SELECT *
-                FROM event
-                WHERE DATE_FORMAT(TglEvent, '%m-%d') = DATE_FORMAT(STR_TO_DATE('$tgl', '%m-%d'), '%m-%d');
+                SELECT * FROM event WHERE DATE_FORMAT(TglEvent, '%m-%d') = '$tgl';
             ");
         }
     
-        if ($query) {
-            return $query->result_array();
-        } else {
-            return [];
-        }
+        return $query ? $query->result_array() : [];
     }
     
     public function Get_Event_All() {
