@@ -341,10 +341,8 @@ class ModelFlutter extends CI_Model
     
     public function Get_Event($tgl, $hasYear = true) {
         if ($hasYear) {
-            // Query dengan tahun (format penuh)
             $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
         } else {
-            // Query tanpa tahun (hanya bulan dan hari)
             $query = $this->db->query("
                 SELECT * FROM event WHERE DATE_FORMAT(TglEvent, '%m-%d') = '$tgl';
             ");
@@ -359,7 +357,8 @@ class ModelFlutter extends CI_Model
                                     FROM 
                                     	event
                                     WHERE
-                                        TipeEvent != 'Ultah'; ");
+                                        TipeEvent != 'Ultah' AND
+                                        TipeEvent != 'Closing'; ");
         return $query->result_array();
     }
     
@@ -2077,6 +2076,23 @@ class ModelFlutter extends CI_Model
                                             LEFT JOIN agen ON infoproperty.IdAgen = agen.IdAgen
                                         WHERE
                                             infoproperty.IdInfo = $id;");
+            return $query->result_array();
+        }
+        
+    // SOP ==========================================================================================================================================================================================
+    
+        // Get -----------------------------------------------------------------
+        
+        public function Get_Sop($limit, $offset) {
+            $query = $this->db->query(" 
+                                        SELECT
+                                            *
+                                        FROM 
+                                            sop
+                                        ORDER BY
+                                        	IdSop DESC
+                                        LIMIT $limit OFFSET $offset;");
+            
             return $query->result_array();
         }
         
