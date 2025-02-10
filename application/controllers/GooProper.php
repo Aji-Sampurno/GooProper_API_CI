@@ -352,17 +352,27 @@
 			$data['listing'] = $this->M_GooProper->DetailListingTemplate($idListing);
 			$data['title'] = 'Template';
 			
-    		$this->load->view('crud/template_kosong',$data);
+			$this->load->view('crud/template_kosong',$data);
         }
-        
-        
+		
+		public function TemplatePrimary($idListing) {
+            $user_id = $this->session->userdata('user_id');
+            $username = $this->session->userdata('username');
+            $status = $this->session->userdata('status');
+            $data['user_id'] = $user_id;
+            $data['username'] = $username;
+            $data['status'] = $status;
+			$data['listing'] = $this->M_GooProper->DetailPrimary($idListing);
+			$data['title'] = 'Template';
+			
+			$this->load->view('crud/template_primary',$data);
+        }
 		
 		public function Privacy() {
 			$data['title'] = 'Ketentuan';
 			
-    		$this->load->view('crud/privacy');
+			$this->load->view('crud/privacy');
         }
-
 		
 	}
 	
