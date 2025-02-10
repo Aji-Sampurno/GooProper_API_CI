@@ -1323,8 +1323,9 @@ class ApiFlutter extends CI_Controller
         
             $tgl = filter_var($this->input->get('tanggal'), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         
-            $data = $this->ModelFlutter->Get_Event($tgl);
-        
+            $hasYear = preg_match('/^\d{4}-/', $tgl);
+            $data = $this->ModelFlutter->Get_Event($tgl, $hasYear);
+		
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
