@@ -1323,9 +1323,7 @@ class ApiFlutter extends CI_Controller
         
             $tgl = filter_var($this->input->get('tanggal'), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         
-            // Periksa apakah tanggal memiliki tahun
-            $hasYear = preg_match('/^\d{4}-/', $tgl);
-            $data = $this->ModelFlutter->Get_Event($tgl, $hasYear);
+            $data = $this->ModelFlutter->Get_Event($tgl);
         
             $this->output
                 ->set_content_type('application/json')
@@ -7809,6 +7807,43 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Tipe Gagal']));
+            }
+        }
+        
+        public function Update_Template_Tipe_Primary(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $data = [
+				'ImgTemplate'=> $input['ImgTemplate'],
+            ];
+            $where = array('IdListing'=> $input['IdListing'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'tipenewlisting');
+		    
+		    if($insert_id) {
+		        $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Update Template Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Template Gagal']));
             }
         }
         
