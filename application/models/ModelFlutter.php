@@ -5,690 +5,676 @@ class ModelFlutter extends CI_Model
 {
     // CRUD ============================================================================================================================================================================================
     
-    public function Input_Data($data,$table){
-		$this->db->insert($table,$data);
-        return $this->db->affected_rows() > 0;
-	}
-	
-	public function Update_Data($where,$data,$table){
-		$this->db->where($where);
-		$this->db->update($table,$data);
-        return $this->db->affected_rows() > 0;
-	}
+        public function Input_Data($data,$table){
+            $this->db->insert($table,$data);
+            return $this->db->affected_rows() > 0;
+        }
+        
+        public function Update_Data($where,$data,$table){
+            $this->db->where($where);
+            $this->db->update($table,$data);
+            return $this->db->affected_rows() > 0;
+        }
     
     // Authentication ==================================================================================================================================================================================
         
-    public function Login_Admin($username, $password) {
-        $hashed_password = md5($password);
-        
-        $this->db->where('Username', $username);
-        $this->db->where('Password', $hashed_password);
-        $query = $this->db->get('admin');
-        
-        if ($query->num_rows() == 1) {
-            return $query->row_array();
-        } else {
-            return false;
+        public function Login_Admin($username, $password) {
+            $hashed_password = md5($password);
+            
+            $this->db->where('Username', $username);
+            $this->db->where('Password', $hashed_password);
+            $query = $this->db->get('admin');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
         }
-    }
-    
-    public function Login_Agen($username, $password) {
-        $hashed_password = md5($password);
         
-        $this->db->where('Username', $username);
-        $this->db->where('Password', $hashed_password);
-        $query = $this->db->get('agen');
-        
-        if ($query->num_rows() == 1) {
-            return $query->row_array();
-        } else {
-            return false;
+        public function Login_Agen($username, $password) {
+            $hashed_password = md5($password);
+            
+            $this->db->where('Username', $username);
+            $this->db->where('Password', $hashed_password);
+            $query = $this->db->get('agen');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
         }
-    }
-    
-    public function Login_Customer($username, $password) {
-        $hashed_password = md5($password);
         
-        $this->db->where('Username', $username);
-        $this->db->where('Password', $hashed_password);
-        $query = $this->db->get('customer');
-        
-        if ($query->num_rows() == 1) {
-            return $query->row_array();
-        } else {
-            return false;
+        public function Login_Customer($username, $password) {
+            $hashed_password = md5($password);
+            
+            $this->db->where('Username', $username);
+            $this->db->where('Password', $hashed_password);
+            $query = $this->db->get('customer');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
         }
-    }
-    
-    public function Login_Kode($username, $kode) {
-        $this->db->where('Username', $username);
-        $this->db->where('KodeVerifikasi', $kode);
-        $query = $this->db->get('agen');
         
-        if ($query->num_rows() == 1) {
-            return $query->row_array();
-        } else {
-            return false;
+        public function Login_Kode($username, $kode) {
+            $this->db->where('Username', $username);
+            $this->db->where('KodeVerifikasi', $kode);
+            $query = $this->db->get('agen');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
         }
-    }
-    
-    public function Check_Login($idAgen) {
+        
+        public function Check_Login($idAgen) {
 
-        $this->db->where('IdAgen', $idAgen);
-        $query = $this->db->get('agen');
+            $this->db->where('IdAgen', $idAgen);
+            $query = $this->db->get('agen');
 
-        if ($query->num_rows() == 1) {
-            return $query->row_array();
-        } else {
-            return false;
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
         }
-    }
     
     // Data ============================================================================================================================================================================================
     
-    public function Check_Token($token) {
-        $this->db->where('Token', $token);
-        $query = $this->db->get('device');
-        return $query->row_array();
-    }
-    
-    public function Check_Token_Agen($token) {
-        $this->db->where('Token', $token);
-        $query = $this->db->get('deviceagen');
-        return $query->row_array();
-    }
-    
-    public function Check_Token_Customer($token) {
-        $this->db->where('Token', $token);
-        $query = $this->db->get('devicecustomer');
-        return $query->row_array();
-    }
-    
-    public function Get_Device($status) {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	device
-                                    WHERE
-                                        Status = $status; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Device_Agen($id) {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	deviceagen
-                                    WHERE
-                                        IdAgen = $id; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Device_Customer() {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	devicecustomer; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Device_All($limit, $offset) {
-        $query = $this->db->query("
-            SELECT * FROM devicecustomer
-            UNION ALL
-            SELECT * FROM deviceagen
-            LIMIT $offset, $limit
-        ");
-    
-        return $query->result_array();
-    }
-    
-    public function Get_Provinsi() {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	provinsi; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Daerah($id) {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	daerah
-                                    WHERE
-                                        IdProvinsi = $id; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Wilayah($id) {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	wilayah
-                                    WHERE
-                                        IdDaerah = $id; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Jenis_Properti() {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	jenisproperty; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Agen_List() {
-        $query = $this->db->query(" SELECT
-                                        agen.IdAgen,
-                                        agen.NamaTemp
-                                    FROM
-                                        agen
-                                    WHERE
-                                        agen.IsAkses = 1 AND
-                                        agen.Approve = 1; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Agen($limit, $offset, $search = '') {
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " AND agen.NamaTemp LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
-            }
+        public function Check_Token($token) {
+            $this->db->where('Token', $token);
+            $query = $this->db->get('device');
+            return $query->row_array();
         }
-    
-        $query = $this->db->query("
-            SELECT
-                agen.IdAgen,
-                agen.NamaTemp,
-                agen.NoTelpTemp,
-                agen.Email,
-                agen.KotaAgen,
-                agen.Photo,
-                COUNT(listing.IdListing) AS listing,
-                COUNT(CASE WHEN listing.Kondisi = 'Jual' OR listing.Kondisi = 'Jual/Sewa' THEN 1 END) AS jual,
-                COUNT(CASE WHEN listing.Kondisi = 'Sewa' THEN 1 END) AS sewa,
-                COUNT(CASE WHEN listing.Sold = 1 OR listing.SoldAgen = 1 THEN 1 END) AS terjual,
-                COUNT(CASE WHEN listing.Rented = 1 OR listing.RentedAgen = 1 THEN 1 END) AS tersewa
-            FROM
-                agen
-                LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
-                AND listing.IsDouble = 0
-                AND listing.IsDelete = 0
-            WHERE
-                agen.IsAkses = 1
-                AND agen.Approve = 1
-                AND agen.IsAktif = 1
-                $searchCondition
-            GROUP BY
-                agen.IdAgen,
-                agen.NamaTemp,
-                agen.NoTelpTemp,
-                agen.Email,
-                agen.KotaAgen,
-                agen.Photo
-            LIMIT ? OFFSET ?
-        ", array($limit, $offset));
-    
-        return $query->result_array();
-    }
-    
-    public function Get_Agen_Kode_List($limit, $offset, $search = '') {
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " AND agen.NamaTemp LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
-            }
+        
+        public function Check_Token_Agen($token) {
+            $this->db->where('Token', $token);
+            $query = $this->db->get('deviceagen');
+            return $query->row_array();
         }
-    
-        $query = $this->db->query("
-            SELECT
-                agen.IdAgen,
-                agen.NamaTemp,
-                agen.NoTelp,
-                agen.Photo,
-                agen.Username,
-                agen.KodeVerifikasi
-            FROM
-                agen
-            WHERE
-                agen.IsAkses = 1
-                AND agen.Approve = 1
-                AND agen.IsAktif = 1
-                $searchCondition
-            LIMIT ? OFFSET ?", array($limit, $offset)
-            );
-            
-        return $query->result_array();
-    }
-    
-    public function Get_Detail_Agen($id) {
-        $query = $this->db->query(" SELECT 
-                                        agen.*,
-                                        karyawan.NoKaryawan,
-                                        COUNT(listing.IdListing) AS listing,
-                                        COUNT(CASE WHEN listing.Kondisi = 'Jual' OR listing.Kondisi = 'Jual/Sewa' THEN 1 END) AS jual,
-                                        COUNT(CASE WHEN listing.Kondisi = 'Sewa' THEN 1 END) AS sewa,
-                                        COUNT(CASE WHEN listing.Sold = 1 OR listing.SoldAgen = 1 THEN 1 END) AS terjual,
-                                        COUNT(CASE WHEN listing.Rented = 1 OR listing.RentedAgen = 1 THEN 1 END) AS tersewa
-                                    FROM 
-                                        agen
-                                        LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
-                                            AND listing.IsDouble = 0
-                                            AND listing.IsDelete = 0
-                                        LEFT JOIN karyawan ON agen.IdAgen = karyawan.IdAgen
-                                    WHERE
-                                        agen.IsAkses = 1 
-                                        AND agen.Approve = 1 
-                                        AND agen.IdAgen = $id
-                                    GROUP BY 
-                                        agen.IdAgen, karyawan.NoKaryawan;");
-        return $query->result_array();
-    }
-    
-    public function Get_Pelamar($limit, $offset) {
-        $query = $this->db->query(" SELECT
-                                        agen.IdAgen,
-                                        agen.Nama,
-                                        agen.NoTelp,
-                                        agen.Email,
-                                        agen.Pendidikan,
-                                        agen.AlamatDomisili,
-                                        agen.Photo
-                                    FROM
-                                        agen
-                                    WHERE
-                                        agen.IsAkses = 1 AND
-                                        agen.Approve = 0 AND
-                                        agen.Reject = 0
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Detail_Pelamar($id) {
-        $query = $this->db->query(" SELECT 
-                                        * 
-                                    FROM 
-                                        agen 
-                                    WHERE 
-                                        IdAgen = $id; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Detail_Pertanyaan($id) {
-        $query = $this->db->query(" SELECT 
-                                        * 
-                                    FROM 
-                                        psikotes 
-                                    WHERE 
-                                        IdAgen = $id; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Kota_Agen() {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	kotaagen; ");
-        return $query->result_array();
-    }
+        
+        public function Check_Token_Customer($token) {
+            $this->db->where('Token', $token);
+            $query = $this->db->get('devicecustomer');
+            return $query->row_array();
+        }
+        
+        public function Get_Device($status) {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            device
+                                        WHERE
+                                            Status = $status; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Device_Agen($id) {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            deviceagen
+                                        WHERE
+                                            IdAgen = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Device_Customer() {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            devicecustomer; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Device_All($limit, $offset) {
+            $query = $this->db->query("
+                SELECT * FROM devicecustomer
+                UNION ALL
+                SELECT * FROM deviceagen
+                LIMIT $offset, $limit
+            ");
+        
+            return $query->result_array();
+        }
+        
+        public function Get_Provinsi() {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            provinsi; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Daerah($id) {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            daerah
+                                        WHERE
+                                            IdProvinsi = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Wilayah($id) {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            wilayah
+                                        WHERE
+                                            IdDaerah = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Jenis_Properti() {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            jenisproperty; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Agen_List() {
+            $query = $this->db->query(" SELECT
+                                            agen.IdAgen,
+                                            agen.NamaTemp
+                                        FROM
+                                            agen
+                                        WHERE
+                                            agen.IsAkses = 1 AND
+                                            agen.Approve = 1; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Agen($limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND agen.NamaTemp LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+        
+            $query = $this->db->query("
+                SELECT
+                    agen.IdAgen,
+                    agen.NamaTemp,
+                    agen.NoTelpTemp,
+                    agen.Email,
+                    agen.KotaAgen,
+                    agen.Photo,
+                    COUNT(listing.IdListing) AS listing,
+                    COUNT(CASE WHEN listing.Kondisi = 'Jual' OR listing.Kondisi = 'Jual/Sewa' THEN 1 END) AS jual,
+                    COUNT(CASE WHEN listing.Kondisi = 'Sewa' THEN 1 END) AS sewa,
+                    COUNT(CASE WHEN listing.Sold = 1 OR listing.SoldAgen = 1 THEN 1 END) AS terjual,
+                    COUNT(CASE WHEN listing.Rented = 1 OR listing.RentedAgen = 1 THEN 1 END) AS tersewa
+                FROM
+                    agen
+                    LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
+                    AND listing.IsDouble = 0
+                    AND listing.IsDelete = 0
+                WHERE
+                    agen.IsAkses = 1
+                    AND agen.Approve = 1
+                    AND agen.IsAktif = 1
+                    $searchCondition
+                GROUP BY
+                    agen.IdAgen,
+                    agen.NamaTemp,
+                    agen.NoTelpTemp,
+                    agen.Email,
+                    agen.KotaAgen,
+                    agen.Photo
+                LIMIT ? OFFSET ?
+            ", array($limit, $offset));
+        
+            return $query->result_array();
+        }
+        
+        public function Get_Agen_Kode_List($limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND agen.NamaTemp LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+        
+            $query = $this->db->query("
+                SELECT
+                    agen.IdAgen,
+                    agen.NamaTemp,
+                    agen.NoTelp,
+                    agen.Photo,
+                    agen.Username,
+                    agen.KodeVerifikasi
+                FROM
+                    agen
+                WHERE
+                    agen.IsAkses = 1
+                    AND agen.Approve = 1
+                    AND agen.IsAktif = 1
+                    $searchCondition
+                LIMIT ? OFFSET ?", array($limit, $offset)
+                );
+                
+            return $query->result_array();
+        }
+        
+        public function Get_Detail_Agen($id) {
+            $query = $this->db->query(" SELECT 
+                                            agen.*,
+                                            karyawan.NoKaryawan,
+                                            COUNT(listing.IdListing) AS listing,
+                                            COUNT(CASE WHEN listing.Kondisi = 'Jual' OR listing.Kondisi = 'Jual/Sewa' THEN 1 END) AS jual,
+                                            COUNT(CASE WHEN listing.Kondisi = 'Sewa' THEN 1 END) AS sewa,
+                                            COUNT(CASE WHEN listing.Sold = 1 OR listing.SoldAgen = 1 THEN 1 END) AS terjual,
+                                            COUNT(CASE WHEN listing.Rented = 1 OR listing.RentedAgen = 1 THEN 1 END) AS tersewa
+                                        FROM 
+                                            agen
+                                            LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
+                                                AND listing.IsDouble = 0
+                                                AND listing.IsDelete = 0
+                                            LEFT JOIN karyawan ON agen.IdAgen = karyawan.IdAgen
+                                        WHERE
+                                            agen.IsAkses = 1 
+                                            AND agen.Approve = 1 
+                                            AND agen.IdAgen = $id
+                                        GROUP BY 
+                                            agen.IdAgen, karyawan.NoKaryawan;");
+            return $query->result_array();
+        }
+        
+        public function Get_Pelamar($limit, $offset) {
+            $query = $this->db->query(" SELECT
+                                            agen.IdAgen,
+                                            agen.Nama,
+                                            agen.NoTelp,
+                                            agen.Email,
+                                            agen.Pendidikan,
+                                            agen.AlamatDomisili,
+                                            agen.Photo
+                                        FROM
+                                            agen
+                                        WHERE
+                                            agen.IsAkses = 1 AND
+                                            agen.Approve = 0 AND
+                                            agen.Reject = 0
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Detail_Pelamar($id) {
+            $query = $this->db->query(" SELECT 
+                                            * 
+                                        FROM 
+                                            agen 
+                                        WHERE 
+                                            IdAgen = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Detail_Pertanyaan($id) {
+            $query = $this->db->query(" SELECT 
+                                            * 
+                                        FROM 
+                                            psikotes 
+                                        WHERE 
+                                            IdAgen = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_Kota_Agen() {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            kotaagen; ");
+            return $query->result_array();
+        }
     
     // Event =============================================================================================================================================================================================
     
-    public function Get_Event($tgl, $hasYear = true) {
-        if ($hasYear) {
-            $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
-        } else {
-            $query = $this->db->query("
-                SELECT * FROM event WHERE DATE_FORMAT(TglEvent, '%m-%d') = '$tgl';
-            ");
+        public function Get_Event($tgl, $hasYear = true) {
+            if ($hasYear) {
+                $query = $this->db->query("SELECT * FROM event WHERE TglEvent = '$tgl';");
+            } else {
+                $query = $this->db->query("
+                    SELECT * FROM event WHERE DATE_FORMAT(TglEvent, '%m-%d') = '$tgl';
+                ");
+            }
+        
+            return $query ? $query->result_array() : [];
         }
-    
-        return $query ? $query->result_array() : [];
-    }
-    
-    public function Get_Event_All() {
-        $query = $this->db->query(" SELECT 
-                                    	*
-                                    FROM 
-                                    	event
-                                    WHERE
-                                        TipeEvent != 'Ultah' AND
-                                        TipeEvent != 'Closing'; ");
-        return $query->result_array();
-    }
-    
-    // Count ---------------------------------------------------------------
-    
-    public function Count_Pelamar(){
-        $query = $this->db->query(" SELECT 
-                                    	COUNT(*) AS Total
-                                    FROM 
-                                        agen 
-                                    WHERE 
-                                        agen.IsAkses = 1 AND
-                                        agen.Approve = 0 AND
-                                        agen.Reject = 0;");
-        return $query->result_array();
-    }
-    
+        
+        public function Get_Event_All() {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            event
+                                        WHERE
+                                            TipeEvent != 'Ultah' AND
+                                            TipeEvent != 'Closing'; ");
+            return $query->result_array();
+        }
+        
     // Closing =========================================================================================================================================================================================
     
-    public function Get_Closing_Agen($id, $limit, $offset, $search = '') {
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " AND CONCAT(closing.NamaPemilik, ' ', closing.NamaBuyer, ' ', closing.JenisProperti, ' ', closing.AlamatProperti) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+        public function Get_Closing_Agen($id, $limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(closing.NamaPemilik, ' ', closing.NamaBuyer, ' ', closing.JenisProperti, ' ', closing.AlamatProperti) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
             }
+            
+            $query = $this->db->query(" SELECT 
+                                            closing.*,
+                                            agen.IdAgen AS IdAgenAgen,
+                                            agen.NamaTemp,
+                                            agen.NoTelp,
+                                            agen.Instagram
+                                        FROM 
+                                            closing
+                                            LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
+                                        WHERE 
+                                            closing.IdAgen = $id
+                                            $searchCondition
+                                        ORDER BY 
+                                            closing.TglMaksPelunasan ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result_array();
         }
         
-        $query = $this->db->query(" SELECT 
-                                        closing.*,
-                                        agen.IdAgen AS IdAgenAgen,
-                                        agen.NamaTemp,
-                                        agen.NoTelp,
-                                        agen.Instagram
-                                    FROM 
-                                        closing
-                                        LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
-                                    WHERE 
-                                        closing.IdAgen = $id
-                                        $searchCondition
-                                    ORDER BY 
-                                        closing.TglMaksPelunasan ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Closing($limit, $offset, $search = '') {
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " WHERE CONCAT(closing.NamaPemilik, ' ', closing.NamaBuyer, ' ', closing.JenisProperti, ' ', closing.AlamatProperti) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+        public function Get_Closing($limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " WHERE CONCAT(closing.NamaPemilik, ' ', closing.NamaBuyer, ' ', closing.JenisProperti, ' ', closing.AlamatProperti) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
             }
+            
+            $query = $this->db->query(" SELECT 
+                                            closing.*,
+                                            agen.IdAgen AS IdAgenAgen,
+                                            agen.NamaTemp,
+                                            agen.NoTelp,
+                                            agen.Instagram
+                                        FROM 
+                                            closing
+                                            LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
+                                            $searchCondition
+                                        ORDER BY 
+                                            closing.TglMaksPelunasan ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result_array();
         }
         
-        $query = $this->db->query(" SELECT 
-                                        closing.*,
-                                        agen.IdAgen AS IdAgenAgen,
-                                        agen.NamaTemp,
-                                        agen.NoTelp,
-                                        agen.Instagram
-                                    FROM 
-                                        closing
-                                        LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
-                                        $searchCondition
-                                    ORDER BY 
-                                        closing.TglMaksPelunasan ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Detail_Closing($id) {
-        $query = $this->db->query(" SELECT 
-                                        closing.*,
-                                        agen.IdAgen AS IdAgenAgen,
-                                        agen.NamaTemp,
-                                        agen.NoTelp,
-                                        agen.Instagram
-                                    FROM 
-                                        closing
-                                        LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
-                                    WHERE 
-                                        closing.IdClosing = $id; ");
-        return $query->result_array();
-    }
-    
-    public function Get_Report_Closing($limit, $offset, $search = '') {
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
-            }
+        public function Get_Detail_Closing($id) {
+            $query = $this->db->query(" SELECT 
+                                            closing.*,
+                                            agen.IdAgen AS IdAgenAgen,
+                                            agen.NamaTemp,
+                                            agen.NoTelp,
+                                            agen.Instagram
+                                        FROM 
+                                            closing
+                                            LEFT JOIN agen ON closing.IdAgen = agen.IdAgen
+                                        WHERE 
+                                            closing.IdClosing = $id; ");
+            return $query->result_array();
         }
         
-        $query = $this->db->query(" SELECT
-                                        reportsold.IdReportSold,
-                                        reportsold.IdListing As IdListingReport,
-                                        reportsold.Report,
-                                        reportsold.IsRead,
-                                        listing.IdListing,
-                                        listing.NamaListing,
-                                        listing.Kondisi,
-                                        listing.Harga,
-                                        listing.HargaSewa,
-                                        listing.Wide,
-                                        listing.Land,
-                                        listing.Priority,
-                                        listing.NoArsip,
-                                        listing.Img1,
-                                        listing.TipeHarga,
-                                        listing.IsSingleOpen
-                                    FROM
-                                        reportsold
-                                        LEFT JOIN listing ON reportsold.IdListing = listing.IdListing
-                                    WHERE
-                                        IsRead = 0
-                                        $searchCondition
-                                    ORDER BY 
-                                        IdListing DESC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result_array();
-    }
+        public function Get_Report_Closing($limit, $offset, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(listing.NamaListing, ' ', listing.MetaNamaListing, ' ', listing.Alamat, ' ', listing.Location, ' ', listing.Wilayah, ' ', listing.Daerah) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+            
+            $query = $this->db->query(" SELECT
+                                            reportsold.IdReportSold,
+                                            reportsold.IdListing As IdListingReport,
+                                            reportsold.Report,
+                                            reportsold.IsRead,
+                                            listing.IdListing,
+                                            listing.NamaListing,
+                                            listing.Kondisi,
+                                            listing.Harga,
+                                            listing.HargaSewa,
+                                            listing.Wide,
+                                            listing.Land,
+                                            listing.Priority,
+                                            listing.NoArsip,
+                                            listing.Img1,
+                                            listing.TipeHarga,
+                                            listing.IsSingleOpen
+                                        FROM
+                                            reportsold
+                                            LEFT JOIN listing ON reportsold.IdListing = listing.IdListing
+                                        WHERE
+                                            IsRead = 0
+                                            $searchCondition
+                                        ORDER BY 
+                                            IdListing DESC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result_array();
+        }
     
     // Report Buyer ====================================================================================================================================================================================
     
-    public function Get_Report_Buyer_Agen($id, $limit, $offset, $search = ''){
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " AND reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+        public function Get_Report_Buyer_Agen($id, $limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
             }
+                
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            reportbuyer.IdAgen = $id
+                                            $searchCondition
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
         }
-            
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        reportbuyer.IdAgen = $id
-                                        $searchCondition
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer_Agen_Ready($id, $limit, $offset){
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        reportbuyer.IdAgen = $id
-                                        AND DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
-                                        AND reportbuyer.IsClose = 0
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer_Agen_To_Expired($id, $limit, $offset){
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        reportbuyer.IdAgen = $id
-                                        AND DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
-                                        AND reportbuyer.IsClose = 0
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer_Agen_Expired($id, $limit, $offset){
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        reportbuyer.IdAgen = $id
-                                        AND DATEDIFF(NOW(), reportbuyer.TglReport) > 30
-                                        AND reportbuyer.IsClose = 0
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer($limit, $offset, $search = ''){
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " WHERE reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+        
+        public function Get_Report_Buyer_Agen_Ready($id, $limit, $offset){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            reportbuyer.IdAgen = $id
+                                            AND DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
+                                            AND reportbuyer.IsClose = 0
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
+        }
+        
+        public function Get_Report_Buyer_Agen_To_Expired($id, $limit, $offset){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            reportbuyer.IdAgen = $id
+                                            AND DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
+                                            AND reportbuyer.IsClose = 0
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
+        }
+        
+        public function Get_Report_Buyer_Agen_Expired($id, $limit, $offset){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            reportbuyer.IdAgen = $id
+                                            AND DATEDIFF(NOW(), reportbuyer.TglReport) > 30
+                                            AND reportbuyer.IsClose = 0
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
+        }
+        
+        public function Get_Report_Buyer($limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " WHERE reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
             }
+                
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                            $searchCondition
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport DESC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
         }
-            
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                        $searchCondition
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer_Ready($limit, $offset){
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
-                                        AND reportbuyer.IsClose = 0
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer_Expired($limit, $offset){
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        DATEDIFF(NOW(), reportbuyer.TglReport) > 30
-                                        AND reportbuyer.IsClose = 0
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY 
-                                        reportbuyer.TglReport ASC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Report_Buyer_To_Expired($limit, $offset){
-        $query = $this->db->query(" SELECT 
-                                        *
-                                    FROM 
-                                        reportbuyer
-                                    WHERE 
-                                        DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
-                                        AND reportbuyer.IsClose = 0
-                                    GROUP BY
-                                    	reportbuyer.IdReportBuyer
-                                    ORDER BY
-                                        DATEDIFF(NOW(), reportbuyer.TglReport) DESC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Detail_Report_Buyer($id){
-        $query = $this->db->query(" SELECT 
-                                        reportbuyer.*,
-                                        agen.IdAgen AS IdAgenAgen,
-                                        agen.NamaTemp,
-                                        agen.NoTelp,
-                                        agen.Instagram
-                                    FROM 
-                                        reportbuyer
-                                        LEFT JOIN agen ON reportbuyer.IdAgen = agen.IdAgen
-                                    WHERE 
-                                        reportbuyer.IdReportBuyer = $id; ");
-        return $query->result();
-    }
+        
+        public function Get_Report_Buyer_Ready($limit, $offset){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
+                                            AND reportbuyer.IsClose = 0
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
+        }
+        
+        public function Get_Report_Buyer_Expired($limit, $offset){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            DATEDIFF(NOW(), reportbuyer.TglReport) > 30
+                                            AND reportbuyer.IsClose = 0
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY 
+                                            reportbuyer.TglReport ASC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
+        }
+        
+        public function Get_Report_Buyer_To_Expired($limit, $offset){
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            reportbuyer
+                                        WHERE 
+                                            DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
+                                            AND reportbuyer.IsClose = 0
+                                        GROUP BY
+                                            reportbuyer.IdReportBuyer
+                                        ORDER BY
+                                            DATEDIFF(NOW(), reportbuyer.TglReport) DESC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
+        }
+        
+        public function Get_Detail_Report_Buyer($id){
+            $query = $this->db->query(" SELECT 
+                                            reportbuyer.*,
+                                            agen.IdAgen AS IdAgenAgen,
+                                            agen.NamaTemp,
+                                            agen.NoTelp,
+                                            agen.Instagram
+                                        FROM 
+                                            reportbuyer
+                                            LEFT JOIN agen ON reportbuyer.IdAgen = agen.IdAgen
+                                        WHERE 
+                                            reportbuyer.IdReportBuyer = $id; ");
+            return $query->result();
+        }
     
     // Report Listing ==================================================================================================================================================================================
     
-    public function Get_Report_Listing_Buyer_Agen($idAgen, $limit, $offset, $search = ''){
-        $searchCondition = '';
-        if (!empty($search)) {
-            $keywords = explode(' ', $search);
-            foreach ($keywords as $keyword) {
-                $searchCondition .= " AND CONCAT(reportlisting.NamaBuyer, ' ', listing.NamaListing, ' ', listing.AlamatTemplate) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+        public function Get_Report_Listing_Buyer_Agen($idAgen, $limit, $offset, $search = ''){
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND CONCAT(reportlisting.NamaBuyer, ' ', listing.NamaListing, ' ', listing.AlamatTemplate) LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
             }
+            
+            $query = $this->db->query(" SELECT
+                                            reportlisting.*,
+                                            listing.NamaListing,
+                                            listing.AlamatTemplate,
+                                            listing.Img1
+                                        FROM
+                                            reportlisting
+                                            LEFT JOIN listing ON reportlisting.IdListing = listing.IdListing
+                                        WHERE
+                                            (IdAgenListing = $idAgen OR IdAgenCoListing = $idAgen OR IdAgenBuyer = $idAgen)
+                                            $searchCondition
+                                        ORDER BY 
+                                            TglUpdateReport DESC
+                                        LIMIT $limit OFFSET $offset; ");
+            return $query->result();
         }
         
-        $query = $this->db->query(" SELECT
-                                    	reportlisting.*,
-                                        listing.NamaListing,
-                                        listing.AlamatTemplate,
-                                        listing.Img1
-                                    FROM
-                                    	reportlisting
-                                        LEFT JOIN listing ON reportlisting.IdListing = listing.IdListing
-                                    WHERE
-                                    	(IdAgenListing = $idAgen OR IdAgenCoListing = $idAgen OR IdAgenBuyer = $idAgen)
-                                        $searchCondition
-                                    ORDER BY 
-                                    	TglUpdateReport DESC
-                                    LIMIT $limit OFFSET $offset; ");
-        return $query->result();
-    }
-    
-    public function Get_Detail_Report_Listing_Buyer($id){
-        $query = $this->db->query(" SELECT 
-                                        reportlisting.*,
-                                        listing.*,
-                                        agen.IdAgen AS IdAgenAgen,
-                                        agen.NamaTemp,
-                                        agen.NoTelp,
-                                        agen.Instagram
-                                    FROM 
-                                        reportlisting
-                                        LEFT JOIN listing ON reportlisting.IdListing = listing.IdListing
-                                        LEFT JOIN agen ON reportlisting.IdAgenBuyer = agen.IdAgen
-                                    WHERE 
-                                        IdReportListing = $id; ");
-        return $query->result();
-    }
+        public function Get_Detail_Report_Listing_Buyer($id){
+            $query = $this->db->query(" SELECT 
+                                            reportlisting.*,
+                                            listing.*,
+                                            agen.IdAgen AS IdAgenAgen,
+                                            agen.NamaTemp,
+                                            agen.NoTelp,
+                                            agen.Instagram
+                                        FROM 
+                                            reportlisting
+                                            LEFT JOIN listing ON reportlisting.IdListing = listing.IdListing
+                                            LEFT JOIN agen ON reportlisting.IdAgenBuyer = agen.IdAgen
+                                        WHERE 
+                                            IdReportListing = $id; ");
+            return $query->result();
+        }
     
     // Tampungan =======================================================================================================================================================================================
     
@@ -2098,639 +2084,112 @@ class ModelFlutter extends CI_Model
         
     // Count ========================================================================================================================================================================================
     
-    public function Count_Report_Vendor(){
-        $query = $this->db->query(" SELECT 
-                                    	COUNT(*) AS Total
-                                    FROM 
-                                    	listing
-                                    WHERE
-                                        IsDouble = 0 AND 
-                                        IsDelete = 0 AND 
-                                        Sold = 0 AND 
-                                        SoldAgen = 0 AND 
-                                        Rented = 0 AND 
-                                        RentedAgen = 0 AND
-                                        Pending = 0 AND
-                                        DAY(TglInput) = DAY(CURDATE());");
-        return $query->result_array();
-    }
-    
-    public function Count_Report_Closing(){
-        $query = $this->db->query(" SELECT 
-                                    	COUNT(*) AS Total
-                                    FROM 
-                                    	reportsold
-                                    WHERE
-                                        IsRead = 0;");
-        return $query->result_array();
-    }
-    
-    public function Count_Pasang_Banner(){
-        $query = $this->db->query(" SELECT 
-                                    	COUNT(*) AS Total
-                                    FROM 
-                                    	listing
-                                    WHERE
-                                        IsDouble = 0 AND 
-                                        IsDelete = 0 AND 
-                                        Sold = 0 AND 
-                                        SoldAgen = 0 AND 
-                                        Rented = 0 AND 
-                                        RentedAgen = 0 AND
-                                        Pending = 0 AND
-                                        Banner = 'Ya' AND 
-                                        IsPasangBanner = 0;");
-        return $query->result_array();
-    }
-    
-    public function Count_Pasang_Banner_Agen($id){
-        $query = $this->db->query(" SELECT 
-                                    	COUNT(*) AS Total
-                                    FROM 
-                                    	listing
-                                    WHERE
-                                        IsDouble = 0 AND 
-                                        IsDelete = 0 AND 
-                                        Sold = 0 AND 
-                                        SoldAgen = 0 AND 
-                                        Rented = 0 AND 
-                                        RentedAgen = 0 AND
-                                        Pending = 0 AND
-                                        Banner = 'Ya' AND 
-                                        IsPasangBanner = 0 AND 
-                                        (IdAgen = $id OR IdAgenCo = $id);");
-        return $query->result_array();
-    }
-    
-    public function Count_Pasang_Banner_Hari_Ini(){
-        $query = $this->db->query(" SELECT 
-                                    	COUNT(*) AS Total
-                                    FROM 
-                                    	pasangbanner
-                                    WHERE
-                                        DATE(UpdatedAt) = CURDATE();");
-        return $query->result_array();
-    }
-    
-    // Unused =======================================================================================================================================================================================
-        
-    // public function Get_List_PraListing_Officer(){
-    //     $query = $this->db->query(" SELECT 
-    //                                 	pralisting.IdPraListing,
-    //                                     pralisting.NamaListing,
-    //                                     pralisting.Harga,
-    //                                     pralisting.HargaSewa,
-    //                                     pralisting.Bed,
-    //                                     pralisting.Bath,
-    //                                     pralisting.Level,
-    //                                     pralisting.Garage,
-    //                                     pralisting.Img1,
-    //                                     pralisting.TipeHarga
-    //                                 FROM 
-    //                                 	pralisting
-    //                                 WHERE
-    //                                 	IsCekLokasi = 0 AND
-    //                                     IsRejected = 0 AND
-    //                                     IsDelete = 0 AND
-    //                                     IsAdmin = 0 AND
-    //                                     IsManager = 0 ORDER BY 
-    //                                     pralisting.Priority ASC, 
-    //                                     pralisting.IdPraListing ASC; ");
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_PraListing_Rejected(){
-    //     $query = $this->db->query(" SELECT 
-    //                                 	pralisting.IdPraListing,
-    //                                     pralisting.NamaListing,
-    //                                     pralisting.Harga,
-    //                                     pralisting.HargaSewa,
-    //                                     pralisting.Bed,
-    //                                     pralisting.Bath,
-    //                                     pralisting.Level,
-    //                                     pralisting.Garage,
-    //                                     pralisting.Img1,
-    //                                     pralisting.TipeHarga
-    //                                 FROM 
-    //                                 	pralisting
-    //                                 WHERE
-    //                                 	IsRejected = 1 AND
-    //                                     IsDelete = 0 ORDER BY 
-    //                                     pralisting.Priority ASC, 
-    //                                     pralisting.IdPraListing ASC; ");
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_Detail_PraListing($id){
-    //     $query = $this->db->query(" SELECT 
-    //                                 	pralisting.*, 
-    //                                     agen.IdAgen, 
-    //                                     agen.Nama, 
-    //                                     agen.NoTelp, 
-    //                                     agen.Instagram, 
-    //                                     vendor.IdVendor, 
-    //                                     vendor.NamaLengkap AS NamaVendor, 
-    //                                     vendor.NoTelp AS NoTelpVendor
-    //                                 FROM 
-    //                                 	pralisting LEFT JOIN agen USING(IdAgen) LEFT JOIN vendor USING(IdVendor)
-    //                                 WHERE
-    //                                 	pralisting.IdPralisting = $id; ");
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_Spec_PraListing($id){
-    //     $query = $this->db->query(" SELECT 
-    //                                 	pralisting.IdPraListing,
-    //                                 	pralisting.Size,
-    //                                 	pralisting.Fee,
-    //                                     pralisting.TglInput,
-    //                                     pralisting.JenisProperti,
-    //                                     pralisting.Kondisi,
-    //                                     pralisting.SHM,
-    //                                     pralisting.HGB,
-    //                                     pralisting.HSHP,
-    //                                     pralisting.PPJB,
-    //                                     pralisting.Stratatitle,
-    //                                     pralisting.AJB,
-    //                                     pralisting.PetokD,
-    //                                     pralisting.Wide,
-    //                                     pralisting.Land,
-    //                                     pralisting.Dimensi,
-    //                                     pralisting.Hadap,
-    //                                     pralisting.Bed,
-    //                                     pralisting.BedArt,
-    //                                     pralisting.Bath,
-    //                                     pralisting.BathArt,
-    //                                     pralisting.Level,
-    //                                     pralisting.Listrik,
-    //                                     pralisting.SumberAir,
-    //                                     pralisting.Prabot,
-    //                                     vendor.IdVendor,
-    //                                     vendor.NamaLengkap AS NamaVendor,
-    //                                     vendor.NoTelp AS NoTelpVendor
-    //                                 FROM 
-    //                                 	pralisting
-    //                                 	LEFT JOIN vendor USING(IdVendor)
-    //                                 WHERE
-    //                                 	pralisting.IdPraListing = $id");
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_Agen_PraListing($id){
-    //     $query = $this->db->query(" SELECT 
-    //                                     pralisting.IdPraListing,
-    //                                     pralisting.IdAgen,
-    //                                     pralisting.IdAgenCo,
-    //                                     agen1.IdAgen AS IdAgenAgen,
-    //                                     agen1.NamaTemp AS NamaTemp,
-    //                                     agen1.NoTelp AS NoTelp,
-    //                                     agen1.Instagram AS Instagram,
-    //                                     agen2.IdAgen AS IdAgenCo,
-    //                                     agen2.NamaTemp AS NamaTempCo,
-    //                                     agen2.NoTelp AS NoTelpCo,
-    //                                     agen2.Instagram AS InstagramCo
-    //                                 FROM 
-    //                                     pralisting
-    //                                     LEFT JOIN agen AS agen1 ON pralisting.IdAgen = agen1.IdAgen
-    //                                     LEFT JOIN agen AS agen2 ON pralisting.IdAgenCo = agen2.IdAgen
-    //                                 WHERE
-    //                                     pralisting.IdPraListing = $id");
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Rumah($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Rumah' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Ruko($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Ruko' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Tanah($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Tanah' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Gudang($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Gudang' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_RuangUsaha($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Ruang Usaha' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Villa($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Villa' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Apartemen($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Apartemen' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Pabrik($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Pabrik' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Kantor($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Kantor' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Hotel($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Hotel' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Rukost($limit, $offset) {
-    //     $query = $this->db->query(" SELECT 
-    //                                     IdListing,
-    //                                     NamaListing,
-    //                                     Kondisi,
-    //                                     Harga,
-    //                                     HargaSewa,
-    //                                     Wide,
-    //                                     Land,
-    //                                     Priority,
-    //                                     NoArsip,
-    //                                     Img1
-    //                                 FROM 
-    //                                     listing
-    //                                 WHERE
-    //                                     JenisProperti = 'Rukost' AND
-    //                                     IsDouble = 0 AND 
-    //                                     IsDelete = 0 AND 
-    //                                     Sold = 0 AND 
-    //                                     SoldAgen = 0 AND 
-    //                                     Rented = 0 AND 
-    //                                     RentedAgen = 0 AND
-    //                                     Pending = 0 
-    //                                 ORDER BY
-    //                                     IdListing DESC
-    //                                 LIMIT $limit OFFSET $offset;");
-        
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_List_Listing_Filter($filters) {
-    //     $this->db->select('*');
-    //     $this->db->from('listing');
+        public function Count_Pelamar(){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            agen 
+                                        WHERE 
+                                            agen.IsAkses = 1 AND
+                                            agen.Approve = 0 AND
+                                            agen.Reject = 0;");
+            return $query->result_array();
+        }
 
-    //     if (!empty($filters['Kondisi'])) {
-    //         $this->db->where('Kondisi', $filters['Kondisi']);
-    //     }
-    //     if (!empty($filters['JenisProperti'])) {
-    //         $this->db->where('JenisProperti', $filters['JenisProperti']);
-    //     }
-    //     if (!empty($filters['Alamat'])) {
-    //         $this->db->like('Alamat', $filters['Alamat']);
-    //     }
-    //     if (!empty($filters['Wilayah'])) {
-    //         $this->db->like('Wilayah', $filters['Wilayah']);
-    //     }
-    //     if (!empty($filters['Daerah'])) {
-    //         $this->db->where('Daerah', $filters['Daerah']);
-    //     }
-    //     if (!empty($filters['Wide'])) {
-    //         $this->db->where('Wide', $filters['Wide']);
-    //     }
-    //     if (!empty($filters['Land'])) {
-    //         $this->db->where('Land', $filters['Land']);
-    //     }
-    //     if (!empty($filters['Bed'])) {
-    //         $this->db->where('Bed', $filters['Bed']);
-    //     }
-    //     if (!empty($filters['Bath'])) {
-    //         $this->db->where('Bath', $filters['Bath']);
-    //     }
-    //     if (!empty($filters['Kondisi'])) {
-    //         if ($filters['Kondisi'] == 'Jual') {
-    //             if (!empty($filters['HargaMin']) && !empty($filters['HargaMax'])) {
-    //                 $this->db->where('harga_jual >=', $filters['HargaMin']);
-    //                 $this->db->where('harga_jual <=', $filters['HargaMax']);
-    //             } else if (!empty($filters['HargaMin'])) {
-    //                 $this->db->where('harga_jual >=', $filters['HargaMin']);
-    //             } else if (!empty($filters['HargaMax'])) {
-    //                 $this->db->where('harga_jual <=', $filters['HargaMax']);
-    //             }
-    //         } else if ($filters['Kondisi'] == 'Sewa') {
-    //             if (!empty($filters['HargaMin']) && !empty($filters['HargaMax'])) {
-    //                 $this->db->where('harga_sewa >=', $filters['HargaMin']);
-    //                 $this->db->where('harga_sewa <=', $filters['HargaMax']);
-    //             } else if (!empty($filters['HargaMin'])) {
-    //                 $this->db->where('harga_sewa >=', $filters['HargaMin']);
-    //             } else if (!empty($filters['HargaMax'])) {
-    //                 $this->db->where('harga_sewa <=', $filters['HargaMax']);
-    //             }
-    //         }
-    //     }
-
-    //     $query = $this->db->get();
-    //     return $query->result();
-    // }
-    
-    // public function Get_Spec_Listing($id){
-    //     $query = $this->db->query(" SELECT 
-    //                                 	listing.IdListing,
-    //                                 	listing.Size,
-    //                                 	listing.Fee,
-    //                                     listing.TglInput,
-    //                                     listing.JenisProperti,
-    //                                     listing.Kondisi,
-    //                                     listing.SHM,
-    //                                     listing.HGB,
-    //                                     listing.HSHP,
-    //                                     listing.PPJB,
-    //                                     listing.Stratatitle,
-    //                                     listing.AJB,
-    //                                     listing.PetokD,
-    //                                     listing.Wide,
-    //                                     listing.Land,
-    //                                     listing.Dimensi,
-    //                                     listing.Hadap,
-    //                                     listing.Bed,
-    //                                     listing.BedArt,
-    //                                     listing.Bath,
-    //                                     listing.BathArt,
-    //                                     listing.Level,
-    //                                     listing.Listrik,
-    //                                     listing.SumberAir,
-    //                                     listing.Prabot,
-    //                                     vendor.IdVendor,
-    //                                     vendor.NamaLengkap AS NamaVendor,
-    //                                     vendor.NoTelp AS NoTelpVendor
-    //                                 FROM 
-    //                                 	listing
-    //                                 	LEFT JOIN vendor USING(IdVendor)
-    //                                 WHERE
-    //                                 	listing.IdListing = $id");
-    //     return $query->result_array();
-    // }
-    
-    // public function Get_Data_Report_Vendor($id){
+        public function Count_Report_Vendor(){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            listing
+                                        WHERE
+                                            IsDouble = 0 AND 
+                                            IsDelete = 0 AND 
+                                            Sold = 0 AND 
+                                            SoldAgen = 0 AND 
+                                            Rented = 0 AND 
+                                            RentedAgen = 0 AND
+                                            Pending = 0 AND
+                                            DAY(TglInput) = DAY(CURDATE());");
+            return $query->result_array();
+        }
         
-    //     $query = $this->db->query(" SELECT 
-    //                                     *
-    //                                 FROM 
-    //                                 	reportvendor
-    //                                 WHERE
-    //                                     IdListing = $id");
-    //     return $query->result_array();
-    // }
+        public function Count_Report_Closing(){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            reportsold
+                                        WHERE
+                                            IsRead = 0;");
+            return $query->result_array();
+        }
+        
+        public function Count_Pasang_Banner(){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            listing
+                                        WHERE
+                                            IsDouble = 0 AND 
+                                            IsDelete = 0 AND 
+                                            Sold = 0 AND 
+                                            SoldAgen = 0 AND 
+                                            Rented = 0 AND 
+                                            RentedAgen = 0 AND
+                                            Pending = 0 AND
+                                            Banner = 'Ya' AND 
+                                            IsPasangBanner = 0;");
+            return $query->result_array();
+        }
+        
+        public function Count_Pasang_Banner_Agen($id){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            listing
+                                        WHERE
+                                            IsDouble = 0 AND 
+                                            IsDelete = 0 AND 
+                                            Sold = 0 AND 
+                                            SoldAgen = 0 AND 
+                                            Rented = 0 AND 
+                                            RentedAgen = 0 AND
+                                            Pending = 0 AND
+                                            Banner = 'Ya' AND 
+                                            IsPasangBanner = 0 AND 
+                                            (IdAgen = $id OR IdAgenCo = $id);");
+            return $query->result_array();
+        }
+        
+        public function Count_Pasang_Banner_Hari_Ini(){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            pasangbanner
+                                        WHERE
+                                            DATE(UpdatedAt) = CURDATE();");
+            return $query->result_array();
+        }
+        
+        public function Count_Report_Buyer(){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            reportbuyer
+                                        WHERE
+                                            IsRead = 0 AND 
+                                            IsClose = 0;");
+            return $query->result_array();
+        }
+        
+        public function Count_Report_Buyer_Agen($id){
+            $query = $this->db->query(" SELECT 
+                                            COUNT(*) AS Total
+                                        FROM 
+                                            reportbuyer
+                                        WHERE
+                                            IsRead = 0 AND 
+                                            IsClose = 0 AND 
+                                            IdAgen = $id;");
+            return $query->result_array();
+        }
 }
