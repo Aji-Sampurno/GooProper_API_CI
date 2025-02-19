@@ -1935,6 +1935,36 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
+        public function Get_List_Brosur_Primary($id){
+            $query = $this->db->query(" SELECT 
+                                        	*
+                                        FROM 
+                                        	brosurprimary
+                                        WHERE
+                                            IdNew = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_List_Siteplan_Primary($id){
+            $query = $this->db->query(" SELECT 
+                                        	*
+                                        FROM 
+                                        	siteplanprimary
+                                        WHERE
+                                            IdNew = $id; ");
+            return $query->result_array();
+        }
+        
+        public function Get_List_Pricelist_Primary($id){
+            $query = $this->db->query(" SELECT 
+                                        	*
+                                        FROM 
+                                        	pricelistprimary
+                                        WHERE
+                                            IdNew = $id; ");
+            return $query->result_array();
+        }
+        
     // Info =========================================================================================================================================================================================
     
         // Get -----------------------------------------------------------------
