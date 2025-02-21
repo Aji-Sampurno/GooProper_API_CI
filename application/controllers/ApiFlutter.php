@@ -4105,7 +4105,7 @@ class ApiFlutter extends CI_Controller
                                         $this->output
                                             ->set_content_type('application/json')
                                             ->set_status_header(200)
-                                            ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                            ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil', 'id_listing' => $newId]));
                                 } else {
                                     $repost = [
                                         'IdPraListing' => $input['IdPraListing'],
