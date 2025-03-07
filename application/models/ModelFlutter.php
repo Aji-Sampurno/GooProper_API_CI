@@ -1991,7 +1991,9 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                         	brosurprimary
                                         WHERE
-                                            IdListing = $id; ");
+                                            IdListing = $id
+                                        ORDER BY IdBrosur DESC
+                                        LIMIT 1; ");
             return $query->result_array();
         }
         
@@ -2001,7 +2003,9 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                         	siteplanprimary
                                         WHERE
-                                            IdListing = $id; ");
+                                            IdListing = $id
+                                        ORDER BY IdSiteplan DESC
+                                        LIMIT 1; ");
             return $query->result_array();
         }
         
@@ -2011,39 +2015,11 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                         	pricelistprimary
                                         WHERE
-                                            IdListing = $id; ");
+                                            IdListing = $id
+                                        ORDER BY IdPricelist DESC
+                                        LIMIT 1; ");
             return $query->result_array();
         }
-        
-        // public function Get_List_Brosur_Primary($id){
-        //     $query = $this->db->query(" SELECT 
-        //                                 	*
-        //                                 FROM 
-        //                                 	brosurprimary
-        //                                 WHERE
-        //                                     IdNew = $id; ");
-        //     return $query->result_array();
-        // }
-        
-        // public function Get_List_Siteplan_Primary($id){
-        //     $query = $this->db->query(" SELECT 
-        //                                 	*
-        //                                 FROM 
-        //                                 	siteplanprimary
-        //                                 WHERE
-        //                                     IdNew = $id; ");
-        //     return $query->result_array();
-        // }
-        
-        // public function Get_List_Pricelist_Primary($id){
-        //     $query = $this->db->query(" SELECT 
-        //                                 	*
-        //                                 FROM 
-        //                                 	pricelistprimary
-        //                                 WHERE
-        //                                     IdNew = $id; ");
-        //     return $query->result_array();
-        // }
         
     // Info =========================================================================================================================================================================================
     
