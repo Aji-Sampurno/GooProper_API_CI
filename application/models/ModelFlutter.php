@@ -72,16 +72,61 @@ class ModelFlutter extends CI_Model
             }
         }
         
-        public function Check_Login($idAgen) {
-
-            $this->db->where('IdAgen', $idAgen);
-            $query = $this->db->get('agen');
-
+        public function Login_Admin_Email($email) {
+            $this->db->where('Email', $email);
+            $query = $this->db->get('admin');
+            
             if ($query->num_rows() == 1) {
                 return $query->row_array();
             } else {
                 return false;
             }
+        }
+        
+        public function Login_Agen_Email($email) {
+            $this->db->where('Email', $email);
+            $this->db->where('IsAkses', '1');
+            $this->db->where('Approve', '1');
+            $this->db->where('IsAktif', '1');
+            $query = $this->db->get('agen');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
+        }
+        
+        public function Login_Customer_Email($email) {
+            $this->db->where('Email', $email);
+            $query = $this->db->get('customer');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
+        }
+        
+        public function Check_Login($idAgen) {
+            $this->db->where('IdAgen', $idAgen);
+            $query = $this->db->get('agen');
+            
+            if ($query->num_rows() == 1) {
+                return $query->row_array();
+            } else {
+                return false;
+            }
+        }
+        
+        public function Check_Email($email) {
+            $query = $this->db->query(" SELECT 
+                                        	COUNT(*) AS Total
+                                        FROM 
+                                            agen
+                                        WHERE 
+                                            Email = '$email';");
+            return $query->result_array();
         }
     
     // Data ============================================================================================================================================================================================
@@ -351,14 +396,15 @@ class ModelFlutter extends CI_Model
             return $query ? $query->result_array() : [];
         }
         
-        public function Get_Event_All() {
+        public function Get_Event_All($limit, $offset) {
             $query = $this->db->query(" SELECT 
                                             *
                                         FROM 
                                             event
                                         WHERE
                                             TipeEvent != 'Ultah' AND
-                                            TipeEvent != 'Closing'; ");
+                                            TipeEvent != 'Closing'
+                                        LIMIT $limit OFFSET $offset; ");
             return $query->result_array();
         }
         
@@ -1939,35 +1985,65 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
-        public function Get_List_Brosur_Primary($id){
+        public function Get_Brosur_Primary($id){
             $query = $this->db->query(" SELECT 
-                                        	*
+                                        	Brosur
                                         FROM 
                                         	brosurprimary
                                         WHERE
-                                            IdNew = $id; ");
+                                            IdListing = $id; ");
             return $query->result_array();
         }
         
-        public function Get_List_Siteplan_Primary($id){
+        public function Get_Siteplan_Primary($id){
             $query = $this->db->query(" SELECT 
-                                        	*
+                                        	Siteplan
                                         FROM 
                                         	siteplanprimary
                                         WHERE
-                                            IdNew = $id; ");
+                                            IdListing = $id; ");
             return $query->result_array();
         }
         
-        public function Get_List_Pricelist_Primary($id){
+        public function Get_Pricelist_Primary($id){
             $query = $this->db->query(" SELECT 
-                                        	*
+                                        	Pricelist
                                         FROM 
                                         	pricelistprimary
                                         WHERE
-                                            IdNew = $id; ");
+                                            IdListing = $id; ");
             return $query->result_array();
         }
+        
+        // public function Get_List_Brosur_Primary($id){
+        //     $query = $this->db->query(" SELECT 
+        //                                 	*
+        //                                 FROM 
+        //                                 	brosurprimary
+        //                                 WHERE
+        //                                     IdNew = $id; ");
+        //     return $query->result_array();
+        // }
+        
+        // public function Get_List_Siteplan_Primary($id){
+        //     $query = $this->db->query(" SELECT 
+        //                                 	*
+        //                                 FROM 
+        //                                 	siteplanprimary
+        //                                 WHERE
+        //                                     IdNew = $id; ");
+        //     return $query->result_array();
+        // }
+        
+        // public function Get_List_Pricelist_Primary($id){
+        //     $query = $this->db->query(" SELECT 
+        //                                 	*
+        //                                 FROM 
+        //                                 	pricelistprimary
+        //                                 WHERE
+        //                                     IdNew = $id; ");
+        //     return $query->result_array();
+        // }
         
     // Info =========================================================================================================================================================================================
     

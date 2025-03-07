@@ -136,6 +136,55 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Check_Email() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            if (!isset($input['Email'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+                return;
+            }
+        
+            $email = $input['Email'];
+        
+            if (empty($email)) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+                return;
+            }
+            
+            $data = $this->ModelFlutter->Check_Email($email);
+            
+            if ($data) {
+                $data[0]['Total'] = (int) $data[0]['Total'];
+                
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user' => $data[0]]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(401)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Pengguna Tidak Ditemukan']));
+            }
+        }
+        
         public function Login_Kode() {
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
@@ -189,6 +238,78 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Username atau Kode Salah']));
             }
         }
+        
+        public function Login_Email() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            if (!isset($input['Email'])) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(400)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Email']));
+                return;
+            }
+            
+            $userAdmin = $this->ModelFlutter->Login_Admin_Email($input['Email']);
+            
+            if ($userAdmin) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user' => $userAdmin]));
+            } else {
+                $userAgen = $this->ModelFlutter->Login_Agen_Email($input['Email']);
+                
+                if ($userAgen) {
+                    $idAgen = $userAgen['IdAgen'];
+                    
+                    $idAgenTidakUpdate = ['66', '123'];
+                    
+                    if (!in_array($idAgen, $idAgenTidakUpdate)) {
+                        $kodeRandom = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                        $kodeBaru = 'agen' . $kodeRandom;
+                        
+                        $data = [
+                            'Password' => md5($kodeBaru),
+                            'KodeVerifikasi' => $kodeRandom,
+                        ];
+                
+                        $where = array('IdAgen' => $idAgen,);
+                        $this->ModelFlutter->Update_Data($where,$data,'agen');
+                    }
+                    
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'user' => $userAgen]));
+                } else {
+                    $userCustomer = $this->ModelFlutter->Login_Customer_Email($input['Email']);
+                    
+                    if ($userCustomer) {
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(200)
+                        ->set_output(json_encode(['status' => 'success', 'user' => $userCustomer]));
+                    } else {
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(401)
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Email Belum Terdaftar']));
+                    }
+                }
+            }
+        }
     
     // Customer ============================================================================================================================================
     
@@ -211,7 +332,7 @@ class ApiFlutter extends CI_Controller
             $namalengkap = $input['NamaLengkap'];
             $notelp = $input['NoTelp'];
             $email = $input['Email'];
-
+            
             if(empty($username) || empty($password) || empty($namalengkap)) {
                 $this->output
                     ->set_content_type('application/json')
@@ -219,9 +340,9 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Harap Masukkan Data']));
                 return;
             }
-
+            
             $hashed_password = md5($password);
-
+            
             $data = [
                 'Username' => $username,
                 'NamaLengkap' => $namalengkap,
@@ -229,9 +350,9 @@ class ApiFlutter extends CI_Controller
                 'Email' => $email,
                 'Password' => $hashed_password,
             ];
-
+            
             $insert_id = $this->ModelFlutter->Input_Data($data, 'customer');
-
+            
             if($insert_id) {
                 $this->output
                     ->set_content_type('application/json')
@@ -282,7 +403,7 @@ class ApiFlutter extends CI_Controller
 			);
 			$this->db->insert('psikotes',$data);
 			$idpsikotes = $this->db->insert_id();
-    
+			
             if($idpsikotes) {
                 $this->db->trans_commit();
                 $this->output
@@ -497,7 +618,7 @@ class ApiFlutter extends CI_Controller
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Update Profil']));
             }
         }
-    
+        
         public function Approve_Agen(){
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
@@ -634,7 +755,7 @@ class ApiFlutter extends CI_Controller
         }
         
         // Get -----------------------------------------------------------------
-    
+        
         public function Get_Agen(){
             $authHeader = $this->input->get_request_header('Authorization', TRUE);
             
@@ -1342,7 +1463,9 @@ class ApiFlutter extends CI_Controller
                 return;
             }
             
-            $data = $this->ModelFlutter->Get_Event_All();
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $data = $this->ModelFlutter->Get_Event_All($limit, $offset);
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
@@ -7901,7 +8024,7 @@ class ApiFlutter extends CI_Controller
             }
         }
         
-        public function Update_Brosur_Primary(){
+        public function Update_Brosur_Tipe_Primary(){
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
             
@@ -7917,29 +8040,30 @@ class ApiFlutter extends CI_Controller
             
             $this->db->trans_start();
             
-            $data = array(
-				'IdNew' => $input['IdNew'],
-				'Brosur' => $input['Brosur'],
-			);
-			$this->db->insert('brosurprimary',$data);
-			$insert_id = $this->db->insert_id();
-			
+            $data = [
+                'IdNew' => $input['IdNew'],
+                'IdListing' => $input['IdListing'],
+				'Brosur'=> $input['Brosur'],
+            ];
+            $this->db->insert('brosurprimary',$data);
+            $insert_id = $this->db->insert_id();
+            
             if($insert_id) {
                 $this->db->trans_commit();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Update Brosur Berhasil']));
+                    ->set_output(json_encode(['status' => 'success', 'Upload Brosur Berhasil']));
             } else {
                 $this->db->trans_rollback();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Brosur Gagal']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Upload Brosur Gagal']));
             }
         }
         
-        public function Update_Siteplan_Primary(){
+        public function Update_Siteplan_Tipe_Primary(){
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
             
@@ -7955,29 +8079,30 @@ class ApiFlutter extends CI_Controller
             
             $this->db->trans_start();
             
-            $data = array(
-				'IdNew' => $input['IdNew'],
-				'Siteplan' => $input['Siteplan'],
-			);
-			$this->db->insert('siteplanprimary',$data);
-			$insert_id = $this->db->insert_id();
-			
+            $data = [
+                'IdNew' => $input['IdNew'],
+                'IdListing' => $input['IdListing'],
+				'Siteplan'=> $input['Siteplan'],
+            ];
+            $this->db->insert('siteplanprimary',$data);
+            $insert_id = $this->db->insert_id();
+            
             if($insert_id) {
                 $this->db->trans_commit();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Update Siteplan Berhasil']));
+                    ->set_output(json_encode(['status' => 'success', 'Upload Siteplan Berhasil']));
             } else {
                 $this->db->trans_rollback();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Siteplan Gagal']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Upload Siteplan Gagal']));
             }
         }
         
-        public function Update_Pricelist_Primary(){
+        public function Update_Pricelist_Tipe_Primary(){
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
             
@@ -7993,136 +8118,26 @@ class ApiFlutter extends CI_Controller
             
             $this->db->trans_start();
             
-            $data = array(
-				'IdNew' => $input['IdNew'],
-				'Pricelist' => $input['Pricelist'],
-			);
-			$this->db->insert('pricelistprimary',$data);
-			$insert_id = $this->db->insert_id();
-			
+            $data = [
+                'IdNew' => $input['IdNew'],
+                'IdListing' => $input['IdListing'],
+				'Pricelist'=> $input['Pricelist'],
+            ];
+            $this->db->insert('pricelistprimary',$data);
+            $insert_id = $this->db->insert_id();
+            
             if($insert_id) {
                 $this->db->trans_commit();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Update Pricelist Berhasil']));
+                    ->set_output(json_encode(['status' => 'success', 'Upload Pricelist Berhasil']));
             } else {
                 $this->db->trans_rollback();
                 $this->output
                     ->set_content_type('application/json')
                     ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Pricelist Gagal']));
-            }
-        }
-        
-        public function Update_File_Brosur_Primary(){
-            $inputJSON = file_get_contents('php://input');
-            $input = json_decode($inputJSON, TRUE);
-            
-            $authHeader = $this->input->get_request_header('Authorization', TRUE);
-            
-            if ($authHeader !== "Bearer $this->validApiKey") {
-                $this->output
-                    ->set_status_header(401)
-                    ->set_content_type('application/json')
-                    ->set_output(json_encode(['error' => 'Unauthorized']));
-                return;
-            }
-            
-            $this->db->trans_start();
-            
-            $data = array(
-				'Brosur' => $input['Brosur'],
-			);
-			$where = array('IdBrosur' => $input['IdBrosur']);
-            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'brosurprimary');
-			
-            if($insert_id) {
-                $this->db->trans_commit();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Update Brosur Berhasil']));
-            } else {
-                $this->db->trans_rollback();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Brosur Gagal']));
-            }
-        }
-        
-        public function Update_File_Siteplan_Primary(){
-            $inputJSON = file_get_contents('php://input');
-            $input = json_decode($inputJSON, TRUE);
-            
-            $authHeader = $this->input->get_request_header('Authorization', TRUE);
-            
-            if ($authHeader !== "Bearer $this->validApiKey") {
-                $this->output
-                    ->set_status_header(401)
-                    ->set_content_type('application/json')
-                    ->set_output(json_encode(['error' => 'Unauthorized']));
-                return;
-            }
-            
-            $this->db->trans_start();
-            
-            $data = array(
-				'Siteplan' => $input['Siteplan'],
-			);
-			$where = array('IdSiteplan' => $input['IdSiteplan']);
-            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'siteplanprimary');
-			
-            if($insert_id) {
-                $this->db->trans_commit();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Update Siteplan Berhasil']));
-            } else {
-                $this->db->trans_rollback();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Siteplan Gagal']));
-            }
-        }
-        
-        public function Update_File_Pricelist_Primary(){
-            $inputJSON = file_get_contents('php://input');
-            $input = json_decode($inputJSON, TRUE);
-            
-            $authHeader = $this->input->get_request_header('Authorization', TRUE);
-            
-            if ($authHeader !== "Bearer $this->validApiKey") {
-                $this->output
-                    ->set_status_header(401)
-                    ->set_content_type('application/json')
-                    ->set_output(json_encode(['error' => 'Unauthorized']));
-                return;
-            }
-            
-            $this->db->trans_start();
-            
-            $data = array(
-				'Pricelist' => $input['Pricelist'],
-			);
-			$where = array('IdPricelist' => $input['IdPricelist']);
-            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pricelistprimary');
-			
-            if($insert_id) {
-                $this->db->trans_commit();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(200)
-                    ->set_output(json_encode(['status' => 'success', 'Update Pricelist Berhasil']));
-            } else {
-                $this->db->trans_rollback();
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_status_header(500)
-                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Pricelist Gagal']));
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Upload Pricelist Gagal']));
             }
         }
         
@@ -8206,7 +8221,7 @@ class ApiFlutter extends CI_Controller
                 ->set_output(json_encode($data));
         }
         
-        public function Get_List_Brosur_Primary() {
+        public function Get_Brosur_Primary() {
             $authHeader = $this->input->get_request_header('Authorization', TRUE);
             
             if ($authHeader !== "Bearer $this->validApiKey") {
@@ -8218,14 +8233,14 @@ class ApiFlutter extends CI_Controller
             }
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Get_List_Brosur_Primary($id);
+            $data = $this->ModelFlutter->Get_Brosur_Primary($id);
             
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
         }
         
-        public function Get_List_Siteplan_Primary() {
+        public function Get_Siteplan_Primary() {
             $authHeader = $this->input->get_request_header('Authorization', TRUE);
             
             if ($authHeader !== "Bearer $this->validApiKey") {
@@ -8237,14 +8252,14 @@ class ApiFlutter extends CI_Controller
             }
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Get_List_Siteplan_Primary($id);
+            $data = $this->ModelFlutter->Get_Siteplan_Primary($id);
             
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
         }
         
-        public function Get_List_Pricelist_Primary() {
+        public function Get_Pricelist_Primary() {
             $authHeader = $this->input->get_request_header('Authorization', TRUE);
             
             if ($authHeader !== "Bearer $this->validApiKey") {
@@ -8256,7 +8271,7 @@ class ApiFlutter extends CI_Controller
             }
             
             $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $data = $this->ModelFlutter->Get_List_Pricelist_Primary($id);
+            $data = $this->ModelFlutter->Get_Pricelist_Primary($id);
             
             $this->output
                 ->set_content_type('application/json')
@@ -8548,5 +8563,289 @@ class ApiFlutter extends CI_Controller
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
         }
+        
+    // Unused ========================================================================================================================================================================================
+        
+//         public function Update_Brosur_Primary(){
+//             $inputJSON = file_get_contents('php://input');
+//             $input = json_decode($inputJSON, TRUE);
+            
+//             $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+//             if ($authHeader !== "Bearer $this->validApiKey") {
+//                 $this->output
+//                     ->set_status_header(401)
+//                     ->set_content_type('application/json')
+//                     ->set_output(json_encode(['error' => 'Unauthorized']));
+//                 return;
+//             }
+            
+//             $this->db->trans_start();
+            
+//             $data = array(
+// 				'IdNew' => $input['IdNew'],
+// 				'Brosur' => $input['Brosur'],
+// 			);
+// 			$this->db->insert('brosurprimary',$data);
+// 			$insert_id = $this->db->insert_id();
+			
+//             if($insert_id) {
+//                 $this->db->trans_commit();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(200)
+//                     ->set_output(json_encode(['status' => 'success', 'Update Brosur Berhasil']));
+//             } else {
+//                 $this->db->trans_rollback();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(500)
+//                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Brosur Gagal']));
+//             }
+//         }
+        
+//         public function Update_Siteplan_Primary(){
+//             $inputJSON = file_get_contents('php://input');
+//             $input = json_decode($inputJSON, TRUE);
+            
+//             $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+//             if ($authHeader !== "Bearer $this->validApiKey") {
+//                 $this->output
+//                     ->set_status_header(401)
+//                     ->set_content_type('application/json')
+//                     ->set_output(json_encode(['error' => 'Unauthorized']));
+//                 return;
+//             }
+            
+//             $this->db->trans_start();
+            
+//             $data = array(
+// 				'IdNew' => $input['IdNew'],
+// 				'Siteplan' => $input['Siteplan'],
+// 			);
+// 			$this->db->insert('siteplanprimary',$data);
+// 			$insert_id = $this->db->insert_id();
+			
+//             if($insert_id) {
+//                 $this->db->trans_commit();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(200)
+//                     ->set_output(json_encode(['status' => 'success', 'Update Siteplan Berhasil']));
+//             } else {
+//                 $this->db->trans_rollback();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(500)
+//                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Siteplan Gagal']));
+//             }
+//         }
+        
+//         public function Update_Pricelist_Primary(){
+//             $inputJSON = file_get_contents('php://input');
+//             $input = json_decode($inputJSON, TRUE);
+            
+//             $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+//             if ($authHeader !== "Bearer $this->validApiKey") {
+//                 $this->output
+//                     ->set_status_header(401)
+//                     ->set_content_type('application/json')
+//                     ->set_output(json_encode(['error' => 'Unauthorized']));
+//                 return;
+//             }
+            
+//             $this->db->trans_start();
+            
+//             $data = array(
+// 				'IdNew' => $input['IdNew'],
+// 				'Pricelist' => $input['Pricelist'],
+// 			);
+// 			$this->db->insert('pricelistprimary',$data);
+// 			$insert_id = $this->db->insert_id();
+			
+//             if($insert_id) {
+//                 $this->db->trans_commit();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(200)
+//                     ->set_output(json_encode(['status' => 'success', 'Update Pricelist Berhasil']));
+//             } else {
+//                 $this->db->trans_rollback();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(500)
+//                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Pricelist Gagal']));
+//             }
+//         }
+        
+//         public function Update_File_Brosur_Primary(){
+//             $inputJSON = file_get_contents('php://input');
+//             $input = json_decode($inputJSON, TRUE);
+            
+//             $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+//             if ($authHeader !== "Bearer $this->validApiKey") {
+//                 $this->output
+//                     ->set_status_header(401)
+//                     ->set_content_type('application/json')
+//                     ->set_output(json_encode(['error' => 'Unauthorized']));
+//                 return;
+//             }
+            
+//             $this->db->trans_start();
+            
+//             $data = array(
+// 				'Brosur' => $input['Brosur'],
+// 			);
+// 			$where = array('IdBrosur' => $input['IdBrosur']);
+//             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'brosurprimary');
+			
+//             if($insert_id) {
+//                 $this->db->trans_commit();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(200)
+//                     ->set_output(json_encode(['status' => 'success', 'Update Brosur Berhasil']));
+//             } else {
+//                 $this->db->trans_rollback();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(500)
+//                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Brosur Gagal']));
+//             }
+//         }
+        
+//         public function Update_File_Siteplan_Primary(){
+//             $inputJSON = file_get_contents('php://input');
+//             $input = json_decode($inputJSON, TRUE);
+            
+//             $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+//             if ($authHeader !== "Bearer $this->validApiKey") {
+//                 $this->output
+//                     ->set_status_header(401)
+//                     ->set_content_type('application/json')
+//                     ->set_output(json_encode(['error' => 'Unauthorized']));
+//                 return;
+//             }
+            
+//             $this->db->trans_start();
+            
+//             $data = array(
+// 				'Siteplan' => $input['Siteplan'],
+// 			);
+// 			$where = array('IdSiteplan' => $input['IdSiteplan']);
+//             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'siteplanprimary');
+			
+//             if($insert_id) {
+//                 $this->db->trans_commit();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(200)
+//                     ->set_output(json_encode(['status' => 'success', 'Update Siteplan Berhasil']));
+//             } else {
+//                 $this->db->trans_rollback();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(500)
+//                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Siteplan Gagal']));
+//             }
+//         }
+        
+//         public function Update_File_Pricelist_Primary(){
+//             $inputJSON = file_get_contents('php://input');
+//             $input = json_decode($inputJSON, TRUE);
+            
+//             $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+//             if ($authHeader !== "Bearer $this->validApiKey") {
+//                 $this->output
+//                     ->set_status_header(401)
+//                     ->set_content_type('application/json')
+//                     ->set_output(json_encode(['error' => 'Unauthorized']));
+//                 return;
+//             }
+            
+//             $this->db->trans_start();
+            
+//             $data = array(
+// 				'Pricelist' => $input['Pricelist'],
+// 			);
+// 			$where = array('IdPricelist' => $input['IdPricelist']);
+//             $insert_id = $this->ModelFlutter->Update_Data($where,$data,'pricelistprimary');
+			
+//             if($insert_id) {
+//                 $this->db->trans_commit();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(200)
+//                     ->set_output(json_encode(['status' => 'success', 'Update Pricelist Berhasil']));
+//             } else {
+//                 $this->db->trans_rollback();
+//                 $this->output
+//                     ->set_content_type('application/json')
+//                     ->set_status_header(500)
+//                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Pricelist Gagal']));
+//             }
+//         }
+        
+        // public function Get_List_Brosur_Primary() {
+        //     $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+        //     if ($authHeader !== "Bearer $this->validApiKey") {
+        //         $this->output
+        //             ->set_status_header(401)
+        //             ->set_content_type('application/json')
+        //             ->set_output(json_encode(['error' => 'Unauthorized']));
+        //         return;
+        //     }
+            
+        //     $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        //     $data = $this->ModelFlutter->Get_List_Brosur_Primary($id);
+            
+        //     $this->output
+        //         ->set_content_type('application/json')
+        //         ->set_output(json_encode($data));
+        // }
+        
+        // public function Get_List_Siteplan_Primary() {
+        //     $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+        //     if ($authHeader !== "Bearer $this->validApiKey") {
+        //         $this->output
+        //             ->set_status_header(401)
+        //             ->set_content_type('application/json')
+        //             ->set_output(json_encode(['error' => 'Unauthorized']));
+        //         return;
+        //     }
+            
+        //     $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        //     $data = $this->ModelFlutter->Get_List_Siteplan_Primary($id);
+            
+        //     $this->output
+        //         ->set_content_type('application/json')
+        //         ->set_output(json_encode($data));
+        // }
+        
+        // public function Get_List_Pricelist_Primary() {
+        //     $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+        //     if ($authHeader !== "Bearer $this->validApiKey") {
+        //         $this->output
+        //             ->set_status_header(401)
+        //             ->set_content_type('application/json')
+        //             ->set_output(json_encode(['error' => 'Unauthorized']));
+        //         return;
+        //     }
+            
+        //     $id = filter_var($_GET['Id'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        //     $data = $this->ModelFlutter->Get_List_Pricelist_Primary($id);
+            
+        //     $this->output
+        //         ->set_content_type('application/json')
+        //         ->set_output(json_encode($data));
+        // }
         
 }
