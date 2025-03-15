@@ -715,6 +715,28 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Reject_Agen_Otomatis() {
+            $this->db->trans_start();
+            
+            $this->db->where('Approve ==', '0');
+            $this->db->where('DATEDIFF(NOW(), CreatedAt) >', 90);
+            $this->db->update('pelamar', ['Reject' => '1']);
+            
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal memperbarui data pelamar']));
+            } else {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Data Pelamar Diperbarui']));
+            }
+        }
+        
         public function Reject_Agen(){
             $inputJSON = file_get_contents('php://input');
             $input = json_decode($inputJSON, TRUE);
@@ -751,6 +773,44 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Approve Agen Gagal, Status Gagal Diupdate']));
+            }
+        }
+        
+        public function Add_Note_Agen(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'IsProses'=> 1,
+                'Notes'=> $input['Notes'],
+            ];
+            $where = array('IdAgen'=> $input['IdAgen'],);
+            $edit_agen = $this->ModelFlutter->Update_Data($where,$data,'agen');
+            
+            if($edit_agen) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Tambah Note Agen Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Note Agen Gagal']));
             }
         }
         
@@ -2988,6 +3048,8 @@ class ApiFlutter extends CI_Controller
                 
                 $dataup = [
                     'IsPasangBanner' => 1,
+                    'NoUrut' => 0,
+                    'TiketBanner' => $input['TiketBanner'],
                 ];
                 $where = array('IdListing'=> $input['IdListing'],);
                 $insert_up = $this->ModelFlutter->Update_Data($where,$dataup,'listing');
@@ -3012,6 +3074,54 @@ class ApiFlutter extends CI_Controller
                     ->set_content_type('application/json')
                     ->set_status_header(500)
                     ->set_output(json_encode(['status' => 'fail', 'message' => 'Pasang Banner Gagal']));
+            }
+        }
+        
+        public function Update_No_Urut_Pasang_Banner_Listing(){
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $this->db->trans_start();
+            
+            $this->db->select_max('NoUrut');
+            $this->db->where('IsPasangBanner', 0);
+            $query = $this->db->get('listing');
+            $result = $query->row_array();
+            
+            $nextNoUrut = $result['NoUrut'] + 1;
+            
+            if ($nextNoUrut == 1 && is_null($result['NoUrut'])) {
+                $nextNoUrut = 1;
+            }
+            
+            $dataup = [
+                'NoUrut' => $nextNoUrut,
+            ];
+            $where = array('IdListing'=> $input['IdListing'],);
+            $insert_up = $this->ModelFlutter->Update_Data($where,$dataup,'listing');
+            
+            if($insert_up) {
+                $this->db->trans_commit();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'Pasang Banner Berhasil']));
+            } else {
+                $this->db->trans_rollback();
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => $input['IdListing'] ]));
             }
         }
         
@@ -3149,8 +3259,20 @@ class ApiFlutter extends CI_Controller
             
             if($insert_id) {
                 
+                $this->db->select_max('NoUrut');
+                $this->db->where('IsPasangBanner', 0);
+                $query = $this->db->get('listing');
+                $result = $query->row_array();
+                
+                $nextNoUrut = $result['NoUrut'] + 1;
+                
+                if ($nextNoUrut == 1 && is_null($result['NoUrut'])) {
+                    $nextNoUrut = 1;
+                }
+                
                 $dataup = [
                     'IsPasangBanner' => 0,
+                    'NoUrut' => $nextNoUrut,
                 ];
                 $where = array('IdListing'=> $input['IdListing'],);
                 $insert_up = $this->ModelFlutter->Update_Data($where,$dataup,'listing');

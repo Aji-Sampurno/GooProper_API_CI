@@ -336,6 +336,14 @@ class ModelFlutter extends CI_Model
         }
         
         public function Get_Pelamar($limit, $offset) {
+            $this->db->query("
+                DELETE FROM agen  
+                WHERE Approve = 0
+                AND IsProses = 0
+                AND Reject = 0 
+                AND DATEDIFF(NOW(), CreatedAt) > 90;
+            ");
+            
             $query = $this->db->query(" SELECT
                                             agen.IdAgen,
                                             agen.Nama,
@@ -343,7 +351,8 @@ class ModelFlutter extends CI_Model
                                             agen.Email,
                                             agen.Pendidikan,
                                             agen.AlamatDomisili,
-                                            agen.Photo
+                                            agen.Photo,
+                                            agen.IsProses
                                         FROM
                                             agen
                                         WHERE
@@ -1558,7 +1567,9 @@ class ModelFlutter extends CI_Model
                                             NoArsip,
                                             Img1,
                                             TipeHarga,
-                                            IsSingleOpen
+                                            IsSingleOpen,
+                                            NoUrut,
+                                            TiketBanner
                                         FROM 
                                         	listing
                                         WHERE
@@ -1572,8 +1583,8 @@ class ModelFlutter extends CI_Model
                                             Banner = 'Ya' AND 
                                             IsPasangBanner = 0
                                             $searchCondition
-                                        ORDER BY 
-                                            IdListing DESC
+                                        ORDER BY
+                                            TglPesanBanner DESC
                                         LIMIT $limit OFFSET $offset ");
             return $query->result_array();
         }
@@ -1599,7 +1610,9 @@ class ModelFlutter extends CI_Model
                                             NoArsip,
                                             Img1,
                                             TipeHarga,
-                                            IsSingleOpen
+                                            IsSingleOpen,
+                                            NoUrut,
+                                            TiketBanner
                                         FROM 
                                         	listing
                                         WHERE
@@ -1614,7 +1627,7 @@ class ModelFlutter extends CI_Model
                                             IsPasangBanner = 1
                                             $searchCondition
                                         ORDER BY 
-                                            IdListing DESC
+                                            TglPesanBanner DESC
                                         LIMIT $limit OFFSET $offset ");
             return $query->result_array();
         }
@@ -1640,7 +1653,9 @@ class ModelFlutter extends CI_Model
                                             NoArsip,
                                             Img1,
                                             TipeHarga,
-                                            IsSingleOpen
+                                            IsSingleOpen,
+                                            NoUrut,
+                                            TiketBanner
                                         FROM 
                                         	listing
                                         WHERE
@@ -1655,8 +1670,8 @@ class ModelFlutter extends CI_Model
                                             IsPasangBanner = 0 AND 
                                             (IdAgen = $id OR IdAgenCo = $id)
                                             $searchCondition
-                                        ORDER BY 
-                                            IdListing DESC
+                                        ORDER BY
+                                            TglPesanBanner DESC
                                         LIMIT $limit OFFSET $offset ");
             return $query->result_array();
         }
@@ -1682,7 +1697,9 @@ class ModelFlutter extends CI_Model
                                             NoArsip,
                                             Img1,
                                             TipeHarga,
-                                            IsSingleOpen
+                                            IsSingleOpen,
+                                            NoUrut,
+                                            TiketBanner
                                         FROM 
                                         	listing
                                         WHERE
@@ -1697,8 +1714,8 @@ class ModelFlutter extends CI_Model
                                             IsPasangBanner = 1 AND 
                                             (IdAgen = $id OR IdAgenCo = $id)
                                             $searchCondition
-                                        ORDER BY 
-                                            IdListing DESC
+                                        ORDER BY
+                                            TglPesanBanner DESC
                                         LIMIT $limit OFFSET $offset ");
             return $query->result_array();
         }
