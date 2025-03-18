@@ -33,27 +33,6 @@
                                         <div style="position: absolute; width: 200px; top: 0px; left: 0px; border-radius: 0px;">
                                             <img src="<?php echo base_url('assets/img/LOGO GP.png'); ?>" alt="Ikon"  style="width: 250px; height: auto;" />
                                         </div>
-                                        <div style="position: absolute; width: 200px; top: 300px; left: 50px; border-radius: 0px;">
-                                            <?php 
-                                                if (!empty($baris->Img2)) {
-                                                    echo '<img src="' . $baris->Img2 . '" style="width: 150px; height: 150px; border: 5px solid rgb(255,255,255); border-radius: 0%;">';
-                                                }
-                                            ?>
-                                        </div>
-                                        <div style="position: absolute; width: 200px; top: 480px; left: 50px; border-radius: 0px;">
-                                            <?php 
-                                                if (!empty($baris->Img3)) {
-                                                    echo '<img src="' . $baris->Img3 . '" style="width: 150px; height: 150px; border: 5px solid rgb(255,255,255); border-radius: 0%;">';
-                                                }
-                                            ?>
-                                        </div>
-                                        <div style="position: absolute; width: 200px; top: 660px; left: 50px; border-radius: 0px;">
-                                            <?php 
-                                                if (!empty($baris->Img4)) {
-                                                    echo '<img src="' . $baris->Img4 . '" style="width: 150px; height: 150px; border: 5px solid rgb(255,255,255); border-radius: 0%;">';
-                                                }
-                                            ?>
-                                        </div>
                                         <div style="position: absolute; top: 20px; right: 20px; border-radius: 0px;">
                                             <img src="<?php echo base_url('assets/img/AREBI LOGO.png'); ?>" alt="Ikon"  style="width: 125px; height: auto;" />
                                         </div>
