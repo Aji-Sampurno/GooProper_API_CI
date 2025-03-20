@@ -15,6 +15,16 @@ class ApiFlutter extends CI_Controller
         $this->validApiKey = 'hjhlasewguwIBDOq98w9q2';
     }
     
+    private function generateReferralCode($length = 6) {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+    
     // Authentication ======================================================================================================================================
     
         public function Login() {
@@ -435,6 +445,8 @@ class ApiFlutter extends CI_Controller
                 return;
             }
             
+            $referralCode = $this->generateReferralCode();
+            
             $this->db->trans_start();
             
             $data = [
@@ -461,6 +473,8 @@ class ApiFlutter extends CI_Controller
                 'Photo' => $input['Photo'],
                 'Status' => 3,
                 'IsAkses' => 1,
+                'Referral' => $referralCode,
+                'Referrer' => $input['Referrer'],
             ];
             
             $this->db->insert('agen', $data);
@@ -815,6 +829,49 @@ class ApiFlutter extends CI_Controller
         }
         
         // Get -----------------------------------------------------------------
+        
+        public function Get_Referral(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $id = $this->input->get('Id');
+            
+            $data = $this->ModelFlutter->Get_Referral($id);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
+        
+        public function Get_Aga(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 10;
+            $offset = $this->input->get('offset') ? (int)$this->input->get('offset') : 0;
+            $referrer = $this->input->get('referrer');
+            $search = $this->input->get('search');
+            
+            $data = $this->ModelFlutter->Get_Aga($limit, $offset, $referrer, $search);
+            
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
         
         public function Get_Agen(){
             $authHeader = $this->input->get_request_header('Authorization', TRUE);

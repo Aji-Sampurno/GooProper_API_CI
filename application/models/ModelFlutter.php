@@ -224,6 +224,64 @@ class ModelFlutter extends CI_Model
             return $query->result_array();
         }
         
+        public function Get_Referral($id) {
+            $query = $this->db->query("
+                SELECT
+                    agen.Referral
+                FROM
+                    agen
+                WHERE
+                    agen.IdAgen = $id");
+        
+            return $query->result_array();
+        }
+        
+        public function Get_Aga($limit, $offset, $referrer, $search = '') {
+            $searchCondition = '';
+            if (!empty($search)) {
+                $keywords = explode(' ', $search);
+                foreach ($keywords as $keyword) {
+                    $searchCondition .= " AND agen.NamaTemp LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                }
+            }
+        
+            $query = $this->db->query("
+                SELECT
+                    agen.IdAgen,
+                    agen.NamaTemp,
+                    agen.NoTelpTemp,
+                    agen.Email,
+                    agen.KotaAgen,
+                    agen.Photo,
+                    COUNT(listing.IdListing) AS listing,
+                    COUNT(CASE WHEN listing.Kondisi = 'Jual' OR listing.Kondisi = 'Jual/Sewa' THEN 1 END) AS jual,
+                    COUNT(CASE WHEN listing.Kondisi = 'Sewa' THEN 1 END) AS sewa,
+                    COUNT(CASE WHEN listing.Sold = 1 OR listing.SoldAgen = 1 THEN 1 END) AS terjual,
+                    COUNT(CASE WHEN listing.Rented = 1 OR listing.RentedAgen = 1 THEN 1 END) AS tersewa
+                FROM
+                    agen
+                    LEFT JOIN listing ON agen.IdAgen = listing.IdAgen
+                    AND listing.IsDouble = 0
+                    AND listing.IsDelete = 0
+                WHERE
+                    agen.IsAkses = 1
+                    AND agen.Approve = 1
+                    AND agen.IsAktif = 1
+                    AND agen.Referrer = '$referrer'
+                    $searchCondition
+                GROUP BY
+                    agen.IdAgen,
+                    agen.NamaTemp,
+                    agen.NoTelpTemp,
+                    agen.Email,
+                    agen.KotaAgen,
+                    agen.Photo
+                LIMIT ? OFFSET ?
+            ", array($limit, $offset));
+        
+            return $query->result_array();
+        }
+        
         public function Get_Agen_List() {
             $query = $this->db->query(" SELECT
                                             agen.IdAgen,
@@ -1584,7 +1642,7 @@ class ModelFlutter extends CI_Model
                                             IsPasangBanner = 0
                                             $searchCondition
                                         ORDER BY
-                                            TglPesanBanner DESC
+                                            NoUrut DESC
                                         LIMIT $limit OFFSET $offset ");
             return $query->result_array();
         }
