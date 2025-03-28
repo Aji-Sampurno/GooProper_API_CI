@@ -1783,7 +1783,11 @@ class ApiFlutter extends CI_Controller
             $data = [
                 'IdAgen' => $input['IdAgen'],
                 'NamaBuyer' => $input['NamaBuyer'],
+                'StatusBuyer' => $input['StatusBuyer'],
                 'TelpBuyer' => $input['NoTelp'],
+                'BadanUsaha' => $input['BadanUsaha'],
+                'UsiaBuyer' => $input['UsiaBuyer'],
+                'PekerjaanBuyer' => $input['PekerjaanBuyer'],
                 'JenisProperti' => $input['JenisProperti'],
                 'JenisTransaksi' => $input['JenisTransaksi'],
                 'CaraBayar' => $input['CaraBayar'],
@@ -1792,6 +1796,9 @@ class ApiFlutter extends CI_Controller
                 'SumberInformasi' => $input['SumberBuyer'],
                 'StatusFollowUp' => $input['StatusFollowUp'],
                 'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'KebutuhanBuyer' => $input['KebutuhanBuyer'],
+                'KategoriProspek' => $input['KategoriProspek'],
+                'HargaDeal' => $input['HargaDeal'],
                 'Selfie' => $input['Selfie']
             ];
             
@@ -1811,6 +1818,88 @@ class ApiFlutter extends CI_Controller
         }
         
         // Update --------------------------------------------------------------
+        
+        public function Update_Handle_Agen() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            date_default_timezone_set('Asia/Jakarta');
+            
+            $data = [
+                'IdAgen' => $input['IdAgen'],
+                'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'TglReport' => date('Y-m-d H:i:s'),
+                'IsRead' => 0
+            ];
+            
+            $where = array('IdReportBuyer'=> $input['IdReport'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'reportbuyer');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Handle Agen Gagal']));
+            }
+        }
+        
+        public function Update_Informasi_Buyer() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            date_default_timezone_set('Asia/Jakarta');
+            
+            $data = [
+                'NamaBuyer' => $input['NamaBuyer'],
+                'TelpBuyer' => $input['NoTelp'],
+                'StatusBuyer' => $input['StatusBuyer'],
+                'KebutuhanBuyer' => $input['KebutuhanBuyer'],
+                'BadanUsaha' => $input['BadanUsaha'],
+                'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'TglReport' => date('Y-m-d H:i:s'),
+                'IsRead' => 0
+            ];
+            
+            $where = array('IdReportBuyer'=> $input['IdReport'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'reportbuyer');
+            
+            if($insert_id) {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(200)
+                    ->set_output(json_encode(['status' => 'success', 'user_id' => $insert_id]));
+            } else {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_status_header(500)
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Update Informasi Buyer Gagal']));
+            }
+        }
         
         public function Update_Report_Buyer() {
             $inputJSON = file_get_contents('php://input');
@@ -1837,10 +1926,11 @@ class ApiFlutter extends CI_Controller
             date_default_timezone_set('Asia/Jakarta');
             
             $data = [
-                'NamaBuyer' => $input['NamaBuyer'],
-                'TelpBuyer' => $input['NoTelp'],
+                'jenisProperti' => $input['JenisProperti'],
+                'AlamatProperti' => $input['AlamatProperti'],
                 'StatusFollowUp' => $input['StatusFollowUp'],
                 'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'KategoriProspek' => $input['KategoriProspek'],
                 'Selfie' => $input['Selfie'],
                 'TglReport' => date('Y-m-d H:i:s'),
                 'IsRead' => 0
@@ -1955,7 +2045,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -1971,6 +2061,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -1992,6 +2083,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2031,7 +2123,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2047,6 +2139,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2068,6 +2161,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2107,7 +2201,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2123,6 +2217,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2144,6 +2239,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2183,7 +2279,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2199,6 +2295,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2220,6 +2317,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2259,7 +2357,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2275,6 +2373,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2296,6 +2395,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2334,7 +2434,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2350,6 +2450,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2371,6 +2472,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2409,7 +2511,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2425,6 +2527,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2446,6 +2549,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2484,7 +2588,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2500,6 +2604,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2521,6 +2626,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2558,7 +2664,7 @@ class ApiFlutter extends CI_Controller
             foreach ($status_data as $data) {
                 $updated_at = new DateTime($data->TglReport);
                 $one_month_after_update = clone $updated_at;
-                $one_month_after_update->modify('+1 month');
+                $one_month_after_update->modify('+2 weeks');
         
                 $interval = $current_date->diff($one_month_after_update);
         
@@ -2567,6 +2673,9 @@ class ApiFlutter extends CI_Controller
                         'IdReportBuyer' => $data->IdReportBuyer,
                         'IdAgen' => $data->IdAgen,
                         'NamaTemp' => $data->NamaTemp,
+                        'StatusBuyer' => $data->StatusBuyer,
+                        'BadanUsaha' => $data->BadanUsaha,
+                        'KebutuhanBuyer' => $data->KebutuhanBuyer,
                         'NoTelp' => $data->NoTelp,
                         'Instagram' => $data->Instagram,
                         'NamaBuyer' => $data->NamaBuyer,
@@ -2577,6 +2686,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -2599,6 +2709,7 @@ class ApiFlutter extends CI_Controller
                         'Budget' => $data->Budget,
                         'AlamatProperti' => $data->AlamatProperti,
                         'SumberInformasi' => $data->SumberInformasi,
+                        'KategoriProspek' => $data->KategoriProspek,
                         'StatusFollowUp' => $data->StatusFollowUp,
                         'KeteranganFollowUp' => $data->KeteranganFollowUp,
                         'Selfie' => $data->Selfie,
@@ -5858,6 +5969,101 @@ class ApiFlutter extends CI_Controller
             }
         }
         
+        public function Add_Banner_Listing() {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE);
+            
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $currentDate = date('Y-m-d H:i:s');
+            
+            $Banner = $input['Banner'];
+            $Size = $input['Size'];
+            
+            $this->db->trans_start();
+            
+            $data = [
+                'Banner'=> $Banner,
+                'Size'=> $Size,
+                'Pending'=> 1,
+            ];
+            $where = array('IdListing'=> $input['IdListing'],);
+            $insert_id = $this->ModelFlutter->Update_Data($where,$data,'listing');
+            
+            if ($this->db->affected_rows() > 0) {
+                if($insert_id) {
+                    $susulan = array(
+                        'IdListing' => $input['IdListing'],
+                        'Keterangan' => "Tambah Pasang Banner",
+                        'PoinTambahan' => 0,
+                        'PoinBerkurang' => 0,
+                        'TglInput' => $currentDate,
+                        'IsRead' => 0,
+                    );
+                    $insert_susulan = $this->db->insert('susulan',$susulan);
+                    
+                    if($insert_susulan) {
+                        $this->db->select_max('NoUrut');
+                        $this->db->where('IsPasangBanner', 0);
+                        $query = $this->db->get('listing');
+                        $result = $query->row_array();
+                        
+                        $nextNoUrut = $result['NoUrut'] + 1;
+                        
+                        if ($nextNoUrut == 1 && is_null($result['NoUrut'])) {
+                            $nextNoUrut = 1;
+                        }
+                        
+                        $dataup = [
+                            'IsPasangBanner' => 0,
+                            'NoUrut' => $nextNoUrut,
+                        ];
+                        $where = array('IdListing'=> $input['IdListing'],);
+                        $insert_up = $this->ModelFlutter->Update_Data($where,$dataup,'listing');
+                        
+                        if($insert_up) {
+                            $this->db->trans_commit();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(200)
+                                ->set_output(json_encode(['status' => 'success', 'Tambah Banner Berhasil']));
+                        } else {
+                            $this->db->trans_rollback();
+                            $this->output
+                                ->set_content_type('application/json')
+                                ->set_status_header(500)
+                                ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Tambah Banner']));
+                        }
+                    } else {
+                        $this->db->trans_rollback();
+                        $this->output
+                            ->set_content_type('application/json')
+                            ->set_status_header(500)
+                            ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Banner Gagal, Gagal Tambah Susulan']));
+                    }
+                } else {
+                    $this->db->trans_rollback();
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_status_header(500)
+                        ->set_output(json_encode(['status' => 'fail', 'message' => 'Tambah Banner Gagal, Tidak Ada Data Yang Diupdate']));
+                }
+            } else {
+                $this->output
+                    ->set_status_header(400)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['status' => 'fail', 'message' => 'Gagal Tambah Banner']));
+            }
+        }
+        
         // Update --------------------------------------------------------------
         
         public function Approve_Susulan(){
@@ -6314,8 +6520,6 @@ class ApiFlutter extends CI_Controller
             $Prabot = $input['Prabot'];	
             $KetPrabot = $input['KetPrabot'];	
             $Priority = $input['Priority'];
-            $Banner = $input['Banner'];
-            $Size = $input['Size'];
             $TipeHarga = $input['TipeHarga'];
             $Harga = $input['Harga'];	
             $HargaSewa = $input['HargaSewa'];
@@ -6378,8 +6582,6 @@ class ApiFlutter extends CI_Controller
                 'Prabot'=> $Prabot,	
                 'KetPrabot'=> $KetPrabot,	
                 'Priority'=> $Priority,
-                'Banner'=> $Banner,
-                'Size'=> $Size,
                 'TipeHarga'=> $TipeHarga,
                 'Harga'=> $Harga,	
                 'HargaSewa'=> $HargaSewa,

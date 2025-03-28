@@ -589,7 +589,7 @@ class ModelFlutter extends CI_Model
             if (!empty($search)) {
                 $keywords = explode(' ', $search);
                 foreach ($keywords as $keyword) {
-                    $searchCondition .= " AND reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                    $searchCondition .= " AND NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
                 }
             }
                 
@@ -598,12 +598,18 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            reportbuyer.IdAgen = $id
+                                            IdAgen = $id
                                             $searchCondition
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
-                                        ORDER BY 
-                                            reportbuyer.TglReport ASC
+                                            IdReportBuyer
+                                        ORDER BY
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            TglReport ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -614,13 +620,19 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            reportbuyer.IdAgen = $id
-                                            AND DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
-                                            AND reportbuyer.IsClose = 0
+                                            IdAgen = $id
+                                            AND DATEDIFF(NOW(), TglReport)  < 14
+                                            AND IsClose = 0
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
+                                            IdReportBuyer
                                         ORDER BY 
-                                            reportbuyer.TglReport ASC
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            TglReport ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -631,13 +643,19 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            reportbuyer.IdAgen = $id
-                                            AND DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
-                                            AND reportbuyer.IsClose = 0
+                                            IdAgen = $id
+                                            AND DATEDIFF(NOW(), TglReport)  BETWEEN 7 AND 14
+                                            AND IsClose = 0
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
+                                            IdReportBuyer
                                         ORDER BY 
-                                            reportbuyer.TglReport ASC
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            TglReport ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -648,13 +666,19 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            reportbuyer.IdAgen = $id
-                                            AND DATEDIFF(NOW(), reportbuyer.TglReport) > 30
-                                            AND reportbuyer.IsClose = 0
+                                            IdAgen = $id
+                                            AND DATEDIFF(NOW(), TglReport) > 14
+                                            AND IsClose = 0
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
-                                        ORDER BY 
-                                            reportbuyer.TglReport ASC
+                                            IdReportBuyer
+                                        ORDER BY
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END, 
+                                            TglReport ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -664,7 +688,7 @@ class ModelFlutter extends CI_Model
             if (!empty($search)) {
                 $keywords = explode(' ', $search);
                 foreach ($keywords as $keyword) {
-                    $searchCondition .= " WHERE reportbuyer.NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
+                    $searchCondition .= " WHERE NamaBuyer LIKE '%" . $this->db->escape_like_str($keyword) . "%' ";
                 }
             }
                 
@@ -674,9 +698,15 @@ class ModelFlutter extends CI_Model
                                             reportbuyer
                                             $searchCondition
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
+                                            IdReportBuyer
                                         ORDER BY 
-                                            reportbuyer.TglReport DESC
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            TglReport DESC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -687,12 +717,18 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            DATEDIFF(NOW(), reportbuyer.TglReport)  < 20
-                                            AND reportbuyer.IsClose = 0
+                                            DATEDIFF(NOW(), TglReport)  < 14
+                                            AND IsClose = 0
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
+                                            IdReportBuyer
                                         ORDER BY 
-                                            reportbuyer.TglReport ASC
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            TglReport ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -703,12 +739,18 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            DATEDIFF(NOW(), reportbuyer.TglReport) > 30
-                                            AND reportbuyer.IsClose = 0
+                                            DATEDIFF(NOW(), TglReport) > 14
+                                            AND IsClose = 0
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            IdReportBuyer
                                         ORDER BY 
-                                            reportbuyer.TglReport ASC
+                                            TglReport ASC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
@@ -719,12 +761,18 @@ class ModelFlutter extends CI_Model
                                         FROM 
                                             reportbuyer
                                         WHERE 
-                                            DATEDIFF(NOW(), reportbuyer.TglReport)  BETWEEN 20 AND 30
-                                            AND reportbuyer.IsClose = 0
+                                            DATEDIFF(NOW(), TglReport)  BETWEEN 7 AND 14
+                                            AND IsClose = 0
                                         GROUP BY
-                                            reportbuyer.IdReportBuyer
+                                            IdReportBuyer
                                         ORDER BY
-                                            DATEDIFF(NOW(), reportbuyer.TglReport) DESC
+                                            CASE KategoriProspek
+                                                WHEN 'Hot Prospek' THEN 1
+                                                WHEN 'Medium Prospek' THEN 2
+                                                WHEN 'Low Prospek' THEN 3
+                                                ELSE 4
+                                            END,
+                                            DATEDIFF(NOW(), TglReport) DESC
                                         LIMIT $limit OFFSET $offset; ");
             return $query->result();
         }
