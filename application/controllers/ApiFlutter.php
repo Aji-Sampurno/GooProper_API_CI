@@ -1451,6 +1451,23 @@ class ApiFlutter extends CI_Controller
                 ->set_content_type('application/json')
                 ->set_output(json_encode($data));
         }
+        
+        public function Get_Include(){
+            $authHeader = $this->input->get_request_header('Authorization', TRUE);
+            
+            if ($authHeader !== "Bearer $this->validApiKey") {
+                $this->output
+                    ->set_status_header(401)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['error' => 'Unauthorized']));
+                return;
+            }
+            
+            $data = $this->ModelFlutter->Get_Include();
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data));
+        }
     
     // Event ===============================================================================================================================================
     
@@ -1926,8 +1943,6 @@ class ApiFlutter extends CI_Controller
             date_default_timezone_set('Asia/Jakarta');
             
             $data = [
-                'jenisProperti' => $input['JenisProperti'],
-                'AlamatProperti' => $input['AlamatProperti'],
                 'StatusFollowUp' => $input['StatusFollowUp'],
                 'KeteranganFollowUp' => $input['KeteranganFollowUp'],
                 'KategoriProspek' => $input['KategoriProspek'],
@@ -2001,6 +2016,8 @@ class ApiFlutter extends CI_Controller
             }
             
             $data = [
+                'KeteranganFollowUp' => $input['KeteranganFollowUp'],
+                'TglReport' => date('Y-m-d H:i:s'),
                 'IsClose' => 1
             ];
             
@@ -3543,6 +3560,7 @@ class ApiFlutter extends CI_Controller
             $Garage = $input['Garage'];	
             $Carpot = $input['Carpot'];
             $Hadap = $input['Hadap'];
+            $RowJalan = $input['RowJalan'];
             $SHM = $input['SHM'];
             $HGB = $input['HGB'];
             $HSHP = $input['HSHP'];
@@ -3585,6 +3603,7 @@ class ApiFlutter extends CI_Controller
             $Harga = $input['Harga'];	
             $HargaSewa = $input['HargaSewa'];
             $RangeHarga = $input['RangeHarga'];	
+            $Include = $input['Include'];
             $Img1 = $input['Img1'];
             $Img2 = $input['Img2'];
             $Img3 = $input['Img3'];
@@ -3667,6 +3686,7 @@ class ApiFlutter extends CI_Controller
                     'Garage'=> $Garage,	
                     'Carpot'=> $Carpot,
                     'Hadap'=> $Hadap,
+                    'RowJalan' => $RowJalan,
                     'SHM'=> $SHM,
                     'HGB'=> $HGB,
                     'HSHP'=> $HSHP,
@@ -3709,6 +3729,7 @@ class ApiFlutter extends CI_Controller
                     'Harga'=> $Harga,
                     'HargaSewa'=> $HargaSewa,
                     'RangeHarga'=> $RangeHarga,	
+                    'Include'=> $Include,
                     'TglInput'=> $makeDate,
                     'Img1'=> $Img1,
                     'Img2'=> $Img2,
@@ -3837,6 +3858,7 @@ class ApiFlutter extends CI_Controller
             $Garage = $input['Garage'];	
             $Carpot = $input['Carpot'];
             $Hadap = $input['Hadap'];
+            $RowJalan = $input['RowJalan'];
             $SHM = $input['SHM'];
             $HGB = $input['HGB'];
             $HSHP = $input['HSHP'];
@@ -3879,6 +3901,7 @@ class ApiFlutter extends CI_Controller
             $Harga = $input['Harga'];	
             $HargaSewa = $input['HargaSewa'];
             $RangeHarga = $input['RangeHarga'];	
+            $Include = $input['Include'];
             $Img1 = $input['Img1'];
             $Img2 = $input['Img2'];
             $Img3 = $input['Img3'];
@@ -3961,6 +3984,7 @@ class ApiFlutter extends CI_Controller
                     'Garage'=> $Garage,	
                     'Carpot'=> $Carpot,
                     'Hadap'=> $Hadap,
+                    'RowJalan' => $RowJalan,
                     'SHM'=> $SHM,
                     'HGB'=> $HGB,
                     'HSHP'=> $HSHP,
@@ -4003,6 +4027,7 @@ class ApiFlutter extends CI_Controller
                     'Harga'=> $Harga,
                     'HargaSewa'=> $HargaSewa,
                     'RangeHarga'=> $RangeHarga,	
+                    'Include'=> $Include,
                     'TglInput'=> $makeDate,
                     'Img1'=> $Img1,
                     'Img2'=> $Img2,
@@ -4145,6 +4170,7 @@ class ApiFlutter extends CI_Controller
             $Garage = $input['Garage'];	
             $Carpot = $input['Carpot'];
             $Hadap = $input['Hadap'];
+            $RowJalan = $input['RowJalan'];
             $SHM = $input['SHM'];
             $HGB = $input['HGB'];
             $HSHP = $input['HSHP'];
@@ -4187,6 +4213,7 @@ class ApiFlutter extends CI_Controller
             $Harga = $input['Harga'];	
             $HargaSewa = $input['HargaSewa'];
             $RangeHarga = $input['RangeHarga'];	
+            $Include = $input['Include'];
             $Img1 = $input['Img1'];
             $Img2 = $input['Img2'];
             $Img3 = $input['Img3'];
@@ -4269,6 +4296,7 @@ class ApiFlutter extends CI_Controller
                     'Garage'=> $Garage,	
                     'Carpot'=> $Carpot,
                     'Hadap'=> $Hadap,
+                    'RowJalan' => $RowJalan,
                     'SHM'=> $SHM,
                     'HGB'=> $HGB,
                     'HSHP'=> $HSHP,
@@ -4311,6 +4339,7 @@ class ApiFlutter extends CI_Controller
                     'Harga'=> $Harga,
                     'HargaSewa'=> $HargaSewa,
                     'RangeHarga'=> $RangeHarga,	
+                    'Include'=> $Include,
                     'TglInput'=> $makeDate,
                     'Img1'=> $Img1,
                     'Img2'=> $Img2,
@@ -4518,7 +4547,7 @@ class ApiFlutter extends CI_Controller
                                         $this->output
                                             ->set_content_type('application/json')
                                             ->set_status_header(200)
-                                            ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil', 'id_listing' => $newId]));
+                                            ->set_output(json_encode([ 'status' => 'success', 'message' => 'Approve Pra-Listing Berhasil', 'id_listing' => $newId ]));
                                 } else {
                                     $repost = [
                                         'IdPraListing' => $input['IdPraListing'],
@@ -4532,7 +4561,7 @@ class ApiFlutter extends CI_Controller
                                         $this->output
                                             ->set_content_type('application/json')
                                             ->set_status_header(200)
-                                            ->set_output(json_encode(['status' => 'success', 'Approve Pra-Listing Berhasil']));
+                                            ->set_output(json_encode([ 'status' => 'success', 'message' => 'Approve Pra-Listing Berhasil', 'id_listing' => $newId ]));
                                     } else {
                                         $this->db->trans_rollback();
                                         $this->output

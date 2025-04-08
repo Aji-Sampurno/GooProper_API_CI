@@ -448,6 +448,14 @@ class ModelFlutter extends CI_Model
                                             kotaagen; ");
             return $query->result_array();
         }
+        
+        public function Get_Include() {
+            $query = $this->db->query(" SELECT 
+                                            *
+                                        FROM 
+                                            include; ");
+            return $query->result_array();
+        }
     
     // Event =============================================================================================================================================================================================
     
@@ -1142,17 +1150,57 @@ class ModelFlutter extends CI_Model
     
         // Add -----------------------------------------------------------------
         
-        public function Add_Listing($id){
-            $query = $this->db->query("INSERT INTO `listing` (
-                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,`InUse`,`Area`,`IsSingleOpen`
-                                    ) 
-                                    SELECT 
-                                      `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,`Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,`Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,`BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`SHM`,`HGB`,`HSHP`,`PPJB`,`Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,`ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,`JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,`Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,`Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,`Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,`LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,`View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,`ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,`InUse`,`Area`,`IsSingleOpen`
-                                    FROM `pralisting` 
-                                    WHERE `IdPraListing` = $id;
-                                    ");
-            return $this->db->insert_id();
-    	}
+        public function Add_Listing($id) {
+            $cek = $this->db->get_where('pralisting', ['IdPraListing' => $id])->row();
+        
+            if (!$cek) {
+                return null;
+            }
+        
+            $sql = "INSERT INTO `listing` (
+                        `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,
+                        `Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,
+                        `Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,
+                        `BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`RowJalan`,`SHM`,`HGB`,`HSHP`,`PPJB`,
+                        `Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,
+                        `ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,
+                        `JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,
+                        `Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,
+                        `Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,
+                        `Include`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,
+                        `Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,
+                        `LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,
+                        `View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,
+                        `ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,
+                        `InUse`,`Area`,`IsSingleOpen`
+                    ) 
+                    SELECT 
+                        `IdAgen`,`IdAgenCo`,`IdInput`,`IdVendor`,`NoArsip`,`NamaListing`,`MetaNamaListing`,
+                        `Alamat`,`AlamatTemplate`,`Latitude`,`Longitude`,`Location`,`Wilayah`,`Daerah`,
+                        `Provinsi`,`Selfie`,`Wide`,`Land`,`Dimensi`,`Listrik`,`Level`,`Bed`,`Bath`,
+                        `BedArt`,`BathArt`,`Garage`,`Carpot`,`Hadap`,`RowJalan`,`SHM`,`HGB`,`HSHP`,`PPJB`,
+                        `Stratatitle`,`AJB`,`PetokD`,`Pjp`,`ImgSHM`,`ImgHGB`,`ImgHSHP`,`ImgPPJB`,`ImgStratatitle`,
+                        `ImgAJB`,`ImgPetokD`,`ImgPjp`,`ImgPjp1`,`NoCertificate`,`Pbb`,`JenisProperti`,
+                        `JenisCertificate`,`SumberAir`,`Kondisi`,`RuangTamu`,`RuangMakan`,`Dapur`,`Jemuran`,
+                        `Masjid`,`Taman`,`Playground`,`Cctv`,`OneGateSystem`,`Deskripsi`,`MetaDeskripsi`,
+                        `Prabot`,`KetPrabot`,`Priority`,`Ttd`,`Banner`,`Size`,`Harga`,`HargaSewa`,`RangeHarga`,
+                        `Include`,`TglInput`,`TglUpdate`,`Img1`,`Img2`,`Img3`,`Img4`,`Img5`,`Img6`,`Img7`,
+                        `Img8`,`Img9`,`Img10`,`Img11`,`Img12`,`Video`,`LinkFacebook`,`LinkTiktok`,`LinkInstagram`,
+                        `LinkYoutube`,`IsAdmin`,`IsManager`,`IsRejected`,`Sold`,`Rented`,`SoldAgen`,`RentedAgen`,
+                        `View`,`Marketable`,`StatusHarga`,`IsSelfie`,`IsLokasi`,`Surveyor`,`Fee`,`NoKtp`,
+                        `ImgKtp`,`TipeHarga`,`Pending`,`IsCekLokasi`,`IsDouble`,`IsDelete`,`Akun1`,`Akun2`,
+                        `InUse`,`Area`,`IsSingleOpen`
+                    FROM `pralisting` 
+                    WHERE `IdPraListing` = ?";
+        
+            $this->db->query($sql, [$id]);
+        
+            if ($this->db->affected_rows() > 0) {
+                return $this->db->insert_id();
+            } else {
+                return null;
+            }
+        }
         
         // Get -----------------------------------------------------------------
         
